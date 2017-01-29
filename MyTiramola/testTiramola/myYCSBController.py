@@ -3,7 +3,6 @@ Created on Jan 29, 2017
 
 @author: indiana
 '''
-
 import subprocess
 import paramiko
 import re
