@@ -1,0 +1,7 @@
+start       : start splitting immediately, no chain splitting, no resets
+start_chain : start splitting immediately, chain split every 500 steps, no resets
+half        : start splitting 1/2 into the training, no chain splitting, no resets
+half_chain  : start splitting and chain split 1/2 into the training, no resets
+end         : start splitting and chain split at the end of the training, no resets
+always      : start splitting, reset and chain split at the end of the training, reset and chain split every 500 steps
+

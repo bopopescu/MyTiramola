@@ -1,0 +1,80 @@
+any0.out (200): Rewards: 49028.96 96.98 Splits: 351.42 1.00 Good Splits: 326.38 1.00
+any1.out (200): Rewards: 49126.34 103.74 Splits: 351.50 0.97 Good Splits: 326.70 1.01
+any2.out (200): Rewards: 48930.85 108.58 Splits: 348.44 0.96 Good Splits: 325.94 0.98
+any3.out (200): Rewards: 48742.30 120.69 Splits: 343.57 0.86 Good Splits: 320.44 0.88
+any4.out (200): Rewards: 48623.50 112.80 Splits: 338.62 0.97 Good Splits: 316.36 1.00
+any5.out (200): Rewards: 48324.03 127.89 Splits: 331.62 0.84 Good Splits: 310.25 0.85
+any6.out (200): Rewards: 47823.51 130.92 Splits: 320.84 0.89 Good Splits: 300.85 0.91
+any7.out (200): Rewards: 47439.09 136.93 Splits: 308.23 0.98 Good Splits: 290.15 0.94
+any8.out (200): Rewards: 46326.16 144.70 Splits: 295.72 1.04 Good Splits: 279.89 1.06
+any9.out (200): Rewards: 43352.50 217.39 Splits: 276.25 1.36 Good Splits: 263.33 1.41
+anyt0.out (200): Rewards: 49056.43 104.13 Splits: 351.86 0.96 Good Splits: 326.60 0.93
+anyt1.out (200): Rewards: 49164.13 100.05 Splits: 350.56 1.05 Good Splits: 325.10 1.04
+anyt2.out (200): Rewards: 49145.12 100.60 Splits: 352.23 1.03 Good Splits: 327.50 1.04
+anyt3.out (200): Rewards: 49184.87 103.37 Splits: 350.04 1.02 Good Splits: 326.19 0.99
+anyt4.out (200): Rewards: 48909.26 109.76 Splits: 349.42 0.96 Good Splits: 325.09 0.94
+anyt5.out (200): Rewards: 49028.37 103.16 Splits: 349.10 0.92 Good Splits: 325.93 0.94
+anyt6.out (200): Rewards: 48906.41 98.75 Splits: 349.51 0.83 Good Splits: 326.92 0.87
+anyt7.out (200): Rewards: 48406.80 113.00 Splits: 346.64 0.91 Good Splits: 325.44 0.94
+anyt8.out (200): Rewards: 47778.40 108.61 Splits: 349.20 0.88 Good Splits: 328.79 0.93
+anyt9.out (200): Rewards: 45460.30 141.74 Splits: 351.58 0.80 Good Splits: 334.32 0.90
+max0.out (200): Rewards: 49480.86 98.61 Splits: 349.81 1.03 Good Splits: 324.65 1.02
+max1.out (200): Rewards: 49294.89 101.28 Splits: 349.37 0.95 Good Splits: 325.07 0.96
+max2.out (200): Rewards: 49119.74 87.38 Splits: 347.44 0.91 Good Splits: 323.50 0.92
+max3.out (200): Rewards: 49257.81 101.04 Splits: 344.03 0.95 Good Splits: 320.33 0.93
+max4.out (200): Rewards: 48911.50 102.94 Splits: 338.31 0.91 Good Splits: 315.54 0.93
+max5.out (200): Rewards: 48459.74 136.75 Splits: 330.36 0.87 Good Splits: 308.72 0.88
+max6.out (200): Rewards: 48149.85 123.63 Splits: 320.33 0.87 Good Splits: 301.20 0.88
+max7.out (200): Rewards: 47096.02 160.41 Splits: 307.30 0.94 Good Splits: 288.72 0.93
+max8.out (200): Rewards: 46370.78 143.52 Splits: 294.11 1.03 Good Splits: 278.38 0.99
+max9.out (200): Rewards: 43782.71 202.49 Splits: 276.28 1.17 Good Splits: 263.49 1.27
+maxt0.out (200): Rewards: 49190.04 103.75 Splits: 349.14 0.97 Good Splits: 323.90 1.00
+maxt1.out (200): Rewards: 49129.95 109.75 Splits: 349.75 1.02 Good Splits: 325.25 1.00
+maxt2.out (200): Rewards: 49346.26 99.77 Splits: 349.29 1.04 Good Splits: 324.18 1.02
+maxt3.out (200): Rewards: 49229.33 110.25 Splits: 349.39 0.97 Good Splits: 325.01 0.99
+maxt4.out (200): Rewards: 49066.09 108.81 Splits: 347.59 1.06 Good Splits: 323.51 1.08
+maxt5.out (200): Rewards: 49111.79 99.40 Splits: 347.63 0.94 Good Splits: 323.23 0.95
+maxt6.out (200): Rewards: 48768.00 112.85 Splits: 345.28 0.96 Good Splits: 322.38 0.98
+maxt7.out (200): Rewards: 48412.96 114.35 Splits: 348.16 0.87 Good Splits: 326.52 0.88
+maxt8.out (200): Rewards: 47842.24 130.95 Splits: 349.19 0.76 Good Splits: 328.96 0.84
+maxt9.out (200): Rewards: 45478.87 163.65 Splits: 351.64 0.76 Good Splits: 334.38 0.85
+mdp0.out (200): Rewards: 40760.34 209.78
+mdp1.out (200): Rewards: 41184.03 223.10
+mdp2.out (200): Rewards: 42585.68 188.93
+mdp3.out (200): Rewards: 43120.40 171.63
+mdp4.out (200): Rewards: 43447.77 185.19
+mdp5.out (200): Rewards: 44620.70 164.36
+mdp6.out (200): Rewards: 44467.81 154.99
+mdp7.out (200): Rewards: 44426.35 167.76
+mdp8.out (200): Rewards: 44073.22 146.66
+mdp9.out (200): Rewards: 43327.13 157.36
+midpoint0.out (200): Rewards: 48608.40 150.28 Splits: 310.99 1.20 Good Splits: 293.33 1.24
+midpoint1.out (200): Rewards: 48653.80 159.36 Splits: 312.38 1.26 Good Splits: 294.33 1.26
+midpoint2.out (200): Rewards: 48437.99 164.48 Splits: 310.67 1.33 Good Splits: 292.89 1.34
+midpoint3.out (200): Rewards: 48475.98 161.20 Splits: 309.02 1.25 Good Splits: 290.48 1.29
+midpoint4.out (200): Rewards: 47889.89 178.46 Splits: 309.56 1.09 Good Splits: 291.09 1.16
+midpoint5.out (200): Rewards: 48221.54 160.34 Splits: 308.77 1.23 Good Splits: 289.92 1.26
+midpoint6.out (200): Rewards: 47557.78 171.87 Splits: 302.69 1.10 Good Splits: 283.50 1.13
+midpoint7.out (200): Rewards: 47201.78 181.39 Splits: 304.44 1.09 Good Splits: 285.56 1.19
+midpoint8.out (200): Rewards: 45446.52 233.01 Splits: 297.29 1.20 Good Splits: 277.56 1.33
+midpoint9.out (200): Rewards: 42251.55 246.79 Splits: 282.27 1.28 Good Splits: 263.28 1.44
+midpointt0.out (200): Rewards: 48532.52 157.83 Splits: 308.31 1.14 Good Splits: 291.19 1.17
+midpointt1.out (200): Rewards: 48629.52 161.73 Splits: 311.12 1.18 Good Splits: 293.82 1.18
+midpointt2.out (200): Rewards: 48648.30 148.93 Splits: 308.19 1.35 Good Splits: 291.34 1.36
+midpointt3.out (200): Rewards: 48567.10 146.82 Splits: 311.43 1.24 Good Splits: 293.91 1.23
+midpointt4.out (200): Rewards: 48682.59 148.21 Splits: 313.77 1.17 Good Splits: 296.86 1.23
+midpointt5.out (200): Rewards: 48204.93 159.16 Splits: 312.31 1.16 Good Splits: 294.78 1.21
+midpointt6.out (200): Rewards: 47585.08 186.30 Splits: 313.50 1.17 Good Splits: 296.90 1.22
+midpointt7.out (200): Rewards: 47521.76 163.65 Splits: 315.94 1.19 Good Splits: 299.81 1.23
+midpointt8.out (200): Rewards: 46272.85 202.27 Splits: 319.24 1.04 Good Splits: 303.48 1.09
+midpointt9.out (200): Rewards: 44174.95 208.42 Splits: 329.23 1.02 Good Splits: 314.35 1.05
+qdt0.out (200): Rewards: 35188.91 345.15 Splits: 135.41 0.77 Good Splits: 114.17 0.72
+qdt1.out (200): Rewards: 34711.24 391.49 Splits: 135.46 0.71 Good Splits: 113.83 0.66
+qdt2.out (200): Rewards: 35339.63 364.81 Splits: 136.14 0.83 Good Splits: 114.36 0.74
+qdt3.out (200): Rewards: 34869.24 370.91 Splits: 135.47 0.83 Good Splits: 113.75 0.76
+qdt4.out (200): Rewards: 33748.48 433.87 Splits: 134.43 0.90 Good Splits: 111.78 0.84
+qdt5.out (200): Rewards: 33231.25 416.10 Splits: 133.26 1.10 Good Splits: 110.56 0.97
+qdt6.out (200): Rewards: 31783.42 452.09 Splits: 134.81 1.12 Good Splits: 109.95 0.99
+qdt7.out (200): Rewards: 30218.28 464.54 Splits: 131.71 1.22 Good Splits: 106.42 1.09
+qdt8.out (200): Rewards: 28095.64 455.75 Splits: 124.80 1.35 Good Splits: 97.58 1.13
+qdt9.out (200): Rewards: 24662.35 477.34 Splits: 115.89 1.40 Good Splits: 86.77 1.16

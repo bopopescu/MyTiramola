@@ -1,0 +1,3 @@
+
+./run_test.sh mid & :runs all the tests on the mid algorithm
+

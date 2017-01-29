@@ -1,0 +1,3 @@
+
+./run_test.sh max & : runs all tests for max
+

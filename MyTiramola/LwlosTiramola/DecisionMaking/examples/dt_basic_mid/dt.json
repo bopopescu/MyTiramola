@@ -1,0 +1,26 @@
+{
+  "model" : "MDP-DT",
+  "initial_parameters" : 
+  { 
+    "number_of_VMs" :
+    {
+      "values"   : [1, 2, 3]
+    }
+  },
+  "parameters" :
+  [
+    "number_of_VMs",
+    "total_load"
+  ],
+  "actions" :
+  {
+    "add_VMs"    : [1],
+    "remove_VMs" : [1],
+    "no_op"      : [0]
+  },
+  "initial_qvalues"  : 0,
+  "discount"         : 0.5,
+  "split_error"      : 0.2,
+  "min_measurements" : 3
+}
+

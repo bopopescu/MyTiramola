@@ -1,0 +1,1 @@
+./run_test.sh midpoint & : runs all the tests for midpoint

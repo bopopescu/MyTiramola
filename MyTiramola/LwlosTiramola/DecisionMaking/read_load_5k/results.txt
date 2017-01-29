@@ -1,0 +1,7 @@
+any.out (1000): Rewards: 51574.46 22.86 Splits: 315.92 0.33 Good Splits: 304.19 0.34
+anyt.out (1000): Rewards: 51634.12 22.65 Splits: 342.45 0.33 Good Splits: 328.94 0.32
+max.out (1000): Rewards: 51570.08 24.15 Splits: 313.59 0.35 Good Splits: 301.82 0.36
+maxt.out (1000): Rewards: 51628.82 24.23 Splits: 339.87 0.32 Good Splits: 326.36 0.32
+mdp.out (1000): Rewards: 45328.34 55.25
+mid.out (1000): Rewards: 51521.11 21.20 Splits: 291.65 0.35 Good Splits: 278.27 0.36
+midt.out (1000): Rewards: 51498.38 22.85 Splits: 299.30 0.36 Good Splits: 286.66 0.36

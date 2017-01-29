@@ -1,0 +1,228 @@
+Reward: 40989.8523496 Total splits: 303 Good splits: 295
+Reward: 46116.5137869 Total splits: 310 Good splits: 283
+Reward: 47841.1437495 Total splits: 314 Good splits: 298
+Reward: 46996.6297816 Total splits: 298 Good splits: 289
+Reward: 46923.8407962 Total splits: 314 Good splits: 300
+Reward: 47777.0439773 Total splits: 301 Good splits: 286
+Reward: 48731.5817225 Total splits: 314 Good splits: 293
+Reward: 46621.8963725 Total splits: 291 Good splits: 274
+Reward: 43967.0310278 Total splits: 311 Good splits: 283
+Reward: 49371.9191353 Total splits: 315 Good splits: 302
+Reward: 45844.4765755 Total splits: 304 Good splits: 288
+Reward: 48585.4665448 Total splits: 317 Good splits: 297
+Reward: 48643.9230191 Total splits: 308 Good splits: 287
+Reward: 48423.919953 Total splits: 305 Good splits: 285
+Reward: 49282.725373 Total splits: 310 Good splits: 288
+Reward: 45562.179333 Total splits: 309 Good splits: 278
+Reward: 48280.5972764 Total splits: 297 Good splits: 277
+Reward: 47171.6822366 Total splits: 293 Good splits: 276
+Reward: 47001.2080339 Total splits: 292 Good splits: 270
+Reward: 46635.6273711 Total splits: 295 Good splits: 269
+Reward: 45955.53384 Total splits: 294 Good splits: 282
+Reward: 44039.2773554 Total splits: 277 Good splits: 260
+Reward: 47658.7858568 Total splits: 288 Good splits: 281
+Reward: 46961.4336312 Total splits: 318 Good splits: 295
+Reward: 45993.4016142 Total splits: 301 Good splits: 286
+Reward: 47592.0034959 Total splits: 318 Good splits: 303
+Reward: 48936.8960433 Total splits: 310 Good splits: 296
+Reward: 41894.8429541 Total splits: 302 Good splits: 280
+Reward: 48263.9349167 Total splits: 311 Good splits: 301
+Reward: 48197.3082228 Total splits: 295 Good splits: 282
+Reward: 47220.5309346 Total splits: 312 Good splits: 292
+Reward: 45957.2858437 Total splits: 307 Good splits: 290
+Reward: 48903.5432688 Total splits: 303 Good splits: 281
+Reward: 48511.6346978 Total splits: 300 Good splits: 278
+Reward: 49681.9089844 Total splits: 321 Good splits: 309
+Reward: 48487.5573714 Total splits: 309 Good splits: 285
+Reward: 49073.0211722 Total splits: 317 Good splits: 304
+Reward: 47904.613599 Total splits: 304 Good splits: 293
+Reward: 47557.9983897 Total splits: 298 Good splits: 286
+Reward: 47105.0993345 Total splits: 305 Good splits: 292
+Reward: 48174.4272361 Total splits: 324 Good splits: 306
+Reward: 49303.9469311 Total splits: 313 Good splits: 293
+Reward: 49018.4394829 Total splits: 290 Good splits: 277
+Reward: 45671.7977939 Total splits: 300 Good splits: 291
+Reward: 39960.1882848 Total splits: 284 Good splits: 267
+Reward: 50481.7342068 Total splits: 308 Good splits: 287
+Reward: 46896.1827759 Total splits: 311 Good splits: 290
+Reward: 47168.8766306 Total splits: 304 Good splits: 276
+Reward: 43224.2597323 Total splits: 286 Good splits: 270
+Reward: 50348.1012297 Total splits: 326 Good splits: 311
+
+Results after 50 tests
+Average total rewards : 47138.2764849
+Average total splits  : 304.74
+Average good splits   : 287.24
+Average good splits % : 94.2573997506
+
+Reward: 48189.0372122 Total splits: 325 Good splits: 300
+Reward: 45125.0361101 Total splits: 304 Good splits: 290
+Reward: 49873.2247224 Total splits: 324 Good splits: 310
+Reward: 45956.4787737 Total splits: 322 Good splits: 306
+Reward: 47641.1760064 Total splits: 311 Good splits: 296
+Reward: 48416.5014039 Total splits: 303 Good splits: 281
+Reward: 48269.33648 Total splits: 306 Good splits: 293
+Reward: 48923.5908295 Total splits: 334 Good splits: 309
+Reward: 48606.4325249 Total splits: 280 Good splits: 268
+Reward: 47776.7093007 Total splits: 306 Good splits: 280
+Reward: 46291.717473 Total splits: 303 Good splits: 286
+Reward: 47402.101415 Total splits: 306 Good splits: 287
+Reward: 47515.0647581 Total splits: 303 Good splits: 298
+Reward: 46875.3795643 Total splits: 319 Good splits: 303
+Reward: 47050.1465075 Total splits: 305 Good splits: 287
+Reward: 44848.8006739 Total splits: 321 Good splits: 293
+Reward: 50370.2440611 Total splits: 294 Good splits: 279
+Reward: 44881.1250914 Total splits: 298 Good splits: 284
+Reward: 47969.2726236 Total splits: 304 Good splits: 294
+Reward: 49283.9931078 Total splits: 342 Good splits: 316
+Reward: 47764.5070691 Total splits: 299 Good splits: 273
+Reward: 43997.3758313 Total splits: 300 Good splits: 277
+Reward: 42991.7213009 Total splits: 305 Good splits: 290
+Reward: 48934.9169427 Total splits: 328 Good splits: 308
+Reward: 50271.6643136 Total splits: 326 Good splits: 309
+Reward: 50675.5239531 Total splits: 336 Good splits: 311
+Reward: 46646.1878811 Total splits: 313 Good splits: 295
+Reward: 47540.6624825 Total splits: 313 Good splits: 293
+Reward: 47880.1017945 Total splits: 306 Good splits: 289
+Reward: 49363.0518038 Total splits: 314 Good splits: 294
+Reward: 47211.9157816 Total splits: 331 Good splits: 311
+Reward: 44627.5621449 Total splits: 292 Good splits: 280
+Reward: 48644.8582507 Total splits: 324 Good splits: 305
+Reward: 44559.15847 Total splits: 314 Good splits: 284
+Reward: 45412.5971666 Total splits: 298 Good splits: 284
+Reward: 47530.7178782 Total splits: 311 Good splits: 299
+Reward: 45793.1133645 Total splits: 313 Good splits: 293
+Reward: 48631.4881407 Total splits: 310 Good splits: 296
+Reward: 48298.7471204 Total splits: 297 Good splits: 280
+Reward: 48476.2846352 Total splits: 307 Good splits: 285
+Reward: 47029.1470389 Total splits: 303 Good splits: 291
+Reward: 48392.5686273 Total splits: 305 Good splits: 288
+Reward: 47942.6150033 Total splits: 322 Good splits: 294
+Reward: 49237.944051 Total splits: 321 Good splits: 295
+Reward: 49308.6996204 Total splits: 330 Good splits: 311
+Reward: 48855.3823253 Total splits: 304 Good splits: 286
+Reward: 48456.3588275 Total splits: 309 Good splits: 287
+Reward: 46394.6519963 Total splits: 308 Good splits: 292
+Reward: 48823.2554148 Total splits: 295 Good splits: 279
+Reward: 45514.7787479 Total splits: 298 Good splits: 282
+
+Results after 50 tests
+Average total rewards : 47529.4585324
+Average total splits  : 310.84
+Average good splits   : 292.42
+Average good splits % : 94.0741217347
+
+Reward: 48708.9347595 Total splits: 316 Good splits: 296
+Reward: 45460.6221952 Total splits: 325 Good splits: 306
+Reward: 45050.8731677 Total splits: 287 Good splits: 270
+Reward: 49137.6045369 Total splits: 333 Good splits: 313
+Reward: 44232.8991888 Total splits: 276 Good splits: 251
+Reward: 50229.5151307 Total splits: 305 Good splits: 290
+Reward: 46402.9427233 Total splits: 309 Good splits: 295
+Reward: 48175.6249336 Total splits: 299 Good splits: 275
+Reward: 48134.311067 Total splits: 309 Good splits: 293
+Reward: 48799.4190985 Total splits: 292 Good splits: 276
+Reward: 46861.4680036 Total splits: 316 Good splits: 296
+Reward: 46242.2676866 Total splits: 298 Good splits: 289
+Reward: 45848.3341811 Total splits: 298 Good splits: 279
+Reward: 45026.9391956 Total splits: 316 Good splits: 296
+Reward: 47082.3544617 Total splits: 322 Good splits: 299
+Reward: 47971.1278692 Total splits: 332 Good splits: 309
+Reward: 48429.2549559 Total splits: 306 Good splits: 286
+Reward: 49477.8763255 Total splits: 326 Good splits: 307
+Reward: 50145.4198951 Total splits: 333 Good splits: 312
+Reward: 46138.1332849 Total splits: 312 Good splits: 295
+Reward: 44684.8797242 Total splits: 304 Good splits: 286
+Reward: 41207.4246033 Total splits: 283 Good splits: 266
+Reward: 46365.6207278 Total splits: 305 Good splits: 281
+Reward: 45873.6497799 Total splits: 330 Good splits: 316
+Reward: 48216.9946098 Total splits: 299 Good splits: 286
+Reward: 49886.7688446 Total splits: 336 Good splits: 317
+Reward: 48081.4752761 Total splits: 322 Good splits: 302
+Reward: 47738.4300761 Total splits: 313 Good splits: 290
+Reward: 46580.8143327 Total splits: 319 Good splits: 301
+Reward: 44876.7027418 Total splits: 296 Good splits: 279
+Reward: 47374.112851 Total splits: 321 Good splits: 296
+Reward: 48988.9345929 Total splits: 300 Good splits: 280
+Reward: 43304.5318708 Total splits: 307 Good splits: 283
+Reward: 49583.2333745 Total splits: 300 Good splits: 281
+Reward: 47927.7628002 Total splits: 331 Good splits: 319
+Reward: 49265.952342 Total splits: 322 Good splits: 300
+Reward: 50288.5590651 Total splits: 345 Good splits: 319
+Reward: 47565.3146765 Total splits: 316 Good splits: 300
+Reward: 48793.1236107 Total splits: 328 Good splits: 309
+Reward: 43716.8161062 Total splits: 273 Good splits: 260
+Reward: 48285.5925448 Total splits: 288 Good splits: 272
+Reward: 47566.254979 Total splits: 305 Good splits: 285
+Reward: 46593.3668174 Total splits: 299 Good splits: 276
+Reward: 50990.7967109 Total splits: 320 Good splits: 300
+Reward: 49192.1229186 Total splits: 290 Good splits: 275
+Reward: 48923.5525998 Total splits: 311 Good splits: 297
+Reward: 47515.1154849 Total splits: 305 Good splits: 295
+Reward: 44136.6303379 Total splits: 314 Good splits: 292
+Reward: 46355.8619819 Total splits: 283 Good splits: 266
+Reward: 49902.1261457 Total splits: 320 Good splits: 295
+
+Results after 50 tests
+Average total rewards : 47346.7689038
+Average total splits  : 309.9
+Average good splits   : 291.14
+Average good splits % : 93.9464343337
+
+Reward: 50909.9334692 Total splits: 330 Good splits: 321
+Reward: 47372.2515152 Total splits: 314 Good splits: 298
+Reward: 46247.8401769 Total splits: 289 Good splits: 270
+Reward: 48733.2584856 Total splits: 330 Good splits: 307
+Reward: 50482.3846512 Total splits: 322 Good splits: 296
+Reward: 49163.1311137 Total splits: 331 Good splits: 313
+Reward: 49670.4657208 Total splits: 322 Good splits: 305
+Reward: 46309.8018293 Total splits: 335 Good splits: 313
+Reward: 44529.8797725 Total splits: 316 Good splits: 283
+Reward: 49446.4969354 Total splits: 308 Good splits: 293
+Reward: 48737.9770574 Total splits: 321 Good splits: 303
+Reward: 47789.0557782 Total splits: 302 Good splits: 279
+Reward: 48544.9027866 Total splits: 307 Good splits: 284
+Reward: 49281.8627941 Total splits: 310 Good splits: 292
+Reward: 45098.7468881 Total splits: 289 Good splits: 266
+Reward: 49145.6343784 Total splits: 301 Good splits: 290
+Reward: 48002.5760877 Total splits: 318 Good splits: 296
+Reward: 48073.8707453 Total splits: 303 Good splits: 288
+Reward: 48671.0402255 Total splits: 291 Good splits: 277
+Reward: 47930.3863405 Total splits: 311 Good splits: 292
+Reward: 46613.2490554 Total splits: 294 Good splits: 267
+Reward: 45196.8970575 Total splits: 333 Good splits: 316
+Reward: 47999.1597173 Total splits: 298 Good splits: 284
+Reward: 47867.9602242 Total splits: 310 Good splits: 286
+Reward: 44513.8661954 Total splits: 288 Good splits: 267
+Reward: 48364.8442171 Total splits: 282 Good splits: 273
+Reward: 47956.5387174 Total splits: 293 Good splits: 284
+Reward: 48460.2606668 Total splits: 302 Good splits: 291
+Reward: 46644.6589065 Total splits: 310 Good splits: 296
+Reward: 47590.8200652 Total splits: 310 Good splits: 292
+Reward: 44589.7051062 Total splits: 308 Good splits: 288
+Reward: 47943.441984 Total splits: 301 Good splits: 293
+Reward: 51078.0463972 Total splits: 322 Good splits: 307
+Reward: 49629.3623389 Total splits: 318 Good splits: 295
+Reward: 48077.0731507 Total splits: 312 Good splits: 299
+Reward: 46506.2898647 Total splits: 312 Good splits: 297
+Reward: 48431.9319014 Total splits: 316 Good splits: 298
+Reward: 48921.5638503 Total splits: 283 Good splits: 272
+Reward: 45252.2413484 Total splits: 275 Good splits: 262
+Reward: 49288.8100957 Total splits: 328 Good splits: 313
+Reward: 48209.1284005 Total splits: 294 Good splits: 278
+Reward: 46663.8489201 Total splits: 292 Good splits: 275
+Reward: 47796.2525149 Total splits: 298 Good splits: 287
+Reward: 45078.607805 Total splits: 319 Good splits: 299
+Reward: 49626.5362359 Total splits: 327 Good splits: 312
+Reward: 45672.817064 Total splits: 290 Good splits: 266
+Reward: 48974.0928068 Total splits: 291 Good splits: 271
+Reward: 45215.1008994 Total splits: 295 Good splits: 281
+Reward: 47998.9733881 Total splits: 316 Good splits: 297
+Reward: 46788.8467397 Total splits: 304 Good splits: 279
+
+Results after 50 tests
+Average total rewards : 47741.8484477
+Average total splits  : 307.42
+Average good splits   : 289.82
+Average good splits % : 94.274933316
+

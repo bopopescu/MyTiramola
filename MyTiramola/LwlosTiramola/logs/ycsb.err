@@ -1,0 +1,204 @@
+java -cp /tmp:/home/ubuntu/ycsb-0.3.0/hbase-binding/conf:/home/ubuntu/ycsb-0.3.0/conf:/home/ubuntu/ycsb-0.3.0/lib/HdrHistogram-2.1.4.jar:/home/ubuntu/ycsb-0.3.0/lib/core-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-mapper-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-el-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/findbugs-annotations-1.3.9-1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-auth-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-api-1.6.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-lang-2.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/activation-1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-annotations-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/log4j-1.2.17.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/avro-1.7.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-cli-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/snappy-java-1.0.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-binding-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/htrace-core-3.1.0-incubating.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/stax-api-1.0-2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/protobuf-java-2.5.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-math3-3.1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/joni-2.1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-log4j12-1.6.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-all-4.0.23.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-configuration-1.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpclient-4.2.5.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpcore-4.2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/junit-4.11.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/guava-12.0.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-mapreduce-client-core-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-io-2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-common-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-i18n-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-asn1-api-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xmlenc-0.52.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-3.6.2.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-api-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-codec-1.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-mapper-asl-1.8.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-compress-1.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-logging-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jaxb-api-2.2.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hamcrest-core-1.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/zookeeper-3.4.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xz-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jcodings-1.0.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-core-1.8.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-1.7.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsch-0.1.42.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsr305-1.3.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-client-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-annotations-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jetty-util-6.1.26.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-util-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-httpclient-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-net-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-protocol-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-digester-1.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/paranamer-2.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-collections-3.2.1.jar com.yahoo.ycsb.Client -db com.yahoo.ycsb.db.HBaseClient -P /home/ubuntu/tiramola/workload.cfg -p recordcount=10000 -s -load
+Loading workload...
+Starting test.
+2015-11-18 21:04:30:059 0 sec: 0 operations; 
+log4j:WARN No appenders could be found for logger (org.apache.hadoop.metrics2.lib.MutableMetricsFactory).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+2015-11-18 21:04:39:983 10 sec: 6955 operations; 700.83 current ops/sec; [INSERT AverageLatency(us)=23802.49] 
+2015-11-18 21:04:49:982 20 sec: 10000 operations; 304.53 current ops/sec; [CLEANUP AverageLatency(us)=18.55] [INSERT AverageLatency(us)=15006.57] [UPDATE AverageLatency(us)=1.75] 
+java -cp /tmp:/home/ubuntu/ycsb-0.3.0/hbase-binding/conf:/home/ubuntu/ycsb-0.3.0/conf:/home/ubuntu/ycsb-0.3.0/lib/HdrHistogram-2.1.4.jar:/home/ubuntu/ycsb-0.3.0/lib/core-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-mapper-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-el-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/findbugs-annotations-1.3.9-1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-auth-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-api-1.6.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-lang-2.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/activation-1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-annotations-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/log4j-1.2.17.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/avro-1.7.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-cli-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/snappy-java-1.0.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-binding-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/htrace-core-3.1.0-incubating.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/stax-api-1.0-2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/protobuf-java-2.5.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-math3-3.1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/joni-2.1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-log4j12-1.6.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-all-4.0.23.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-configuration-1.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpclient-4.2.5.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpcore-4.2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/junit-4.11.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/guava-12.0.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-mapreduce-client-core-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-io-2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-common-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-i18n-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-asn1-api-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xmlenc-0.52.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-3.6.2.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-api-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-codec-1.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-mapper-asl-1.8.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-compress-1.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-logging-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jaxb-api-2.2.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hamcrest-core-1.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/zookeeper-3.4.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xz-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jcodings-1.0.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-core-1.8.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-1.7.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsch-0.1.42.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsr305-1.3.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-client-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-annotations-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jetty-util-6.1.26.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-util-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-httpclient-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-net-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-protocol-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-digester-1.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/paranamer-2.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-collections-3.2.1.jar com.yahoo.ycsb.Client -db com.yahoo.ycsb.db.HBaseClient -P /home/ubuntu/tiramola/workload.cfg -p recordcount=10000 -s -load
+Loading workload...
+Starting test.
+2015-11-18 22:15:29:273 0 sec: 0 operations; 
+log4j:WARN No appenders could be found for logger (org.apache.hadoop.metrics2.lib.MutableMetricsFactory).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+2015-11-18 22:15:39:189 10 sec: 8576 operations; 864.78 current ops/sec; [INSERT AverageLatency(us)=19313.54] 
+2015-11-18 22:15:49:189 20 sec: 10000 operations; 142.41 current ops/sec; [CLEANUP AverageLatency(us)=16.35] [INSERT AverageLatency(us)=12983.73] [UPDATE AverageLatency(us)=1.6] 
+java -cp /tmp:/home/ubuntu/ycsb-0.3.0/hbase-binding/conf:/home/ubuntu/ycsb-0.3.0/conf:/home/ubuntu/ycsb-0.3.0/lib/HdrHistogram-2.1.4.jar:/home/ubuntu/ycsb-0.3.0/lib/core-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-mapper-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-el-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/findbugs-annotations-1.3.9-1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-auth-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-api-1.6.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-lang-2.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/activation-1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-annotations-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/log4j-1.2.17.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/avro-1.7.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-cli-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/snappy-java-1.0.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-binding-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/htrace-core-3.1.0-incubating.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/stax-api-1.0-2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/protobuf-java-2.5.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-math3-3.1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/joni-2.1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-log4j12-1.6.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-all-4.0.23.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-configuration-1.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpclient-4.2.5.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpcore-4.2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/junit-4.11.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/guava-12.0.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-mapreduce-client-core-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-io-2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-common-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-i18n-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-asn1-api-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xmlenc-0.52.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-3.6.2.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-api-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-codec-1.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-mapper-asl-1.8.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-compress-1.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-logging-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jaxb-api-2.2.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hamcrest-core-1.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/zookeeper-3.4.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xz-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jcodings-1.0.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-core-1.8.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-1.7.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsch-0.1.42.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsr305-1.3.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-client-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-annotations-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jetty-util-6.1.26.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-util-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-httpclient-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-net-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-protocol-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-digester-1.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/paranamer-2.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-collections-3.2.1.jar com.yahoo.ycsb.Client -db com.yahoo.ycsb.db.HBaseClient -P /home/ubuntu/tiramola/workload.cfg -p recordcount=10000 -s -load
+Loading workload...
+Starting test.
+2015-11-19 00:39:06:089 0 sec: 0 operations; 
+log4j:WARN No appenders could be found for logger (org.apache.hadoop.metrics2.lib.MutableMetricsFactory).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+2015-11-19 00:39:16:050 10 sec: 8056 operations; 808.75 current ops/sec; [INSERT AverageLatency(us)=20233.87] 
+2015-11-19 00:39:26:050 20 sec: 10000 operations; 194.4 current ops/sec; [CLEANUP AverageLatency(us)=15.95] [INSERT AverageLatency(us)=14025.5] [UPDATE AverageLatency(us)=2.1] 
+java -cp /tmp:/home/ubuntu/ycsb-0.3.0/hbase-binding/conf:/home/ubuntu/ycsb-0.3.0/conf:/home/ubuntu/ycsb-0.3.0/lib/HdrHistogram-2.1.4.jar:/home/ubuntu/ycsb-0.3.0/lib/core-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-mapper-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-el-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/findbugs-annotations-1.3.9-1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-auth-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-api-1.6.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-lang-2.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/activation-1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-annotations-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/log4j-1.2.17.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/avro-1.7.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-cli-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/snappy-java-1.0.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-binding-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/htrace-core-3.1.0-incubating.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/stax-api-1.0-2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/protobuf-java-2.5.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-math3-3.1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/joni-2.1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-log4j12-1.6.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-all-4.0.23.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-configuration-1.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpclient-4.2.5.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpcore-4.2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/junit-4.11.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/guava-12.0.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-mapreduce-client-core-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-io-2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-common-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-i18n-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-asn1-api-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xmlenc-0.52.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-3.6.2.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-api-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-codec-1.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-mapper-asl-1.8.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-compress-1.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-logging-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jaxb-api-2.2.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hamcrest-core-1.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/zookeeper-3.4.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xz-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jcodings-1.0.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-core-1.8.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-1.7.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsch-0.1.42.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsr305-1.3.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-client-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-annotations-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jetty-util-6.1.26.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-util-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-httpclient-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-net-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-protocol-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-digester-1.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/paranamer-2.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-collections-3.2.1.jar com.yahoo.ycsb.Client -db com.yahoo.ycsb.db.HBaseClient -P /home/ubuntu/tiramola/workload.cfg -p recordcount=10000 -s -load
+Loading workload...
+Starting test.
+2015-11-19 14:17:49:375 0 sec: 0 operations; 
+log4j:WARN No appenders could be found for logger (org.apache.hadoop.metrics2.lib.MutableMetricsFactory).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+2015-11-19 14:17:59:327 10 sec: 7210 operations; 724.48 current ops/sec; [INSERT AverageLatency(us)=22685.73] 
+2015-11-19 14:18:09:327 20 sec: 10000 operations; 279 current ops/sec; [CLEANUP AverageLatency(us)=19.3] [INSERT AverageLatency(us)=13600.77] [UPDATE AverageLatency(us)=1.85] 
+java -cp /tmp:/home/ubuntu/ycsb-0.3.0/hbase-binding/conf:/home/ubuntu/ycsb-0.3.0/conf:/home/ubuntu/ycsb-0.3.0/lib/HdrHistogram-2.1.4.jar:/home/ubuntu/ycsb-0.3.0/lib/core-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-mapper-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-el-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/findbugs-annotations-1.3.9-1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-auth-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-api-1.6.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-lang-2.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/activation-1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-annotations-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/log4j-1.2.17.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/avro-1.7.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-cli-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/snappy-java-1.0.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-binding-0.3.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/htrace-core-3.1.0-incubating.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/stax-api-1.0-2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/protobuf-java-2.5.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-math3-3.1.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/joni-2.1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/slf4j-log4j12-1.6.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-all-4.0.23.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-configuration-1.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpclient-4.2.5.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/httpcore-4.2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/junit-4.11.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/guava-12.0.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-mapreduce-client-core-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-io-2.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-common-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/apacheds-i18n-2.0.0-M15.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-asn1-api-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xmlenc-0.52.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/netty-3.6.2.Final.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-api-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-codec-1.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-mapper-asl-1.8.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-compress-1.4.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-logging-1.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jaxb-api-2.2.2.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hamcrest-core-1.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/zookeeper-3.4.6.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/xz-1.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jcodings-1.0.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-core-1.8.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-beanutils-1.7.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsch-0.1.42.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jsr305-1.3.9.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-client-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jackson-core-asl-1.9.4.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-annotations-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/jetty-util-6.1.26.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/api-util-1.0.0-M20.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-httpclient-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-net-3.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hbase-protocol-1.0.0.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-digester-1.8.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/hadoop-yarn-common-2.5.1.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/paranamer-2.3.jar:/home/ubuntu/ycsb-0.3.0/hbase-binding/lib/commons-collections-3.2.1.jar com.yahoo.ycsb.Client -db com.yahoo.ycsb.db.HBaseClient -P /home/ubuntu/tiramola/workload.cfg -p recordcount=10000 -s -load
+Loading workload...
+Starting test.
+2015-11-20 10:20:49:805 0 sec: 0 operations; 
+log4j:WARN No appenders could be found for logger (org.apache.hadoop.metrics2.lib.MutableMetricsFactory).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+com.yahoo.ycsb.DBException: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:114)
+	at com.yahoo.ycsb.DBWrapper.init(DBWrapper.java:63)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:195)
+Caused by: org.apache.hadoop.hbase.TableNotFoundException: usertable
+	at org.apache.hadoop.hbase.client.HTable.getTableDescriptor(HTable.java:587)
+	at com.yahoo.ycsb.db.HBaseClient.init(HBaseClient.java:110)
+	... 2 more
+2015-11-20 10:20:59:749 10 sec: 0 operations; 

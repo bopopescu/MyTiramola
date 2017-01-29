@@ -1,0 +1,22 @@
+{
+  "model" : "Q-learning",
+  "parameters" : 
+  {
+    "number_of_VMs" :
+    {
+      "values"   : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "modeled"  : true,
+      "recorded" : true
+    }
+  },
+  "actions" :
+  {
+    "add_VMs"    : [1],
+    "remove_VMs" : [1],
+    "no_op"      : [0]
+  },
+  "initial_qvalues" : 0.0,
+  "learning_rate"   : 0.1,
+  "discount"        : 0.85
+}
+

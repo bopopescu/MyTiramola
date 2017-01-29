@@ -1,0 +1,30 @@
+{
+  "model" : "MDP-DT",
+  "initial_parameters" :
+  {
+  },
+  "parameters" :
+  [
+    "number_of_VMs",
+    "RAM_size",
+    "number_of_CPUs",
+    "storage_capacity",
+    "%_free_RAM",
+    "%_CPU_usage",
+    "I/O_per_sec",
+    "total_load",
+    "%_read_load",
+    "total_latency"
+  ],
+  "actions" :
+  {
+    "add_VMs"    : [1],
+    "remove_VMs" : [1],
+    "no_op"      : [0]
+  },
+  "initial_qvalues"  : 0,
+  "discount"         : 0.5,
+  "split_error"      : 0.0000001,
+  "min_measurements" : 5
+}
+

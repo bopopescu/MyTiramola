@@ -1,0 +1,26 @@
+{
+  "model" : "MDP-DT",
+  "initial_parameters" :
+  {
+      "number_of_VMs" :
+      {
+          "values" : [4, 6, 8, 10, 12, 14]
+      }
+  },
+  "parameters" :
+  [
+    "number_of_VMs",
+    "network_usage"
+  ],
+  "actions" :
+  {
+    "add_VMs"    : [1, 2],
+    "remove_VMs" : [1, 2],
+    "no_op"      : [0]
+  },
+  "initial_qvalues"  : 0,
+  "discount"         : 0,
+  "split_error"      : 0.005,
+  "min_measurements" : 2
+}
+

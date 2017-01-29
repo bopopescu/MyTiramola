@@ -1,0 +1,43 @@
+{
+  "model" : "Q-DT",
+  "initial_parameters" :
+  {
+    "number_of_VMs" :
+    {
+      "values"   : [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+    },
+    "total_load" :
+    {
+      "limits"   : [0, 20, 40, 60, 80, 100]
+    },
+    "%_read_load" :
+    {
+      "limits"   : [0.5, 0.65, 0.8, 1.0]
+    }
+  },
+  "parameters" :
+  [
+    "number_of_VMs",
+    "RAM_size",
+    "number_of_CPUs",
+    "storage_capacity",
+    "%_free_RAM",
+    "%_CPU_usage",
+    "I/O_per_sec",
+    "total_load",
+    "%_read_load",
+    "total_latency"
+  ],
+  "actions" :
+  {
+    "add_VMs"    : [1],
+    "remove_VMs" : [1],
+    "no_op"      : [0]
+  },
+  "initial_qvalues"  : 0,
+  "discount"         : 0.5,
+  "learning_rate"    : 0.5,
+  "split_error"      : 0.001,
+  "min_measurements" : 10
+}
+

@@ -1,0 +1,4 @@
+
+./run.sh max &
+
+runs all tests with the max criterion

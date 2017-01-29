@@ -1,0 +1,11 @@
+master:
+sudo apt-get install ganglia-monitor rrdtool gmetad ganglia-webfrontend
+
+/etc/init.d/ganglia-monitor start
+/etc/init.d/gmetad start
+/etc/init.d/apache2 restart
+
+servers:
+sudo apt-get install ganglia-monitor
+
+/etc/init.d/ganglia-monitor restart

@@ -1,0 +1,2492 @@
+2015-11-18 23:56:31,638 - DEBUG - Deamon - /home/ubuntu/.openstack
+2015-11-18 23:56:31,639 - DEBUG - Deamon - 6
+2015-11-18 23:56:31,639 - DEBUG - Deamon - ded38fe1-afd6-4a11-946d-d17253a639f6
+2015-11-18 23:56:31,639 - DEBUG - Deamon - singles.1
+2015-11-18 23:56:31,639 - DEBUG - Deamon - klolos-hadoop
+2015-11-18 23:56:31,639 - DEBUG - Deamon - klolos-nodes-
+2015-11-18 23:56:31,639 - DEBUG - Deamon - False
+2015-11-18 23:56:31,639 - DEBUG - Deamon - HBASE
+2015-11-18 23:56:31,640 - DEBUG - Deamon - sqlite:////home/ubuntu/hbase.db
+2015-11-18 23:56:31,652 - DEBUG - Coordinator - environ({'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:', 'LC_IDENTIFICATION': 'el_GR.UTF-8', 'LC_MEASUREMENT': 'el_GR.UTF-8', 'LC_ADDRESS': 'el_GR.UTF-8', 'TERM': 'xterm', 'OS_TENANT_ID': '4cc843ae9f454efb98b890cb79239f52', 'LOGNAME': 'root', 'LC_MONETARY': 'el_GR.UTF-8', 'OS_TENANT_NAME': 'klolos', 'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'SUDO_UID': '1000', 'HOME': '/home/ubuntu', 'OS_PASSWORD': '$OS_PASSWORD_INPUT', 'LC_NAME': 'el_GR.UTF-8', 'OS_REGION_NAME': 'regionOne', 'LC_NUMERIC': 'el_GR.UTF-8', 'USER': 'root', 'SUDO_USER': 'ubuntu', 'MAIL': '/var/mail/root', 'OS_AUTH_URL': 'http://termi7:5000/v2.0', 'LANG': 'en_US.UTF-8', 'LC_TELEPHONE': 'el_GR.UTF-8', 'SHELL': '/bin/bash', 'LC_TIME': 'el_GR.UTF-8', 'USERNAME': 'root', 'OS_USERNAME': 'klolos', 'SUDO_COMMAND': './coordinator.py start', 'LC_PAPER': 'el_GR.UTF-8', 'SUDO_GID': '1000'})
+2015-11-18 23:56:31,653 - DEBUG - Coordinator - ded38fe1-afd6-4a11-946d-d17253a639f6
+2015-11-18 23:56:31,726 - DEBUG - Coordinator - Created OpenStackCluster with EC2 API and public ipv6 dnsname
+2015-11-18 23:56:32,780 - DEBUG - Coordinator - All user instances:['ycsb-client-4', 'ycsb-client-3', 'ycsb-client-2', 'ycsb-client-1', 'Simulations', 'tiramola-master', 'tiramola-node', 'hmaster']
+2015-11-18 23:56:32,881 - DEBUG - Coordinator - Removing previous instance of cluster from db
+2015-11-18 23:56:32,881 - DEBUG - Coordinator - cluster_name = klolos-hadoop
+2015-11-18 23:56:32,885 - DEBUG - Coordinator - bucket_name = ded38fe1-afd6-4a11-946d-d17253a639f6
+2015-11-18 23:56:33,426 - DEBUG - Coordinator - Found image in db: [<Image: tiramola-node-3>], id = ded38fe1-afd6-4a11-946d-d17253a639f6
+2015-11-18 23:56:33,426 - DEBUG - Coordinator - Launching 6 new instances ...
+2015-11-19 00:01:59,437 - DEBUG - Coordinator - Running instances: ['192.168.5.200', '192.168.5.155', '192.168.5.199', '192.168.5.198', '192.168.5.195', '192.168.5.197']
+2015-11-19 00:01:59,438 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 00:03:46,538 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 00:04:28,986 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 00:04:30,908 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 00:04:49,744 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 00:05:07,024 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 00:05:30,849 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 00:05:55,094 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 00:06:05,089 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 00:09:56,723 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 00:10:40,419 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 00:10:59,617 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 00:11:22,136 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 00:11:33,304 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 00:12:08,641 - DEBUG - HBaseCluster - Formatting namenode ...
+2015-11-19 00:12:54,879 - DEBUG - HBaseCluster - Namenode Formatted, exit status: 0
+2015-11-19 00:12:55,508 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 00:13:57,964 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: starting namenode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-namenode-klolos-nodes-master.out
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-3.out
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-2.out
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-1.out
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-5.out
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-4.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: starting secondarynamenode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-secondarynamenode-klolos-nodes-master.out
+
+2015-11-19 00:15:29,567 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 00:15:29,568 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 00:19:43,639 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-2: starting zookeeper, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-zookeeper-klolos-nodes-2.out
+  klolos-nodes-master: starting zookeeper, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-zookeeper-klolos-nodes-master.out
+  klolos-nodes-1: starting zookeeper, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-zookeeper-klolos-nodes-1.out
+  starting master, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-master-klolos-nodes-master.out
+  klolos-nodes-1: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-1.out
+  klolos-nodes-2: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-2.out
+  klolos-nodes-2: head: cannot open ‘/opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-2.out’ for reading: No such file or directory
+  klolos-nodes-5: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-5.out
+  klolos-nodes-3: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-3.out
+  klolos-nodes-4: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-4.out
+
+2015-11-19 00:19:43,643 - DEBUG - Coordinator - Initialized Cluster Connections
+2015-11-19 00:19:43,644 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 00:19:43,665 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 00:19:43,927 - DEBUG - Coordinator - Waiting for HBase to get ready ... 
+2015-11-19 00:19:43,927 - DEBUG - Coordinator - Sleeping for 30 seconds ...
+2015-11-19 00:20:03,948 - DEBUG - Coordinator - Sleeping for 10 seconds ...
+2015-11-19 00:20:14,139 - DEBUG - HBaseCluster - Initializing the db table ...
+2015-11-19 00:28:59,834 - DEBUG - HBaseCluster - 
+  HBase Shell; enter 'help<RETURN>' for list of supported commands.
+  Type "exit<RETURN>" to leave the HBase Shell
+  Version 1.1.2, rcc2b70cf03e3378800661ec5cab11eb43fafe0fc, Wed Aug 26 20:11:27 PDT 2015
+  
+  n_splits = 200
+  200
+  create 'usertable', 'family', {SPLITS => (1..n_splits).map {|i| "user#{1000+i*(9999-1000)/n_splits}"}}
+  
+  ERROR: Can't get master address from ZooKeeper; znode data == null
+  
+  Here is some help for this command:
+  Creates a table. Pass a table name, and a set of column family
+  specifications (at least one), and, optionally, table configuration.
+  Column specification can be a simple string (name), or a dictionary
+  (dictionaries are described below in main help output), necessarily 
+  including NAME attribute. 
+  Examples:
+  
+  Create a table with namespace=ns1 and table qualifier=t1
+    hbase> create 'ns1:t1', {NAME => 'f1', VERSIONS => 5}
+  
+  Create a table with namespace=default and table qualifier=t1
+    hbase> create 't1', {NAME => 'f1'}, {NAME => 'f2'}, {NAME => 'f3'}
+    hbase> # The above in shorthand would be the following:
+    hbase> create 't1', 'f1', 'f2', 'f3'
+    hbase> create 't1', {NAME => 'f1', VERSIONS => 1, TTL => 2592000, BLOCKCACHE => true}
+    hbase> create 't1', {NAME => 'f1', CONFIGURATION => {'hbase.hstore.blockingStoreFiles' => '10'}}
+    
+  Table configuration options can be put at the end.
+  Examples:
+  
+    hbase> create 'ns1:t1', 'f1', SPLITS => ['10', '20', '30', '40']
+    hbase> create 't1', 'f1', SPLITS => ['10', '20', '30', '40']
+    hbase> create 't1', 'f1', SPLITS_FILE => 'splits.txt', OWNER => 'johndoe'
+    hbase> create 't1', {NAME => 'f1', VERSIONS => 5}, METADATA => { 'mykey' => 'myvalue' }
+    hbase> # Optionally pre-split the table into NUMREGIONS, using
+    hbase> # SPLITALGO ("HexStringSplit", "UniformSplit" or classname)
+    hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit'}
+    hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit', REGION_REPLICATION => 2, CONFIGURATION => {'hbase.hregion.scan.loadColumnFamiliesOnDemand' => 'true'}}
+  
+  You can also keep around a reference to the created table:
+  
+    hbase> t1 = create 't1', 'f1'
+  
+  Which gives you a reference to the table named 't1', on which you can then
+  call methods.
+  
+  
+
+2015-11-19 00:28:59,836 - DEBUG - HBaseCluster - Restarting cluster ...
+2015-11-19 00:29:00,023 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 00:29:13,121 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-4: datanode running as process 1858. Stop it first.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-5: datanode running as process 1794. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 00:29:16,418 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 00:29:16,419 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 00:29:20,030 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  starting master, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-master-klolos-nodes-master.out
+  klolos-nodes-5: regionserver running as process 1993. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-4: regionserver running as process 2046. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+
+2015-11-19 00:29:20,031 - DEBUG - HBaseCluster - Waiting for HBase to get ready ... 
+2015-11-19 00:29:50,062 - DEBUG - HBaseCluster - Initializing the db table ...
+2015-11-19 00:30:23,231 - DEBUG - HBaseCluster - 
+  HBase Shell; enter 'help<RETURN>' for list of supported commands.
+  Type "exit<RETURN>" to leave the HBase Shell
+  Version 1.1.2, rcc2b70cf03e3378800661ec5cab11eb43fafe0fc, Wed Aug 26 20:11:27 PDT 2015
+  
+  n_splits = 200
+  200
+  create 'usertable', 'family', {SPLITS => (1..n_splits).map {|i| "user#{1000+i*(9999-1000)/n_splits}"}}
+  
+  ERROR: org.apache.hadoop.hbase.PleaseHoldException: Master is initializing
+  	at org.apache.hadoop.hbase.master.HMaster.checkInitialized(HMaster.java:2177)
+  	at org.apache.hadoop.hbase.master.HMaster.checkNamespaceManagerReady(HMaster.java:2182)
+  	at org.apache.hadoop.hbase.master.HMaster.ensureNamespaceExists(HMaster.java:2375)
+  	at org.apache.hadoop.hbase.master.HMaster.createTable(HMaster.java:1444)
+  	at org.apache.hadoop.hbase.master.MasterRpcServices.createTable(MasterRpcServices.java:422)
+  	at org.apache.hadoop.hbase.protobuf.generated.MasterProtos$MasterService$2.callBlockingMethod(MasterProtos.java:48502)
+  	at org.apache.hadoop.hbase.ipc.RpcServer.call(RpcServer.java:2114)
+  	at org.apache.hadoop.hbase.ipc.CallRunner.run(CallRunner.java:101)
+  	at org.apache.hadoop.hbase.ipc.RpcExecutor.consumerLoop(RpcExecutor.java:130)
+  	at org.apache.hadoop.hbase.ipc.RpcExecutor$1.run(RpcExecutor.java:107)
+  	at java.lang.Thread.run(Thread.java:745)
+  
+  Here is some help for this command:
+  Creates a table. Pass a table name, and a set of column family
+  specifications (at least one), and, optionally, table configuration.
+  Column specification can be a simple string (name), or a dictionary
+  (dictionaries are described below in main help output), necessarily 
+  including NAME attribute. 
+  Examples:
+  
+  Create a table with namespace=ns1 and table qualifier=t1
+    hbase> create 'ns1:t1', {NAME => 'f1', VERSIONS => 5}
+  
+  Create a table with namespace=default and table qualifier=t1
+    hbase> create 't1', {NAME => 'f1'}, {NAME => 'f2'}, {NAME => 'f3'}
+    hbase> # The above in shorthand would be the following:
+    hbase> create 't1', 'f1', 'f2', 'f3'
+    hbase> create 't1', {NAME => 'f1', VERSIONS => 1, TTL => 2592000, BLOCKCACHE => true}
+    hbase> create 't1', {NAME => 'f1', CONFIGURATION => {'hbase.hstore.blockingStoreFiles' => '10'}}
+    
+  Table configuration options can be put at the end.
+  Examples:
+  
+    hbase> create 'ns1:t1', 'f1', SPLITS => ['10', '20', '30', '40']
+    hbase> create 't1', 'f1', SPLITS => ['10', '20', '30', '40']
+    hbase> create 't1', 'f1', SPLITS_FILE => 'splits.txt', OWNER => 'johndoe'
+    hbase> create 't1', {NAME => 'f1', VERSIONS => 5}, METADATA => { 'mykey' => 'myvalue' }
+    hbase> # Optionally pre-split the table into NUMREGIONS, using
+    hbase> # SPLITALGO ("HexStringSplit", "UniformSplit" or classname)
+    hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit'}
+    hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit', REGION_REPLICATION => 2, CONFIGURATION => {'hbase.hregion.scan.loadColumnFamiliesOnDemand' => 'true'}}
+  
+  You can also keep around a reference to the created table:
+  
+    hbase> t1 = create 't1', 'f1'
+  
+  Which gives you a reference to the table named 't1', on which you can then
+  call methods.
+  
+  
+
+2015-11-19 00:30:23,232 - DEBUG - HBaseCluster - Restarting cluster ...
+2015-11-19 00:30:23,414 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 00:30:33,061 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-4: datanode running as process 1858. Stop it first.
+  klolos-nodes-5: datanode running as process 1794. Stop it first.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 00:30:39,644 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 00:30:39,645 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 00:30:42,254 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-4: regionserver running as process 2046. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-5: regionserver running as process 1993. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+
+2015-11-19 00:30:42,256 - DEBUG - HBaseCluster - Waiting for HBase to get ready ... 
+2015-11-19 00:31:12,258 - DEBUG - HBaseCluster - Initializing the db table ...
+2015-11-19 00:31:36,140 - DEBUG - HBaseCluster - 
+  HBase Shell; enter 'help<RETURN>' for list of supported commands.
+  Type "exit<RETURN>" to leave the HBase Shell
+  Version 1.1.2, rcc2b70cf03e3378800661ec5cab11eb43fafe0fc, Wed Aug 26 20:11:27 PDT 2015
+  
+  n_splits = 200
+  200
+  create 'usertable', 'family', {SPLITS => (1..n_splits).map {|i| "user#{1000+i*(9999-1000)/n_splits}"}}
+  
+  ERROR: org.apache.hadoop.hbase.PleaseHoldException: Master is initializing
+  	at org.apache.hadoop.hbase.master.HMaster.checkInitialized(HMaster.java:2177)
+  	at org.apache.hadoop.hbase.master.HMaster.checkNamespaceManagerReady(HMaster.java:2182)
+  	at org.apache.hadoop.hbase.master.HMaster.ensureNamespaceExists(HMaster.java:2375)
+  	at org.apache.hadoop.hbase.master.HMaster.createTable(HMaster.java:1444)
+  	at org.apache.hadoop.hbase.master.MasterRpcServices.createTable(MasterRpcServices.java:422)
+  	at org.apache.hadoop.hbase.protobuf.generated.MasterProtos$MasterService$2.callBlockingMethod(MasterProtos.java:48502)
+  	at org.apache.hadoop.hbase.ipc.RpcServer.call(RpcServer.java:2114)
+  	at org.apache.hadoop.hbase.ipc.CallRunner.run(CallRunner.java:101)
+  	at org.apache.hadoop.hbase.ipc.RpcExecutor.consumerLoop(RpcExecutor.java:130)
+  	at org.apache.hadoop.hbase.ipc.RpcExecutor$1.run(RpcExecutor.java:107)
+  	at java.lang.Thread.run(Thread.java:745)
+  
+  Here is some help for this command:
+  Creates a table. Pass a table name, and a set of column family
+  specifications (at least one), and, optionally, table configuration.
+  Column specification can be a simple string (name), or a dictionary
+  (dictionaries are described below in main help output), necessarily 
+  including NAME attribute. 
+  Examples:
+  
+  Create a table with namespace=ns1 and table qualifier=t1
+    hbase> create 'ns1:t1', {NAME => 'f1', VERSIONS => 5}
+  
+  Create a table with namespace=default and table qualifier=t1
+    hbase> create 't1', {NAME => 'f1'}, {NAME => 'f2'}, {NAME => 'f3'}
+    hbase> # The above in shorthand would be the following:
+    hbase> create 't1', 'f1', 'f2', 'f3'
+    hbase> create 't1', {NAME => 'f1', VERSIONS => 1, TTL => 2592000, BLOCKCACHE => true}
+    hbase> create 't1', {NAME => 'f1', CONFIGURATION => {'hbase.hstore.blockingStoreFiles' => '10'}}
+    
+  Table configuration options can be put at the end.
+  Examples:
+  
+    hbase> create 'ns1:t1', 'f1', SPLITS => ['10', '20', '30', '40']
+    hbase> create 't1', 'f1', SPLITS => ['10', '20', '30', '40']
+    hbase> create 't1', 'f1', SPLITS_FILE => 'splits.txt', OWNER => 'johndoe'
+    hbase> create 't1', {NAME => 'f1', VERSIONS => 5}, METADATA => { 'mykey' => 'myvalue' }
+    hbase> # Optionally pre-split the table into NUMREGIONS, using
+    hbase> # SPLITALGO ("HexStringSplit", "UniformSplit" or classname)
+    hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit'}
+    hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit', REGION_REPLICATION => 2, CONFIGURATION => {'hbase.hregion.scan.loadColumnFamiliesOnDemand' => 'true'}}
+  
+  You can also keep around a reference to the created table:
+  
+    hbase> t1 = create 't1', 'f1'
+  
+  Which gives you a reference to the table named 't1', on which you can then
+  call methods.
+  
+  
+
+2015-11-19 00:31:36,141 - DEBUG - HBaseCluster - Restarting cluster ...
+2015-11-19 00:31:39,437 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 00:31:54,612 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-4: datanode running as process 1858. Stop it first.
+  klolos-nodes-5: datanode running as process 1794. Stop it first.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 00:31:57,979 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 00:31:57,979 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 00:32:00,591 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-4: regionserver running as process 2046. Stop it first.
+  klolos-nodes-5: regionserver running as process 1993. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+
+2015-11-19 00:32:00,593 - DEBUG - HBaseCluster - Waiting for HBase to get ready ... 
+2015-11-19 00:32:30,622 - DEBUG - HBaseCluster - Initializing the db table ...
+2015-11-19 00:36:53,588 - DEBUG - HBaseCluster - Initialization successful!
+2015-11-19 00:36:53,592 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 00:37:04,987 - DEBUG - DecisionMaking.MDPDTModel - Initialized MDPDT model with 1 states
+2015-11-19 00:37:04,988 - DEBUG - DecisionMaking.MDPDTModel - Splitting criterion set to any_point, consider transitions set to True
+2015-11-19 00:37:05,004 - DEBUG - DecisionMaking.MDPDTModel - Split with total_latency at 3.3762779840738135 with prob 0.000363082890316 after 0.004845732997637242 seconds
+2015-11-19 00:37:05,142 - DEBUG - DecisionMaking.MDPDTModel - Split with total_latency at 1.940619916393877 with prob 0.000625225518007 after 0.006829306999861728 seconds
+2015-11-19 00:37:05,205 - DEBUG - DecisionMaker - Trained the model with 69 experiences
+2015-11-19 00:37:05,205 - DEBUG - Coordinator - Will start loading data in 120 seconds.
+2015-11-19 00:37:05,205 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 00:37:25,226 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 00:37:45,242 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 00:38:05,264 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 00:38:25,286 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 00:38:45,296 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 00:39:05,317 - DEBUG - YCSBController - Loading 10000 records into the database ... 
+2015-11-19 00:39:36,385 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 00:39:56,406 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 00:40:16,413 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 00:40:36,435 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 00:40:56,457 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 00:41:16,478 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 00:41:36,499 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 00:41:56,520 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 00:42:16,536 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 00:42:36,558 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 00:42:56,579 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 00:43:16,590 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 00:43:36,612 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 00:43:36,719 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 00:43:36,720 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 00:44:42,251 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 00:44:42,252 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 00:45:47,300 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 00:45:47,300 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 00:46:50,392 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 00:46:58,913 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 00:47:28,944 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 00:50:04,770 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 00:50:04,771 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 756479.1081333333, 'cpu_idle': 25.47866666666666, 'load_fifteen': 1.4343999999999997, 'proc_run': 2.68, 'pkts_in': 5244.704799999999, 'bytes_out': 5377305.268533334, 'mem_shared': 0.0, 'load_five': 0.8566666666666668, 'number_of_threads': 17.2, 'cpu': 3.260000000000001, 'mem_cached': 425437.4933333334, 'proc_total': 332.56, 'pkts_out': 6489.7872, 'read_io_reqs': 0.0, 'mem_free': 146057.33333333337, 'cpu_system': 23.366666666666667, 'part_max_used': 33.42000000000001, 'disk_free': 7.013599999999998, 'write_io_reqs': 10.93333333333333, 'cpu_user': 50.65600000000001, 'mem_buffers': 16276.106666666665, 'cpu_wio': 0.5213333333333333, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.9645333333333335}
+2015-11-19 00:50:05,095 - DEBUG - YCSBController - list index out of range
+2015-11-19 00:50:05,095 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 00:50:25,869 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 00:50:26,659 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 00:50:27,469 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 00:50:28,204 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 00:50:28,208 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 74.52133333333335,
+ '%_cached_RAM': 0.41796593429193085,
+ '%_free_RAM': 0.1434922655935825,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0002016043270794,
+ 'RAM_size': 1024,
+ 'bytes_in': 756479.1081333333,
+ 'bytes_out': 5377305.268533334,
+ 'cpu': 3.260000000000001,
+ 'cpu_idle': 25.47866666666666,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 23.366666666666667,
+ 'cpu_user': 50.65600000000001,
+ 'cpu_wio': 0.5213333333333333,
+ 'disk_free': 7.013599999999998,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 10.93333333333333,
+ 'load_fifteen': 1.4343999999999997,
+ 'load_five': 0.8566666666666668,
+ 'load_one': 1.9645333333333335,
+ 'mem_buffers': 16276.106666666665,
+ 'mem_cached': 425437.4933333334,
+ 'mem_free': 146057.33333333337,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 6,
+ 'number_of_threads': 17.2,
+ 'part_max_used': 33.42000000000001,
+ 'pkts_in': 5244.704799999999,
+ 'pkts_out': 6489.7872,
+ 'proc_run': 2.68,
+ 'proc_total': 332.56,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 4.201276591145055,
+ 'read_throughput': 18832.855555555558,
+ 'storage_capacity': 10,
+ 'total_latency': 4.20117798267339,
+ 'total_throughput': 18829.05953567833,
+ 'update_latency': 0.02275,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 10.93333333333333}
+2015-11-19 00:50:28,210 - DEBUG - Coordinator - Executing action: ('remove_VMs', 1)
+2015-11-19 00:50:28,211 - DEBUG - Coordinator - Removing 1 nodes ...
+2015-11-19 00:50:28,211 - DEBUG - HBaseCluster - Removing: klolos-nodes-5, 192.168.5.197
+2015-11-19 00:50:28,211 - DEBUG - HBaseCluster - Stopping HBase on klolos-nodes-5 ...
+2015-11-19 00:53:13,083 - DEBUG - HBaseCluster - HBase Stopped:
+  2015-11-19T00:50:28 Disabling load balancer
+  2015-11-19T00:50:46 Previous balancer state was true
+  2015-11-19T00:50:46 Unloading klolos-nodes-5 region(s)
+  Valid region move targets: 
+  klolos-nodes-2,16020,1447892680747
+  klolos-nodes-4,16020,1447892869521
+  klolos-nodes-1,16020,1447892750816
+  klolos-nodes-3,16020,1447892830186
+  2015-11-19T00:52:50 Unloaded klolos-nodes-5 region(s)
+  2015-11-19T00:52:50 Stopping regionserver
+  stopping regionserver..........
+  2015-11-19T00:53:00 Restoring balancer state to
+
+2015-11-19 00:53:18,093 - DEBUG - HBaseCluster - Adding klolos-nodes-5 to datanode-excludes ...
+2015-11-19 00:53:23,645 - DEBUG - HBaseCluster - Waiting until decommissioning is done ...
+2015-11-19 00:53:57,422 - DEBUG - HBaseCluster - 1 nodes still being decommissioned ...
+2015-11-19 00:54:30,768 - DEBUG - HBaseCluster - 1 nodes still being decommissioned ...
+2015-11-19 00:55:04,117 - DEBUG - HBaseCluster - Decommissioning complete!
+2015-11-19 00:55:04,120 - DEBUG - HBaseCluster - Sleeping for 60 seconds ...
+2015-11-19 00:55:24,141 - DEBUG - HBaseCluster - Sleeping for 40 seconds ...
+2015-11-19 00:55:44,162 - DEBUG - HBaseCluster - Sleeping for 20 seconds ...
+2015-11-19 00:56:04,183 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 00:56:06,538 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 00:56:07,411 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 00:56:08,140 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 00:56:08,873 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 00:56:09,651 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 00:56:10,373 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 00:56:11,634 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 00:56:12,802 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 00:56:13,970 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 00:56:15,104 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 00:56:16,313 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 00:56:25,443 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 00:56:35,348 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1858. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 00:56:38,641 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 00:56:38,642 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 00:56:41,672 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-4: regionserver running as process 2046. Stop it first.
+
+2015-11-19 00:56:41,964 - DEBUG - OpenStackCluster - deleting instance: <Server: klolos-hadoop-ff0af96e-8e4f-11e5-9035-fa163ebe6c92>
+2015-11-19 00:56:42,253 - DEBUG - Coordinator - Terminated: [<Server: klolos-hadoop-ff0af96e-8e4f-11e5-9035-fa163ebe6c92>]
+2015-11-19 00:56:42,253 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 00:56:42,254 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 00:56:47,013 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 00:57:07,026 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 00:57:27,048 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 00:57:47,069 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 00:58:07,079 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 00:58:27,101 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 00:58:47,117 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 00:59:07,130 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 00:59:27,151 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 00:59:47,172 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 01:00:07,180 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 01:00:27,201 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 01:00:47,221 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 01:01:07,230 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 01:01:27,251 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 01:01:47,284 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 01:01:47,284 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 01:01:47,631 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 01:01:55,836 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 01:02:25,849 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 01:05:00,813 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 01:05:00,814 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 550452.5698333333, 'cpu_idle': 42.74166666666666, 'load_fifteen': 0.8796666666666667, 'proc_run': 4.383333333333334, 'pkts_in': 3842.7264999999993, 'bytes_out': 3871323.0401666667, 'mem_shared': 0.0, 'load_five': 0.5143333333333333, 'number_of_threads': 8.8, 'cpu': 2.361666666666667, 'mem_cached': 415453.4666666667, 'proc_total': 342.43333333333334, 'pkts_out': 4694.030333333332, 'read_io_reqs': 0.0, 'mem_free': 117039.2, 'cpu_system': 17.475, 'part_max_used': 33.47500000000001, 'disk_free': 7.006950000000002, 'write_io_reqs': 1.5, 'cpu_user': 39.075, 'mem_buffers': 17144.933333333334, 'cpu_wio': 0.7349999999999997, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.2273333333333332}
+2015-11-19 01:05:01,333 - DEBUG - YCSBController - YCSB test failed!
+2015-11-19 01:05:01,334 - DEBUG - Coordinator - Test failed, trying again in 300 seconds ...
+2015-11-19 01:05:01,334 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 01:05:21,355 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 01:05:41,376 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 01:06:01,397 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 01:06:21,419 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 01:06:41,440 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 01:07:01,451 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 01:07:21,469 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 01:07:41,491 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 01:08:01,512 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 01:08:21,522 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 01:08:41,544 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 01:09:01,555 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 01:09:21,576 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 01:09:41,598 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 01:10:01,607 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 01:10:01,892 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 01:10:10,458 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 01:10:40,468 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 01:13:15,765 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 01:13:15,767 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 981177.9928333331, 'cpu_idle': 16.16, 'load_fifteen': 0.9776666666666667, 'proc_run': 1.85, 'pkts_in': 6693.676333333333, 'bytes_out': 7073423.541999999, 'mem_shared': 0.0, 'load_five': 0.9998333333333334, 'number_of_threads': 7.4, 'cpu': 2.8033333333333332, 'mem_cached': 415162.4, 'proc_total': 341.76666666666665, 'pkts_out': 8586.41566666667, 'read_io_reqs': 0.0, 'mem_free': 101166.8, 'cpu_system': 27.374999999999996, 'part_max_used': 33.47500000000001, 'disk_free': 7.009749999999998, 'write_io_reqs': 2.45, 'cpu_user': 56.22500000000001, 'mem_buffers': 17505.8, 'cpu_wio': 0.27166666666666667, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.8848333333333338}
+2015-11-19 01:13:16,171 - DEBUG - YCSBController - list index out of range
+2015-11-19 01:13:16,172 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 01:13:36,920 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 01:13:37,704 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 01:13:38,477 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 01:13:39,272 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 01:13:39,276 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 83.84,
+ '%_cached_RAM': 0.4078712927704357,
+ '%_free_RAM': 0.09939010252722336,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0002176485116197,
+ 'RAM_size': 1024,
+ 'bytes_in': 981177.9928333331,
+ 'bytes_out': 7073423.541999999,
+ 'cpu': 2.8033333333333332,
+ 'cpu_idle': 16.16,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 27.374999999999996,
+ 'cpu_user': 56.22500000000001,
+ 'cpu_wio': 0.27166666666666667,
+ 'disk_free': 7.009749999999998,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 2.45,
+ 'load_fifteen': 0.9776666666666667,
+ 'load_five': 0.9998333333333334,
+ 'load_one': 1.8848333333333338,
+ 'mem_buffers': 17505.8,
+ 'mem_cached': 415162.4,
+ 'mem_free': 101166.8,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 5,
+ 'number_of_threads': 7.4,
+ 'part_max_used': 33.47500000000001,
+ 'pkts_in': 6693.676333333333,
+ 'pkts_out': 8586.41566666667,
+ 'proc_run': 1.85,
+ 'proc_total': 341.76666666666665,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 4.17171765344088,
+ 'read_throughput': 18962.066666666666,
+ 'storage_capacity': 10,
+ 'total_latency': 4.171620436355158,
+ 'total_throughput': 18957.940499133656,
+ 'update_latency': 0.023887500000000002,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 2.45}
+2015-11-19 01:13:39,277 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 01:13:39,301 - DEBUG - Coordinator - Executing action: ('remove_VMs', 1)
+2015-11-19 01:13:39,301 - DEBUG - Coordinator - Removing 1 nodes ...
+2015-11-19 01:13:39,302 - DEBUG - HBaseCluster - Removing: klolos-nodes-4, 192.168.5.195
+2015-11-19 01:13:39,302 - DEBUG - HBaseCluster - Stopping HBase on klolos-nodes-4 ...
+2015-11-19 01:16:34,056 - DEBUG - HBaseCluster - HBase Stopped:
+  2015-11-19T01:13:39 Disabling load balancer
+  2015-11-19T01:13:56 Previous balancer state was true
+  2015-11-19T01:13:56 Unloading klolos-nodes-4 region(s)
+  Valid region move targets: 
+  klolos-nodes-2,16020,1447892680747
+  klolos-nodes-1,16020,1447892750816
+  klolos-nodes-3,16020,1447892830186
+  2015-11-19T01:16:17 Unloaded klolos-nodes-4 region(s)
+  2015-11-19T01:16:17 Stopping regionserver
+  stopping regionserver.....
+  2015-11-19T01:16:22 Restoring balancer state to
+
+2015-11-19 01:16:39,066 - DEBUG - HBaseCluster - Adding klolos-nodes-4 to datanode-excludes ...
+2015-11-19 01:16:44,859 - DEBUG - HBaseCluster - Waiting until decommissioning is done ...
+2015-11-19 01:17:18,660 - DEBUG - HBaseCluster - 1 nodes still being decommissioned ...
+2015-11-19 01:17:51,964 - DEBUG - HBaseCluster - 1 nodes still being decommissioned ...
+2015-11-19 01:18:25,400 - DEBUG - HBaseCluster - 1 nodes still being decommissioned ...
+2015-11-19 01:18:58,759 - DEBUG - HBaseCluster - Decommissioning complete!
+2015-11-19 01:18:58,761 - DEBUG - HBaseCluster - Sleeping for 60 seconds ...
+2015-11-19 01:19:18,771 - DEBUG - HBaseCluster - Sleeping for 40 seconds ...
+2015-11-19 01:19:38,793 - DEBUG - HBaseCluster - Sleeping for 20 seconds ...
+2015-11-19 01:19:58,814 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 01:20:00,738 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 01:20:01,471 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 01:20:02,299 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 01:20:03,076 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 01:20:03,872 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 01:20:04,895 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 01:20:06,066 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 01:20:07,251 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 01:20:08,441 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 01:20:15,911 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 01:20:25,684 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 01:20:28,980 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 01:20:28,981 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 01:20:31,782 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+
+2015-11-19 01:20:32,082 - DEBUG - OpenStackCluster - deleting instance: <Server: klolos-hadoop-ff0b7524-8e4f-11e5-9035-fa163ebe6c92>
+2015-11-19 01:20:32,307 - DEBUG - Coordinator - Terminated: [<Server: klolos-hadoop-ff0b7524-8e4f-11e5-9035-fa163ebe6c92>]
+2015-11-19 01:20:32,308 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 01:20:32,308 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 01:20:36,236 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 01:20:56,257 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 01:21:16,278 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 01:21:36,299 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 01:21:56,314 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 01:22:16,335 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 01:22:36,355 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 01:22:56,367 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 01:23:16,388 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 01:23:36,409 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 01:23:56,418 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 01:24:16,440 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 01:24:36,460 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 01:24:56,468 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 01:25:16,489 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 01:25:36,529 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 01:25:36,530 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 01:25:36,863 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 01:25:45,139 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 01:26:15,161 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 01:28:49,999 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 01:28:50,000 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 1034921.4366666664, 'cpu_idle': 13.251111111111111, 'load_fifteen': 0.9828888888888888, 'proc_run': 5.422222222222222, 'pkts_in': 6970.373333333334, 'bytes_out': 7511882.21, 'mem_shared': 0.0, 'load_five': 1.2642222222222224, 'number_of_threads': 7.133333333333335, 'cpu': 3.8666666666666663, 'mem_cached': 402664.0, 'proc_total': 346.6222222222222, 'pkts_out': 9135.556888888888, 'read_io_reqs': 0.0, 'mem_free': 99045.33333333331, 'cpu_system': 27.94222222222222, 'part_max_used': 33.53333333333332, 'disk_free': 7.003, 'write_io_reqs': 1.2000000000000002, 'cpu_user': 58.515555555555565, 'mem_buffers': 18680.0, 'cpu_wio': 0.28666666666666657, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 3.484888888888889}
+2015-11-19 01:28:50,522 - DEBUG - YCSBController - list index out of range
+2015-11-19 01:28:50,522 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 01:29:11,304 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 01:29:12,079 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 01:29:12,841 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 01:29:13,597 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 01:29:13,601 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 86.74888888888889,
+ '%_cached_RAM': 0.3955923904286966,
+ '%_free_RAM': 0.09730589318672737,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0002137627726004,
+ 'RAM_size': 1024,
+ 'bytes_in': 1034921.4366666664,
+ 'bytes_out': 7511882.21,
+ 'cpu': 3.8666666666666663,
+ 'cpu_idle': 13.251111111111111,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 27.94222222222222,
+ 'cpu_user': 58.515555555555565,
+ 'cpu_wio': 0.28666666666666657,
+ 'disk_free': 7.003,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 1.2000000000000002,
+ 'load_fifteen': 0.9828888888888888,
+ 'load_five': 1.2642222222222224,
+ 'load_one': 3.484888888888889,
+ 'mem_buffers': 18680.0,
+ 'mem_cached': 402664.0,
+ 'mem_free': 99045.33333333331,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 4,
+ 'number_of_threads': 7.133333333333335,
+ 'part_max_used': 33.53333333333332,
+ 'pkts_in': 6970.373333333334,
+ 'pkts_out': 9135.556888888888,
+ 'proc_run': 5.422222222222222,
+ 'proc_total': 346.6222222222222,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 5.2302594699698775,
+ 'read_throughput': 15124.677777777779,
+ 'storage_capacity': 10,
+ 'total_latency': 5.230106383325363,
+ 'total_throughput': 15121.445375688547,
+ 'update_latency': 0.0204875,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 1.2000000000000002}
+2015-11-19 01:29:13,603 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 01:29:13,627 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 01:29:13,628 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 01:29:20,229 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 01:29:54,174 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 01:30:01,186 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 01:30:01,971 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 01:30:02,524 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 01:30:03,069 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 01:30:03,623 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 01:30:06,501 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 01:30:21,621 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 01:30:22,449 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 01:30:23,281 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 01:30:24,434 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 01:30:35,825 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 01:30:44,825 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 01:31:01,000 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-4.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 01:31:04,462 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 01:31:04,463 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 01:31:08,275 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-4: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-4.out
+
+2015-11-19 01:31:08,280 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 01:31:08,280 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 01:31:12,807 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 01:31:32,828 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 01:31:52,830 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 01:32:12,848 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 01:32:32,870 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 01:32:52,883 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 01:33:12,904 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 01:33:32,926 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 01:33:52,946 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 01:34:12,960 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 01:34:32,982 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 01:34:52,988 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 01:35:13,006 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 01:35:33,028 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 01:35:53,040 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 01:36:13,085 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 01:36:13,085 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 01:36:13,385 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 01:36:21,581 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 01:36:51,589 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 01:39:27,018 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 01:39:27,018 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 749015.9926666667, 'cpu_idle': 23.40333333333334, 'load_fifteen': 0.9516666666666667, 'proc_run': 3.933333333333333, 'pkts_in': 5161.025833333333, 'bytes_out': 5321926.083833333, 'mem_shared': 0.0, 'load_five': 1.1491666666666664, 'number_of_threads': 15.066666666666666, 'cpu': 3.0449999999999995, 'mem_cached': 384290.5333333333, 'proc_total': 344.68333333333334, 'pkts_out': 6444.999999999999, 'read_io_reqs': 0.0, 'mem_free': 153375.4, 'cpu_system': 22.47166666666667, 'part_max_used': 33.25, 'disk_free': 7.029300000000002, 'write_io_reqs': 1.3333333333333333, 'cpu_user': 53.85666666666667, 'mem_buffers': 17901.133333333335, 'cpu_wio': 0.2866666666666667, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 2.373666666666667}
+2015-11-19 01:39:27,542 - DEBUG - YCSBController - list index out of range
+2015-11-19 01:39:27,543 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 01:39:48,344 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 01:39:49,141 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 01:39:49,933 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 01:39:50,723 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 01:39:50,727 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 76.59666666666666,
+ '%_cached_RAM': 0.3775415996971471,
+ '%_free_RAM': 0.15068181192994037,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0002933063235604,
+ 'RAM_size': 1024,
+ 'bytes_in': 749015.9926666667,
+ 'bytes_out': 5321926.083833333,
+ 'cpu': 3.0449999999999995,
+ 'cpu_idle': 23.40333333333334,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 22.47166666666667,
+ 'cpu_user': 53.85666666666667,
+ 'cpu_wio': 0.2866666666666667,
+ 'disk_free': 7.029300000000002,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 1.3333333333333333,
+ 'load_fifteen': 0.9516666666666667,
+ 'load_five': 1.1491666666666664,
+ 'load_one': 2.373666666666667,
+ 'mem_buffers': 17901.133333333335,
+ 'mem_cached': 384290.5333333333,
+ 'mem_free': 153375.4,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 5,
+ 'number_of_threads': 15.066666666666666,
+ 'part_max_used': 33.25,
+ 'pkts_in': 5161.025833333333,
+ 'pkts_out': 6444.999999999999,
+ 'proc_run': 3.933333333333333,
+ 'proc_total': 344.68333333333334,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 5.299285781006378,
+ 'read_throughput': 14931.055555555555,
+ 'storage_capacity': 10,
+ 'total_latency': 5.299128720480911,
+ 'total_throughput': 14926.677466664836,
+ 'update_latency': 0.0227,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 1.3333333333333333}
+2015-11-19 01:39:50,729 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 01:39:50,755 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 01:39:50,756 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 01:39:57,423 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 01:40:42,863 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 01:40:48,912 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 01:40:51,135 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 01:40:51,735 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 01:40:52,345 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 01:40:52,896 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 01:40:53,493 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 01:40:54,561 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 01:40:55,712 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 01:40:56,609 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 01:40:57,385 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 01:40:58,246 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 01:40:59,385 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 01:41:00,608 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 01:41:12,223 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 01:41:34,779 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1597. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-5.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 01:41:38,110 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 01:41:38,111 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 01:41:41,979 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-4: regionserver running as process 1705. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-5: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-5.out
+
+2015-11-19 01:41:41,981 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 01:41:41,982 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 01:41:47,667 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 01:42:07,688 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 01:42:27,711 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 01:42:47,719 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 01:43:07,740 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 01:43:27,761 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 01:43:47,781 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 01:44:07,791 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 01:44:27,800 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 01:44:47,821 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 01:45:07,843 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 01:45:27,864 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 01:45:47,877 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 01:46:07,899 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 01:46:27,920 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 01:46:47,965 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 01:46:47,966 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 01:46:48,059 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 01:46:48,059 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 01:47:53,196 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 01:47:53,196 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 01:48:56,309 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 01:49:04,835 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 01:49:34,838 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 01:52:10,697 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 01:52:10,698 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 648451.7528, 'cpu_idle': 28.326666666666654, 'load_fifteen': 0.8193333333333332, 'proc_run': 2.813333333333333, 'pkts_in': 4559.993333333333, 'bytes_out': 4516581.443066667, 'mem_shared': 0.0, 'load_five': 0.8574666666666669, 'number_of_threads': 9.306666666666668, 'cpu': 2.9879999999999995, 'mem_cached': 362909.3333333333, 'proc_total': 340.4133333333333, 'pkts_out': 5446.732266666667, 'read_io_reqs': 2.4, 'mem_free': 191611.89333333337, 'cpu_system': 20.74533333333333, 'part_max_used': 33.15999999999998, 'disk_free': 7.040000000000003, 'write_io_reqs': 0.9600000000000004, 'cpu_user': 50.55466666666667, 'mem_buffers': 17711.306666666667, 'cpu_wio': 0.3680000000000001, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.8412}
+2015-11-19 01:52:11,225 - DEBUG - YCSBController - list index out of range
+2015-11-19 01:52:11,225 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 01:52:32,017 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 01:52:32,808 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 01:52:33,585 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 01:52:34,343 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 01:52:34,347 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 71.67333333333335,
+ '%_cached_RAM': 0.3565358976273469,
+ '%_free_RAM': 0.18824679365004515,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0003345791456926,
+ 'RAM_size': 1024,
+ 'bytes_in': 648451.7528,
+ 'bytes_out': 4516581.443066667,
+ 'cpu': 2.9879999999999995,
+ 'cpu_idle': 28.326666666666654,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 20.74533333333333,
+ 'cpu_user': 50.55466666666667,
+ 'cpu_wio': 0.3680000000000001,
+ 'disk_free': 7.040000000000003,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 3.3600000000000003,
+ 'load_fifteen': 0.8193333333333332,
+ 'load_five': 0.8574666666666669,
+ 'load_one': 1.8412,
+ 'mem_buffers': 17711.306666666667,
+ 'mem_cached': 362909.3333333333,
+ 'mem_free': 191611.89333333337,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 6,
+ 'number_of_threads': 9.306666666666668,
+ 'part_max_used': 33.15999999999998,
+ 'pkts_in': 4559.993333333333,
+ 'pkts_out': 5446.732266666667,
+ 'proc_run': 2.813333333333333,
+ 'proc_total': 340.4133333333333,
+ 'read_io_reqs': 2.4,
+ 'read_latency': 4.969453142136326,
+ 'read_throughput': 15925.738888888889,
+ 'storage_capacity': 10,
+ 'total_latency': 4.969315029513482,
+ 'total_throughput': 15920.412250958889,
+ 'update_latency': 0.0203375,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 0.9600000000000004}
+2015-11-19 01:52:34,349 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 01:52:34,372 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 01:52:34,372 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 01:52:41,046 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 01:53:18,384 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 01:53:24,690 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 01:53:26,223 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 01:53:26,824 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 01:53:27,597 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 01:53:28,382 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 01:53:28,965 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 01:53:29,732 - DEBUG - HBaseCluster - Configuring node: 192.168.5.201
+2015-11-19 01:53:30,879 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 01:53:32,028 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 01:53:32,860 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 01:53:34,046 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 01:53:35,284 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 01:53:36,112 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 01:53:37,264 - DEBUG - HBaseCluster - Copying files to: 192.168.5.201
+2015-11-19 01:53:38,449 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 01:53:50,611 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 01:54:16,271 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1597. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: datanode running as process 1586. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-6: Warning: Permanently added 'klolos-nodes-6,192.168.5.201' (ECDSA) to the list of known hosts.
+  klolos-nodes-6: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-6.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 01:54:19,603 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 01:54:19,604 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 01:54:23,414 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-4: regionserver running as process 1705. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-5: regionserver running as process 1705. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-6: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-6.out
+
+2015-11-19 01:54:23,416 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-6: 192.168.5.201
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 01:54:23,416 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 01:54:29,946 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 01:54:49,960 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 01:55:09,981 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 01:55:29,998 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 01:55:50,012 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 01:56:10,033 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 01:56:30,053 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 01:56:50,062 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 01:57:10,083 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 01:57:30,088 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 01:57:50,109 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 01:58:10,131 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 01:58:30,139 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 01:58:50,161 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 01:59:10,183 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 01:59:30,222 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 01:59:30,223 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 01:59:30,566 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 01:59:38,964 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 02:00:08,994 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 02:02:45,030 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 02:02:45,031 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 575914.5491111112, 'cpu_idle': 32.276666666666664, 'load_fifteen': 0.7512222222222223, 'proc_run': 3.011111111111111, 'pkts_in': 4087.9237777777785, 'bytes_out': 3995118.2857777774, 'mem_shared': 0.0, 'load_five': 0.7685555555555557, 'number_of_threads': 7.1, 'cpu': 2.6355555555555554, 'mem_cached': 357314.5777777778, 'proc_total': 339.4555555555555, 'pkts_out': 4808.386777777778, 'read_io_reqs': 0.0, 'mem_free': 214738.75555555554, 'cpu_system': 19.357777777777777, 'part_max_used': 33.050000000000004, 'disk_free': 7.051500000000001, 'write_io_reqs': 0.9111111111111111, 'cpu_user': 47.97888888888888, 'mem_buffers': 17474.177777777782, 'cpu_wio': 0.4066666666666667, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.3984444444444444}
+2015-11-19 02:02:45,357 - DEBUG - YCSBController - list index out of range
+2015-11-19 02:02:45,358 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 02:03:06,139 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 02:03:06,928 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 02:03:07,721 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 02:03:08,498 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 02:03:08,501 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 67.72333333333333,
+ '%_cached_RAM': 0.3510393975079261,
+ '%_free_RAM': 0.2109675005163257,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0002458225593087,
+ 'RAM_size': 1024,
+ 'bytes_in': 575914.5491111112,
+ 'bytes_out': 3995118.2857777774,
+ 'cpu': 2.6355555555555554,
+ 'cpu_idle': 32.276666666666664,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 19.357777777777777,
+ 'cpu_user': 47.97888888888888,
+ 'cpu_wio': 0.4066666666666667,
+ 'disk_free': 7.051500000000001,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 0.9111111111111111,
+ 'load_fifteen': 0.7512222222222223,
+ 'load_five': 0.7685555555555557,
+ 'load_one': 1.3984444444444444,
+ 'mem_buffers': 17474.177777777782,
+ 'mem_cached': 357314.5777777778,
+ 'mem_free': 214738.75555555554,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 7,
+ 'number_of_threads': 7.1,
+ 'part_max_used': 33.050000000000004,
+ 'pkts_in': 4087.9237777777785,
+ 'pkts_out': 4808.386777777778,
+ 'proc_run': 3.011111111111111,
+ 'proc_total': 339.4555555555555,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 4.652264097422059,
+ 'read_throughput': 17007.161111111112,
+ 'storage_capacity': 10,
+ 'total_latency': 4.652142991104005,
+ 'total_throughput': 17002.981394708786,
+ 'update_latency': 0.017875000000000002,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 0.9111111111111111}
+2015-11-19 02:03:08,502 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 02:03:08,533 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 02:03:08,534 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 02:03:15,018 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 02:03:53,022 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 02:03:58,420 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 02:04:09,351 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 02:04:09,916 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 02:04:10,660 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 02:04:12,603 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 02:04:13,330 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 02:04:14,095 - DEBUG - HBaseCluster - Configuring node: 192.168.5.201
+2015-11-19 02:04:14,831 - DEBUG - HBaseCluster - Configuring node: 192.168.5.202
+2015-11-19 02:04:16,071 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 02:04:17,269 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 02:04:18,109 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 02:04:19,272 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 02:04:20,464 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 02:04:21,630 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 02:04:22,976 - DEBUG - HBaseCluster - Copying files to: 192.168.5.201
+2015-11-19 02:04:24,150 - DEBUG - HBaseCluster - Copying files to: 192.168.5.202
+2015-11-19 02:04:25,967 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 02:04:48,647 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 02:05:06,662 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1597. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: datanode running as process 1586. Stop it first.
+  klolos-nodes-6: Warning: Permanently added 'klolos-nodes-6,192.168.5.201' (ECDSA) to the list of known hosts.
+  klolos-nodes-6: datanode running as process 1597. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-7: Warning: Permanently added 'klolos-nodes-7,192.168.5.202' (ECDSA) to the list of known hosts.
+  klolos-nodes-7: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-7.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 02:05:10,041 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 02:05:10,041 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 02:05:14,065 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-6: regionserver running as process 1702. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-5: regionserver running as process 1705. Stop it first.
+  klolos-nodes-4: regionserver running as process 1705. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-7: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-7.out
+
+2015-11-19 02:05:14,066 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-6: 192.168.5.201
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-7: 192.168.5.202
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 02:05:14,066 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 02:05:24,845 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 02:05:44,867 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 02:06:04,889 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 02:06:24,911 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 02:06:44,925 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 02:07:04,946 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 02:07:24,967 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 02:07:44,988 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 02:08:05,009 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 02:08:25,030 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 02:08:45,051 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 02:09:05,068 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 02:09:25,089 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 02:09:45,110 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 02:10:05,131 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 02:10:25,190 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 02:10:25,191 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 02:10:27,528 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:10:27,529 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:11:33,848 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:11:33,850 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:12:39,859 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:12:39,860 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:13:45,970 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:13:45,970 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:14:52,196 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:14:52,197 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:15:58,334 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:15:58,335 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:17:04,354 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:17:04,355 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:18:10,331 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:18:10,332 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:19:16,665 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:19:16,666 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:20:22,717 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:20:22,719 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:21:28,902 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 02:21:28,904 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 02:22:33,220 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 02:22:41,529 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 02:23:11,560 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 02:25:48,172 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 02:25:48,173 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 623443.7387619048, 'cpu_idle': 27.971428571428557, 'load_fifteen': 0.40333333333333327, 'proc_run': 2.4857142857142858, 'pkts_in': 4419.173142857142, 'bytes_out': 4339647.794761905, 'mem_shared': 0.0, 'load_five': 0.465047619047619, 'number_of_threads': 6.609523809523807, 'cpu': 2.8780952380952383, 'mem_cached': 351150.361904762, 'proc_total': 341.74285714285713, 'pkts_out': 5255.4383809523815, 'read_io_reqs': 0.0, 'mem_free': 228328.91428571436, 'cpu_system': 21.616190476190475, 'part_max_used': 32.971428571428575, 'disk_free': 7.059285714285711, 'write_io_reqs': 2.466666666666667, 'cpu_user': 50.22761904761905, 'mem_buffers': 17968.609523809526, 'cpu_wio': 0.2019047619047619, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.4576190476190476}
+2015-11-19 02:25:48,515 - DEBUG - YCSBController - list index out of range
+2015-11-19 02:25:48,515 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 02:26:09,288 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 02:26:10,094 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 02:26:10,889 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 02:26:11,362 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 02:26:11,367 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 72.02857142857144,
+ '%_cached_RAM': 0.34498343796765224,
+ '%_free_RAM': 0.22431898805523892,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0003407917082872,
+ 'RAM_size': 1024,
+ 'bytes_in': 623443.7387619048,
+ 'bytes_out': 4339647.794761905,
+ 'cpu': 2.8780952380952383,
+ 'cpu_idle': 27.971428571428557,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 21.616190476190475,
+ 'cpu_user': 50.22761904761905,
+ 'cpu_wio': 0.2019047619047619,
+ 'disk_free': 7.059285714285711,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 2.466666666666667,
+ 'load_fifteen': 0.40333333333333327,
+ 'load_five': 0.465047619047619,
+ 'load_one': 1.4576190476190476,
+ 'mem_buffers': 17968.609523809526,
+ 'mem_cached': 351150.361904762,
+ 'mem_free': 228328.91428571436,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 8,
+ 'number_of_threads': 6.609523809523807,
+ 'part_max_used': 32.971428571428575,
+ 'pkts_in': 4419.173142857142,
+ 'pkts_out': 5255.4383809523815,
+ 'proc_run': 2.4857142857142858,
+ 'proc_total': 341.74285714285713,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 3.7571715992775103,
+ 'read_throughput': 21031.794444444444,
+ 'storage_capacity': 10,
+ 'total_latency': 3.7570926633878337,
+ 'total_throughput': 21024.62942506657,
+ 'update_latency': 0.021725,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 2.466666666666667}
+2015-11-19 02:26:11,368 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 02:26:11,399 - DEBUG - Coordinator - Executing action: ('remove_VMs', 1)
+2015-11-19 02:26:11,399 - DEBUG - Coordinator - Removing 1 nodes ...
+2015-11-19 02:26:11,399 - DEBUG - HBaseCluster - Removing: klolos-nodes-7, 192.168.5.202
+2015-11-19 02:26:11,400 - DEBUG - HBaseCluster - Stopping HBase on klolos-nodes-7 ...
+2015-11-19 02:28:08,632 - DEBUG - HBaseCluster - HBase Stopped:
+  2015-11-19T02:26:11 Disabling load balancer
+  2015-11-19T02:26:28 Previous balancer state was true
+  2015-11-19T02:26:28 Unloading klolos-nodes-7 region(s)
+  Valid region move targets: 
+  klolos-nodes-2,16020,1447892680747
+  klolos-nodes-1,16020,1447892750816
+  klolos-nodes-4,16020,1447896682557
+  klolos-nodes-6,16020,1447898082048
+  klolos-nodes-5,16020,1447897324833
+  klolos-nodes-3,16020,1447892830186
+  2015-11-19T02:27:45 Unloaded klolos-nodes-7 region(s)
+  2015-11-19T02:27:45 Stopping regionserver
+  stopping regionserver..........
+  2015-11-19T02:27:55 Restoring balancer state to
+
+2015-11-19 02:28:13,640 - DEBUG - HBaseCluster - Adding klolos-nodes-7 to datanode-excludes ...
+2015-11-19 02:28:19,309 - DEBUG - HBaseCluster - Waiting until decommissioning is done ...
+2015-11-19 02:28:53,449 - DEBUG - HBaseCluster - Decommissioning complete!
+2015-11-19 02:28:53,450 - DEBUG - HBaseCluster - Sleeping for 60 seconds ...
+2015-11-19 02:29:13,470 - DEBUG - HBaseCluster - Sleeping for 40 seconds ...
+2015-11-19 02:29:33,491 - DEBUG - HBaseCluster - Sleeping for 20 seconds ...
+2015-11-19 02:29:53,512 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 02:29:57,036 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 02:29:57,832 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 02:29:58,576 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 02:29:59,436 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 02:30:00,205 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 02:30:00,924 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 02:30:01,676 - DEBUG - HBaseCluster - Configuring node: 192.168.5.201
+2015-11-19 02:30:02,484 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 02:30:03,748 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 02:30:04,929 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 02:30:06,153 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 02:30:07,439 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 02:30:08,579 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 02:30:09,720 - DEBUG - HBaseCluster - Copying files to: 192.168.5.201
+2015-11-19 02:30:10,970 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 02:30:23,927 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 02:30:34,976 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1597. Stop it first.
+  klolos-nodes-6: Warning: Permanently added 'klolos-nodes-6,192.168.5.201' (ECDSA) to the list of known hosts.
+  klolos-nodes-6: datanode running as process 1597. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: datanode running as process 1586. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 02:30:38,493 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 02:30:38,494 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 02:30:42,377 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-6: regionserver running as process 1702. Stop it first.
+  klolos-nodes-5: regionserver running as process 1705. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-4: regionserver running as process 1705. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+
+2015-11-19 02:30:42,796 - DEBUG - OpenStackCluster - deleting instance: <Server: klolos-hadoop-ae63c6e6-8e61-11e5-9035-fa163ebe6c92>
+2015-11-19 02:30:43,108 - DEBUG - Coordinator - Terminated: [<Server: klolos-hadoop-ae63c6e6-8e61-11e5-9035-fa163ebe6c92>]
+2015-11-19 02:30:43,109 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-6: 192.168.5.201
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 02:30:43,109 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 02:30:50,190 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 02:31:10,194 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 02:31:30,216 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 02:31:50,237 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 02:32:10,252 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 02:32:30,273 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 02:32:50,284 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 02:33:10,303 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 02:33:30,324 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 02:33:50,341 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 02:34:10,349 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 02:34:30,370 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 02:34:50,391 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 02:35:10,412 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 02:35:30,433 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 02:35:50,471 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 02:35:50,471 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 02:35:50,884 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 02:35:59,243 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 02:36:29,274 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 02:39:05,979 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 02:39:05,979 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 766217.0267777777, 'cpu_idle': 19.95, 'load_fifteen': 0.5913333333333334, 'proc_run': 4.655555555555555, 'pkts_in': 5377.198444444445, 'bytes_out': 5388978.905222222, 'mem_shared': 0.0, 'load_five': 0.8151111111111111, 'number_of_threads': 6.888888888888889, 'cpu': 3.518888888888889, 'mem_cached': 349463.42222222226, 'proc_total': 349.6555555555555, 'pkts_out': 6536.855111111112, 'read_io_reqs': 0.0, 'mem_free': 206607.06666666662, 'cpu_system': 25.256666666666664, 'part_max_used': 33.050000000000004, 'disk_free': 7.051000000000001, 'write_io_reqs': 1.2555555555555555, 'cpu_user': 54.59111111111111, 'mem_buffers': 18653.288888888892, 'cpu_wio': 0.21333333333333335, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 2.218333333333333}
+2015-11-19 02:39:06,308 - DEBUG - YCSBController - list index out of range
+2015-11-19 02:39:06,309 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 02:39:27,105 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 02:39:27,903 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 02:39:28,708 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 02:39:29,459 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 02:39:29,463 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 80.05,
+ '%_cached_RAM': 0.3433261244220536,
+ '%_free_RAM': 0.20297862084052146,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0001688192497942,
+ 'RAM_size': 1024,
+ 'bytes_in': 766217.0267777777,
+ 'bytes_out': 5388978.905222222,
+ 'cpu': 3.518888888888889,
+ 'cpu_idle': 19.95,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 25.256666666666664,
+ 'cpu_user': 54.59111111111111,
+ 'cpu_wio': 0.21333333333333335,
+ 'disk_free': 7.051000000000001,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 1.2555555555555555,
+ 'load_fifteen': 0.5913333333333334,
+ 'load_five': 0.8151111111111111,
+ 'load_one': 2.218333333333333,
+ 'mem_buffers': 18653.288888888892,
+ 'mem_cached': 349463.42222222226,
+ 'mem_free': 206607.06666666662,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 7,
+ 'number_of_threads': 6.888888888888889,
+ 'part_max_used': 33.050000000000004,
+ 'pkts_in': 5377.198444444445,
+ 'pkts_out': 6536.855111111112,
+ 'proc_run': 4.655555555555555,
+ 'proc_total': 349.6555555555555,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 3.6430337914711064,
+ 'read_throughput': 21674.272222222222,
+ 'storage_capacity': 10,
+ 'total_latency': 3.6429594401971777,
+ 'total_throughput': 21670.613805457007,
+ 'update_latency': 0.0170625,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 1.2555555555555555}
+2015-11-19 02:39:29,465 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 02:39:29,489 - DEBUG - Coordinator - Executing action: ('remove_VMs', 1)
+2015-11-19 02:39:29,490 - DEBUG - Coordinator - Removing 1 nodes ...
+2015-11-19 02:39:29,490 - DEBUG - HBaseCluster - Removing: klolos-nodes-6, 192.168.5.201
+2015-11-19 02:39:29,490 - DEBUG - HBaseCluster - Stopping HBase on klolos-nodes-6 ...
+2015-11-19 02:41:31,597 - DEBUG - HBaseCluster - HBase Stopped:
+  2015-11-19T02:39:29 Disabling load balancer
+  2015-11-19T02:39:48 Previous balancer state was true
+  2015-11-19T02:39:48 Unloading klolos-nodes-6 region(s)
+  Valid region move targets: 
+  klolos-nodes-2,16020,1447892680747
+  klolos-nodes-1,16020,1447892750816
+  klolos-nodes-4,16020,1447896682557
+  klolos-nodes-5,16020,1447897324833
+  klolos-nodes-3,16020,1447892830186
+  2015-11-19T02:41:13 Unloaded klolos-nodes-6 region(s)
+  2015-11-19T02:41:13 Stopping regionserver
+  stopping regionserver......
+  2015-11-19T02:41:19 Restoring balancer state to
+
+2015-11-19 02:41:36,602 - DEBUG - HBaseCluster - Adding klolos-nodes-6 to datanode-excludes ...
+2015-11-19 02:41:42,137 - DEBUG - HBaseCluster - Waiting until decommissioning is done ...
+2015-11-19 02:42:16,244 - DEBUG - HBaseCluster - Decommissioning complete!
+2015-11-19 02:42:16,248 - DEBUG - HBaseCluster - Sleeping for 60 seconds ...
+2015-11-19 02:42:36,269 - DEBUG - HBaseCluster - Sleeping for 40 seconds ...
+2015-11-19 02:42:56,289 - DEBUG - HBaseCluster - Sleeping for 20 seconds ...
+2015-11-19 02:43:16,311 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 02:43:19,394 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 02:43:20,216 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 02:43:21,100 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 02:43:21,856 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 02:43:22,631 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 02:43:23,370 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 02:43:24,126 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 02:43:25,378 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 02:43:26,595 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 02:43:27,799 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 02:43:29,004 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 02:43:30,142 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 02:43:31,324 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 02:43:42,062 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 02:43:52,428 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: datanode running as process 1586. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1597. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 02:43:55,889 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 02:43:55,890 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 02:43:58,994 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-5: regionserver running as process 1705. Stop it first.
+  klolos-nodes-4: regionserver running as process 1705. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+
+2015-11-19 02:43:59,289 - DEBUG - OpenStackCluster - deleting instance: <Server: klolos-hadoop-347275ae-8e60-11e5-9035-fa163ebe6c92>
+2015-11-19 02:43:59,569 - DEBUG - Coordinator - Terminated: [<Server: klolos-hadoop-347275ae-8e60-11e5-9035-fa163ebe6c92>]
+2015-11-19 02:43:59,570 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 02:43:59,571 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 02:44:05,710 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 02:44:25,731 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 02:44:45,747 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 02:45:05,749 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 02:45:25,770 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 02:45:45,791 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 02:46:05,812 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 02:46:25,823 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 02:46:45,845 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 02:47:05,857 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 02:47:25,879 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 02:47:45,900 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 02:48:05,912 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 02:48:25,929 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 02:48:45,950 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 02:49:06,004 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 02:49:06,005 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 02:49:06,353 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 02:49:15,035 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 02:49:45,065 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 02:52:21,357 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 02:52:21,358 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 821558.7420000001, 'cpu_idle': 16.294666666666664, 'load_fifteen': 0.7542666666666668, 'proc_run': 5.213333333333334, 'pkts_in': 5723.105066666666, 'bytes_out': 5815780.920000001, 'mem_shared': 0.0, 'load_five': 0.9316, 'number_of_threads': 8.040000000000003, 'cpu': 2.9280000000000004, 'mem_cached': 349244.6933333334, 'proc_total': 357.0533333333334, 'pkts_out': 7076.4034666666685, 'read_io_reqs': 0.0, 'mem_free': 176692.4266666667, 'cpu_system': 26.21066666666666, 'part_max_used': 33.15999999999998, 'disk_free': 7.0417999999999985, 'write_io_reqs': 2.4, 'cpu_user': 57.337333333333326, 'mem_buffers': 19992.373333333333, 'cpu_wio': 0.1746666666666667, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 2.336}
+2015-11-19 02:52:21,680 - DEBUG - YCSBController - list index out of range
+2015-11-19 02:52:21,681 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 02:52:42,200 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 02:52:43,023 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 02:52:43,785 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 02:52:44,547 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 02:52:44,551 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 83.70533333333333,
+ '%_cached_RAM': 0.3431112368631674,
+ '%_free_RAM': 0.17358934356116726,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0003704949358585,
+ 'RAM_size': 1024,
+ 'bytes_in': 821558.7420000001,
+ 'bytes_out': 5815780.920000001,
+ 'cpu': 2.9280000000000004,
+ 'cpu_idle': 16.294666666666664,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 26.21066666666666,
+ 'cpu_user': 57.337333333333326,
+ 'cpu_wio': 0.1746666666666667,
+ 'disk_free': 7.0417999999999985,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 2.4,
+ 'load_fifteen': 0.7542666666666668,
+ 'load_five': 0.9316,
+ 'load_one': 2.336,
+ 'mem_buffers': 19992.373333333333,
+ 'mem_cached': 349244.6933333334,
+ 'mem_free': 176692.4266666667,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 6,
+ 'number_of_threads': 8.040000000000003,
+ 'part_max_used': 33.15999999999998,
+ 'pkts_in': 5723.105066666666,
+ 'pkts_out': 7076.4034666666685,
+ 'proc_run': 5.213333333333334,
+ 'proc_total': 357.0533333333334,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 4.103756926256061,
+ 'read_throughput': 19273.0,
+ 'storage_capacity': 10,
+ 'total_latency': 4.103662999219407,
+ 'total_throughput': 19265.86209565861,
+ 'update_latency': 0.0305875,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 2.4}
+2015-11-19 02:52:44,554 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 02:52:44,598 - DEBUG - Coordinator - Executing action: ('remove_VMs', 1)
+2015-11-19 02:52:44,598 - DEBUG - Coordinator - Removing 1 nodes ...
+2015-11-19 02:52:44,598 - DEBUG - HBaseCluster - Removing: klolos-nodes-5, 192.168.5.197
+2015-11-19 02:52:44,599 - DEBUG - HBaseCluster - Stopping HBase on klolos-nodes-5 ...
+2015-11-19 02:55:00,461 - DEBUG - HBaseCluster - HBase Stopped:
+  2015-11-19T02:52:44 Disabling load balancer
+  2015-11-19T02:53:01 Previous balancer state was true
+  2015-11-19T02:53:01 Unloading klolos-nodes-5 region(s)
+  Valid region move targets: 
+  klolos-nodes-2,16020,1447892680747
+  klolos-nodes-1,16020,1447892750816
+  klolos-nodes-4,16020,1447896682557
+  klolos-nodes-3,16020,1447892830186
+  2015-11-19T02:54:40 Unloaded klolos-nodes-5 region(s)
+  2015-11-19T02:54:40 Stopping regionserver
+  stopping regionserver........
+  2015-11-19T02:54:48 Restoring balancer state to
+
+2015-11-19 02:55:05,470 - DEBUG - HBaseCluster - Adding klolos-nodes-5 to datanode-excludes ...
+2015-11-19 02:55:11,021 - DEBUG - HBaseCluster - Waiting until decommissioning is done ...
+2015-11-19 02:55:45,134 - DEBUG - HBaseCluster - 1 nodes still being decommissioned ...
+2015-11-19 02:56:18,655 - DEBUG - HBaseCluster - Decommissioning complete!
+2015-11-19 02:56:18,658 - DEBUG - HBaseCluster - Sleeping for 60 seconds ...
+2015-11-19 02:56:38,679 - DEBUG - HBaseCluster - Sleeping for 40 seconds ...
+2015-11-19 02:56:58,700 - DEBUG - HBaseCluster - Sleeping for 20 seconds ...
+2015-11-19 02:57:18,715 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 02:57:21,398 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 02:57:22,178 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 02:57:22,939 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 02:57:23,736 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 02:57:24,555 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 02:57:25,357 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 02:57:26,624 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 02:57:27,821 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 02:57:29,065 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 02:57:30,293 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 02:57:31,493 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 02:57:40,964 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 02:57:51,521 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1597. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 02:57:55,028 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 02:57:55,029 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 02:57:58,479 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-4: regionserver running as process 1705. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+
+2015-11-19 02:57:58,812 - DEBUG - OpenStackCluster - deleting instance: <Server: klolos-hadoop-6d4eaade-8e5e-11e5-9035-fa163ebe6c92>
+2015-11-19 02:57:59,095 - DEBUG - Coordinator - Terminated: [<Server: klolos-hadoop-6d4eaade-8e5e-11e5-9035-fa163ebe6c92>]
+2015-11-19 02:57:59,096 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 02:57:59,096 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 02:58:04,209 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 02:58:24,230 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 02:58:44,251 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 02:59:04,272 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 02:59:24,281 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 02:59:44,303 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 03:00:04,324 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 03:00:24,331 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 03:00:44,353 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 03:01:04,374 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 03:01:24,382 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 03:01:44,403 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 03:02:04,424 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 03:02:24,443 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 03:02:44,464 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 03:03:04,512 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 03:03:04,513 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 03:03:04,851 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 03:03:13,415 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 03:03:43,451 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 03:06:19,423 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 03:06:19,424 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 850895.8549999999, 'cpu_idle': 13.683333333333334, 'load_fifteen': 0.88, 'proc_run': 6.516666666666667, 'pkts_in': 5936.953166666667, 'bytes_out': 6009969.261333333, 'mem_shared': 0.0, 'load_five': 1.1261666666666668, 'number_of_threads': 6.4, 'cpu': 3.0400000000000005, 'mem_cached': 347359.4, 'proc_total': 367.71666666666664, 'pkts_out': 7294.076333333334, 'read_io_reqs': 0.0, 'mem_free': 138814.2, 'cpu_system': 26.730000000000004, 'part_max_used': 33.324999999999996, 'disk_free': 7.025000000000002, 'write_io_reqs': 0.5, 'cpu_user': 59.40833333333333, 'mem_buffers': 21355.133333333335, 'cpu_wio': 0.20333333333333334, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 2.9645000000000006}
+2015-11-19 03:06:19,974 - DEBUG - YCSBController - list index out of range
+2015-11-19 03:06:19,975 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 03:06:40,785 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 03:06:41,586 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 03:06:42,345 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 03:06:43,147 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 03:06:43,152 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 86.31666666666666,
+ '%_cached_RAM': 0.34125905316561156,
+ '%_free_RAM': 0.13637633660681656,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0000308469864576,
+ 'RAM_size': 1024,
+ 'bytes_in': 850895.8549999999,
+ 'bytes_out': 6009969.261333333,
+ 'cpu': 3.0400000000000005,
+ 'cpu_idle': 13.683333333333334,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 26.730000000000004,
+ 'cpu_user': 59.40833333333333,
+ 'cpu_wio': 0.20333333333333334,
+ 'disk_free': 7.025000000000002,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 0.5,
+ 'load_fifteen': 0.88,
+ 'load_five': 1.1261666666666668,
+ 'load_one': 2.9645000000000006,
+ 'mem_buffers': 21355.133333333335,
+ 'mem_cached': 347359.4,
+ 'mem_free': 138814.2,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 5,
+ 'number_of_threads': 6.4,
+ 'part_max_used': 33.324999999999996,
+ 'pkts_in': 5936.953166666667,
+ 'pkts_out': 7294.076333333334,
+ 'proc_run': 6.516666666666667,
+ 'proc_total': 367.71666666666664,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 4.908237257053166,
+ 'read_throughput': 16104.911111111112,
+ 'storage_capacity': 10,
+ 'total_latency': 4.908102304366425,
+ 'total_throughput': 16104.414338460107,
+ 'update_latency': 0.01795,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 0.5}
+2015-11-19 03:06:43,154 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 03:06:43,181 - DEBUG - DecisionMaking.MDPDTModel - Split with io_reqs at 4.141666666666667 with prob 0.000392104032858 after 0.02594623299955856 seconds
+2015-11-19 03:06:43,181 - DEBUG - Coordinator - Executing action: ('remove_VMs', 1)
+2015-11-19 03:06:43,181 - DEBUG - Coordinator - Removing 1 nodes ...
+2015-11-19 03:06:43,182 - DEBUG - HBaseCluster - Removing: klolos-nodes-4, 192.168.5.195
+2015-11-19 03:06:43,182 - DEBUG - HBaseCluster - Stopping HBase on klolos-nodes-4 ...
+2015-11-19 03:09:24,038 - DEBUG - HBaseCluster - HBase Stopped:
+  2015-11-19T03:06:43 Disabling load balancer
+  2015-11-19T03:06:59 Previous balancer state was true
+  2015-11-19T03:06:59 Unloading klolos-nodes-4 region(s)
+  Valid region move targets: 
+  klolos-nodes-2,16020,1447892680747
+  klolos-nodes-1,16020,1447892750816
+  klolos-nodes-3,16020,1447892830186
+  2015-11-19T03:09:04 Unloaded klolos-nodes-4 region(s)
+  2015-11-19T03:09:04 Stopping regionserver
+  stopping regionserver.......
+  2015-11-19T03:09:11 Restoring balancer state to
+
+2015-11-19 03:09:29,047 - DEBUG - HBaseCluster - Adding klolos-nodes-4 to datanode-excludes ...
+2015-11-19 03:09:34,691 - DEBUG - HBaseCluster - Waiting until decommissioning is done ...
+2015-11-19 03:10:08,726 - DEBUG - HBaseCluster - 1 nodes still being decommissioned ...
+2015-11-19 03:10:42,526 - DEBUG - HBaseCluster - Decommissioning complete!
+2015-11-19 03:10:42,527 - DEBUG - HBaseCluster - Sleeping for 60 seconds ...
+2015-11-19 03:11:02,531 - DEBUG - HBaseCluster - Sleeping for 40 seconds ...
+2015-11-19 03:11:22,553 - DEBUG - HBaseCluster - Sleeping for 20 seconds ...
+2015-11-19 03:11:42,574 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 03:11:44,740 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 03:11:45,570 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 03:11:46,377 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 03:11:47,173 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 03:11:47,973 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 03:11:49,234 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 03:11:50,471 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 03:11:51,668 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 03:11:52,887 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 03:12:00,578 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 03:12:11,028 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 03:12:14,595 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 03:12:14,596 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 03:12:17,644 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+
+2015-11-19 03:12:17,926 - DEBUG - OpenStackCluster - deleting instance: <Server: klolos-hadoop-f1864e58-8e5c-11e5-9035-fa163ebe6c92>
+2015-11-19 03:12:18,221 - DEBUG - Coordinator - Terminated: [<Server: klolos-hadoop-f1864e58-8e5c-11e5-9035-fa163ebe6c92>]
+2015-11-19 03:12:18,222 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 03:12:18,222 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 03:12:22,371 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 03:12:42,374 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 03:13:02,388 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 03:13:22,409 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 03:13:42,427 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 03:14:02,448 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 03:14:22,470 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 03:14:42,490 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 03:15:02,511 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 03:15:22,533 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 03:15:42,551 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 03:16:02,565 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 03:16:22,585 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 03:16:42,606 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 03:17:02,626 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 03:17:22,668 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 03:17:22,669 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 03:17:22,982 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 03:17:31,582 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 03:18:01,601 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 03:20:36,951 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 03:20:36,952 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 847594.3744444443, 'cpu_idle': 10.046666666666665, 'load_fifteen': 1.0053333333333332, 'proc_run': 5.955555555555554, 'pkts_in': 5911.322, 'bytes_out': 5989631.478, 'mem_shared': 0.0, 'load_five': 1.2959999999999998, 'number_of_threads': 6.377777777777777, 'cpu': 3.6088888888888895, 'mem_cached': 342988.79999999993, 'proc_total': 373.3999999999999, 'pkts_out': 7264.310444444446, 'read_io_reqs': 0.0, 'mem_free': 87069.33333333333, 'cpu_system': 28.139999999999997, 'part_max_used': 33.56666666666666, 'disk_free': 6.997333333333331, 'write_io_reqs': 1.8444444444444443, 'cpu_user': 61.73555555555557, 'mem_buffers': 22751.733333333334, 'cpu_wio': 0.08, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 3.4024444444444444}
+2015-11-19 03:20:37,502 - DEBUG - YCSBController - list index out of range
+2015-11-19 03:20:37,503 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 03:20:58,309 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 03:20:59,110 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 03:20:59,920 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 03:21:00,703 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 03:21:00,709 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 89.95333333333333,
+ '%_cached_RAM': 0.3369652099076901,
+ '%_free_RAM': 0.08554021642452846,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0003543035961,
+ 'RAM_size': 1024,
+ 'bytes_in': 847594.3744444443,
+ 'bytes_out': 5989631.478,
+ 'cpu': 3.6088888888888895,
+ 'cpu_idle': 10.046666666666665,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 28.139999999999997,
+ 'cpu_user': 61.73555555555557,
+ 'cpu_wio': 0.08,
+ 'disk_free': 6.997333333333331,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 1.8444444444444443,
+ 'load_fifteen': 1.0053333333333332,
+ 'load_five': 1.2959999999999998,
+ 'load_one': 3.4024444444444444,
+ 'mem_buffers': 22751.733333333334,
+ 'mem_cached': 342988.79999999993,
+ 'mem_free': 87069.33333333333,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 4,
+ 'number_of_threads': 6.377777777777777,
+ 'part_max_used': 33.56666666666666,
+ 'pkts_in': 5911.322,
+ 'pkts_out': 7264.310444444446,
+ 'proc_run': 5.955555555555554,
+ 'proc_total': 373.3999999999999,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 6.513839072675717,
+ 'read_throughput': 12145.488888888889,
+ 'storage_capacity': 10,
+ 'total_latency': 6.513601549130654,
+ 'total_throughput': 12141.187222595,
+ 'update_latency': 0.0227125,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 1.8444444444444443}
+2015-11-19 03:21:00,722 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 03:21:00,723 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 03:21:00,724 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 03:21:07,258 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 03:21:45,988 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 03:21:51,929 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 03:21:53,489 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 03:21:54,156 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 03:21:54,732 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 03:21:55,354 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 03:21:57,762 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 03:21:59,071 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 03:21:59,910 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 03:22:00,718 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 03:22:01,941 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 03:22:03,418 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 03:22:13,086 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 03:22:37,928 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-4.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 03:22:41,483 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 03:22:41,484 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 03:22:49,246 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-1: regionserver running as process 2164. Stop it first.
+  klolos-nodes-2: regionserver running as process 2135. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-4: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-4.out
+
+2015-11-19 03:22:49,251 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 03:22:49,254 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 03:22:54,121 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 03:23:14,139 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 03:23:34,160 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 03:23:54,181 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 03:24:14,200 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 03:24:34,212 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 03:24:54,233 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 03:25:14,253 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 03:25:34,274 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 03:25:54,296 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 03:26:14,317 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 03:26:34,339 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 03:26:54,360 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 03:27:14,361 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 03:27:34,382 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 03:27:54,432 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 03:27:54,433 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 03:27:54,774 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 03:28:03,289 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 03:28:33,312 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 03:31:09,161 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 03:31:09,162 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 371965.7609999999, 'cpu_idle': 56.114999999999995, 'load_fifteen': 0.9258333333333332, 'proc_run': 3.2333333333333334, 'pkts_in': 2613.4238333333333, 'bytes_out': 2526569.282, 'mem_shared': 0.0, 'load_five': 1.1003333333333332, 'number_of_threads': 11.616666666666667, 'cpu': 1.9583333333333337, 'mem_cached': 321300.93333333335, 'proc_total': 282.71666666666664, 'pkts_out': 3029.8419999999996, 'read_io_reqs': 3.2666666666666666, 'mem_free': 303277.86666666664, 'cpu_system': 11.248333333333333, 'part_max_used': 33.300000000000004, 'disk_free': 7.024399999999999, 'write_io_reqs': 4.133333333333334, 'cpu_user': 31.115000000000002, 'mem_buffers': 19798.466666666667, 'cpu_wio': 1.5566666666666664, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.9475000000000005}
+2015-11-19 03:31:09,816 - DEBUG - YCSBController - list index out of range
+2015-11-19 03:31:09,816 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 03:31:30,633 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 03:31:31,472 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 03:31:32,307 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 03:31:33,078 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 03:31:33,083 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 43.885000000000005,
+ '%_cached_RAM': 0.31565822686980866,
+ '%_free_RAM': 0.29795168239222325,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0002747553001192,
+ 'RAM_size': 1024,
+ 'bytes_in': 371965.7609999999,
+ 'bytes_out': 2526569.282,
+ 'cpu': 1.9583333333333337,
+ 'cpu_idle': 56.114999999999995,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 11.248333333333333,
+ 'cpu_user': 31.115000000000002,
+ 'cpu_wio': 1.5566666666666664,
+ 'disk_free': 7.024399999999999,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 7.4,
+ 'load_fifteen': 0.9258333333333332,
+ 'load_five': 1.1003333333333332,
+ 'load_one': 1.9475000000000005,
+ 'mem_buffers': 19798.466666666667,
+ 'mem_cached': 321300.93333333335,
+ 'mem_free': 303277.86666666664,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 5,
+ 'number_of_threads': 11.616666666666667,
+ 'part_max_used': 33.300000000000004,
+ 'pkts_in': 2613.4238333333333,
+ 'pkts_out': 3029.8419999999996,
+ 'proc_run': 3.2333333333333334,
+ 'proc_total': 282.71666666666664,
+ 'read_io_reqs': 3.2666666666666666,
+ 'read_latency': 10.660415702262346,
+ 'read_throughput': 7418.622222222222,
+ 'storage_capacity': 10,
+ 'total_latency': 10.659778415409718,
+ 'total_throughput': 7416.5844763285695,
+ 'update_latency': 0.02225,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 4.133333333333334}
+2015-11-19 03:31:33,085 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 03:31:33,086 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 03:31:33,086 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 03:31:39,674 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 03:32:31,370 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 03:32:39,990 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 03:32:40,634 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 03:32:41,645 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 03:32:42,642 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 03:32:45,970 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 03:32:46,859 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 03:32:48,092 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 03:32:49,338 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 03:32:50,590 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 03:32:51,785 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 03:32:54,251 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 03:32:55,399 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 03:32:59,007 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 03:33:09,880 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 03:33:31,984 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1585. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-5.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 03:33:35,453 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 03:33:35,453 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 03:33:43,739 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-4: regionserver running as process 1704. Stop it first.
+  klolos-nodes-2: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-2.out
+  klolos-nodes-1: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-1.out
+  klolos-nodes-5: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-5.out
+
+2015-11-19 03:33:43,841 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 03:33:43,842 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 03:33:50,122 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 03:34:10,143 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 03:34:30,164 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 03:34:50,183 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 03:35:10,205 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 03:35:30,226 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 03:35:50,230 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 03:36:10,251 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 03:36:30,270 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 03:36:50,286 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 03:37:10,306 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 03:37:30,326 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 03:37:50,332 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 03:38:10,352 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 03:38:30,373 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 03:38:50,423 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 03:38:50,423 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 03:38:50,801 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 03:38:59,071 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 03:39:29,098 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 03:42:05,838 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 03:42:05,839 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 585887.6405333334, 'cpu_idle': 29.038666666666668, 'load_fifteen': 0.8252, 'proc_run': 4.079999999999999, 'pkts_in': 4140.443333333334, 'bytes_out': 4069250.986399999, 'mem_shared': 0.0, 'load_five': 1.0320000000000003, 'number_of_threads': 13.466666666666663, 'cpu': 3.3280000000000003, 'mem_cached': 322728.74666666664, 'proc_total': 360.0133333333333, 'pkts_out': 4909.977999999999, 'read_io_reqs': 0.0, 'mem_free': 237028.16000000003, 'cpu_system': 19.9, 'part_max_used': 33.13999999999999, 'disk_free': 7.0410266666666645, 'write_io_reqs': 1.7199999999999993, 'cpu_user': 50.37466666666666, 'mem_buffers': 18609.81333333333, 'cpu_wio': 0.7000000000000001, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 2.3876}
+2015-11-19 03:42:06,386 - DEBUG - YCSBController - list index out of range
+2015-11-19 03:42:06,387 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 03:42:27,220 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 03:42:27,976 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 03:42:28,784 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 03:42:29,596 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 03:42:29,600 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 70.96133333333333,
+ '%_cached_RAM': 0.3170609648588498,
+ '%_free_RAM': 0.23286545708907572,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0002973060892368,
+ 'RAM_size': 1024,
+ 'bytes_in': 585887.6405333334,
+ 'bytes_out': 4069250.986399999,
+ 'cpu': 3.3280000000000003,
+ 'cpu_idle': 29.038666666666668,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 19.9,
+ 'cpu_user': 50.37466666666666,
+ 'cpu_wio': 0.7000000000000001,
+ 'disk_free': 7.0410266666666645,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 1.7199999999999993,
+ 'load_fifteen': 0.8252,
+ 'load_five': 1.0320000000000003,
+ 'load_one': 2.3876,
+ 'mem_buffers': 18609.81333333333,
+ 'mem_cached': 322728.74666666664,
+ 'mem_free': 237028.16000000003,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 6,
+ 'number_of_threads': 13.466666666666663,
+ 'part_max_used': 33.13999999999999,
+ 'pkts_in': 4140.443333333334,
+ 'pkts_out': 4909.977999999999,
+ 'proc_run': 4.079999999999999,
+ 'proc_total': 360.0133333333333,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 5.4278413985543414,
+ 'read_throughput': 14558.822222222223,
+ 'storage_capacity': 10,
+ 'total_latency': 5.427676269162948,
+ 'total_throughput': 14554.495082208516,
+ 'update_latency': 0.018475,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 1.7199999999999993}
+2015-11-19 03:42:29,601 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 03:42:29,601 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 03:42:29,601 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 03:42:36,048 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 03:43:15,303 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 03:43:21,543 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 03:43:22,309 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 03:43:23,110 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 03:43:23,684 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 03:43:24,954 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 03:43:25,525 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 03:43:26,281 - DEBUG - HBaseCluster - Configuring node: 192.168.5.201
+2015-11-19 03:43:30,736 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 03:43:36,250 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 03:43:37,526 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 03:43:38,801 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 03:43:40,138 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 03:43:40,991 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 03:43:42,146 - DEBUG - HBaseCluster - Copying files to: 192.168.5.201
+2015-11-19 03:43:43,303 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 03:43:55,891 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 03:44:24,661 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1585. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: datanode running as process 1600. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-6: Warning: Permanently added 'klolos-nodes-6,192.168.5.201' (ECDSA) to the list of known hosts.
+  klolos-nodes-6: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-6.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 03:44:28,202 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 03:44:28,203 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 03:44:32,131 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-5: regionserver running as process 1708. Stop it first.
+  klolos-nodes-4: regionserver running as process 1704. Stop it first.
+  klolos-nodes-1: regionserver running as process 17023. Stop it first.
+  klolos-nodes-2: regionserver running as process 16925. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-6: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-6.out
+
+2015-11-19 03:44:32,134 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-6: 192.168.5.201
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 03:44:32,134 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 03:44:41,162 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 03:45:01,183 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 03:45:21,205 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 03:45:41,227 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 03:46:01,242 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 03:46:21,263 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 03:46:41,284 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 03:47:01,305 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 03:47:21,327 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 03:47:41,349 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 03:48:01,364 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 03:48:21,382 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 03:48:41,404 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 03:49:01,423 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 03:49:21,441 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 03:49:41,497 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 03:49:41,498 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 03:49:41,617 - DEBUG - Metrics - Missing data for klolos-nodes-6
+2015-11-19 03:49:41,619 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 03:50:45,285 - DEBUG - Metrics - Missing data for klolos-nodes-6
+2015-11-19 03:50:45,286 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 03:51:49,364 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 03:51:58,065 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 03:52:28,089 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 03:55:05,044 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 03:55:05,045 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 568318.4836666666, 'cpu_idle': 31.24333333333334, 'load_fifteen': 0.6992222222222222, 'proc_run': 3.2, 'pkts_in': 4037.7916666666665, 'bytes_out': 3937618.078222222, 'mem_shared': 0.0, 'load_five': 0.692111111111111, 'number_of_threads': 11.666666666666663, 'cpu': 2.8388888888888886, 'mem_cached': 320186.0444444444, 'proc_total': 357.7777777777777, 'pkts_out': 4759.030777777777, 'read_io_reqs': 0.2777777777777778, 'mem_free': 249708.17777777783, 'cpu_system': 19.92666666666667, 'part_max_used': 33.03333333333332, 'disk_free': 7.052166666666666, 'write_io_reqs': 0.7222222222222221, 'cpu_user': 48.35444444444445, 'mem_buffers': 18231.95555555556, 'cpu_wio': 0.46888888888888897, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.4842222222222223}
+2015-11-19 03:55:05,593 - DEBUG - YCSBController - list index out of range
+2015-11-19 03:55:05,593 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 03:55:26,388 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 03:55:27,214 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 03:55:28,028 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 03:55:28,799 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 03:55:28,803 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 68.75666666666666,
+ '%_cached_RAM': 0.31456291772715383,
+ '%_free_RAM': 0.24532278762617238,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.000260617709993,
+ 'RAM_size': 1024,
+ 'bytes_in': 568318.4836666666,
+ 'bytes_out': 3937618.078222222,
+ 'cpu': 2.8388888888888886,
+ 'cpu_idle': 31.24333333333334,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 19.92666666666667,
+ 'cpu_user': 48.35444444444445,
+ 'cpu_wio': 0.46888888888888897,
+ 'disk_free': 7.052166666666666,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 0.9999999999999999,
+ 'load_fifteen': 0.6992222222222222,
+ 'load_five': 0.692111111111111,
+ 'load_one': 1.4842222222222223,
+ 'mem_buffers': 18231.95555555556,
+ 'mem_cached': 320186.0444444444,
+ 'mem_free': 249708.17777777783,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 7,
+ 'number_of_threads': 11.666666666666663,
+ 'part_max_used': 33.03333333333332,
+ 'pkts_in': 4037.7916666666665,
+ 'pkts_out': 4759.030777777777,
+ 'proc_run': 3.2,
+ 'proc_total': 357.7777777777777,
+ 'read_io_reqs': 0.2777777777777778,
+ 'read_latency': 4.591652596447943,
+ 'read_throughput': 17221.938888888886,
+ 'storage_capacity': 10,
+ 'total_latency': 4.591534568452813,
+ 'total_throughput': 17217.45171605073,
+ 'update_latency': 0.018025,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 0.7222222222222221}
+2015-11-19 03:55:28,804 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 03:55:28,804 - DEBUG - Coordinator - Executing action: ('add_VMs', 1)
+2015-11-19 03:55:28,805 - DEBUG - Coordinator - Adding 1 nodes ...
+2015-11-19 03:55:35,369 - DEBUG - Coordinator - Waiting for the new instances ...
+2015-11-19 03:56:16,770 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 03:56:25,028 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 03:56:25,822 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 03:56:26,653 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 03:56:27,232 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 03:56:28,043 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 03:56:28,595 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 03:56:29,373 - DEBUG - HBaseCluster - Configuring node: 192.168.5.201
+2015-11-19 03:56:29,942 - DEBUG - HBaseCluster - Configuring node: 192.168.5.202
+2015-11-19 03:56:33,478 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 03:56:43,996 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 03:56:45,207 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 03:56:46,425 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 03:56:47,765 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 03:56:48,909 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 03:56:50,066 - DEBUG - HBaseCluster - Copying files to: 192.168.5.201
+2015-11-19 03:56:51,268 - DEBUG - HBaseCluster - Copying files to: 192.168.5.202
+2015-11-19 03:56:52,734 - DEBUG - HBaseCluster - Uploading hosts files ...
+2015-11-19 03:57:19,579 - DEBUG - HBaseCluster - Starting the dfs ...
+2015-11-19 03:57:36,104 - DEBUG - HBaseCluster - Started the dfs:
+  Starting namenodes on [klolos-nodes-master]
+  klolos-nodes-master: Warning: Permanently added 'klolos-nodes-master,192.168.5.200' (ECDSA) to the list of known hosts.
+  klolos-nodes-master: namenode running as process 2254. Stop it first.
+  klolos-nodes-5: Warning: Permanently added 'klolos-nodes-5,192.168.5.197' (ECDSA) to the list of known hosts.
+  klolos-nodes-5: datanode running as process 1600. Stop it first.
+  klolos-nodes-4: Warning: Permanently added 'klolos-nodes-4,192.168.5.195' (ECDSA) to the list of known hosts.
+  klolos-nodes-4: datanode running as process 1585. Stop it first.
+  klolos-nodes-6: Warning: Permanently added 'klolos-nodes-6,192.168.5.201' (ECDSA) to the list of known hosts.
+  klolos-nodes-6: datanode running as process 1607. Stop it first.
+  klolos-nodes-1: Warning: Permanently added 'klolos-nodes-1,192.168.5.155' (ECDSA) to the list of known hosts.
+  klolos-nodes-1: datanode running as process 1891. Stop it first.
+  klolos-nodes-2: Warning: Permanently added 'klolos-nodes-2,192.168.5.199' (ECDSA) to the list of known hosts.
+  klolos-nodes-2: datanode running as process 1843. Stop it first.
+  klolos-nodes-3: Warning: Permanently added 'klolos-nodes-3,192.168.5.198' (ECDSA) to the list of known hosts.
+  klolos-nodes-3: datanode running as process 1853. Stop it first.
+  klolos-nodes-7: Warning: Permanently added 'klolos-nodes-7,192.168.5.202' (ECDSA) to the list of known hosts.
+  klolos-nodes-7: starting datanode, logging to /opt/hadoop-2.5.2/logs/hadoop-root-datanode-klolos-nodes-7.out
+  Starting secondary namenodes [0.0.0.0]
+  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.
+  0.0.0.0: secondarynamenode running as process 2449. Stop it first.
+
+2015-11-19 03:57:39,710 - DEBUG - HBaseCluster - Refreshed dfsadmin: ['Refresh nodes successful\n']
+2015-11-19 03:57:39,711 - DEBUG - HBaseCluster - Starting HBase ...
+2015-11-19 03:57:43,794 - DEBUG - HBaseCluster - Started hbase:
+  klolos-nodes-master: zookeeper running as process 2870. Stop it first.
+  klolos-nodes-2: zookeeper running as process 2031. Stop it first.
+  klolos-nodes-1: zookeeper running as process 2087. Stop it first.
+  master running as process 3884. Stop it first.
+  klolos-nodes-5: regionserver running as process 1708. Stop it first.
+  klolos-nodes-3: regionserver running as process 2038. Stop it first.
+  klolos-nodes-4: regionserver running as process 1704. Stop it first.
+  klolos-nodes-6: regionserver running as process 1712. Stop it first.
+  klolos-nodes-2: regionserver running as process 16925. Stop it first.
+  klolos-nodes-1: regionserver running as process 17023. Stop it first.
+  klolos-nodes-7: starting regionserver, logging to /opt/hbase-1.1.2/bin/../logs/hbase-root-regionserver-klolos-nodes-7.out
+
+2015-11-19 03:57:43,896 - DEBUG - Coordinator - Current cluster:
+  klolos-nodes-5: 192.168.5.197
+  klolos-nodes-3: 192.168.5.198
+  klolos-nodes-6: 192.168.5.201
+  klolos-nodes-4: 192.168.5.195
+  klolos-nodes-7: 192.168.5.202
+  klolos-nodes-master: 192.168.5.200
+  klolos-nodes-2: 192.168.5.199
+  klolos-nodes-1: 192.168.5.155
+2015-11-19 03:57:43,896 - DEBUG - HBaseCluster - Starting Ganglia ...
+2015-11-19 03:57:57,189 - DEBUG - Coordinator - Sleeping for 300 seconds ...
+2015-11-19 03:58:17,209 - DEBUG - Coordinator - Sleeping for 280 seconds ...
+2015-11-19 03:58:37,231 - DEBUG - Coordinator - Sleeping for 260 seconds ...
+2015-11-19 03:58:57,252 - DEBUG - Coordinator - Sleeping for 240 seconds ...
+2015-11-19 03:59:17,273 - DEBUG - Coordinator - Sleeping for 220 seconds ...
+2015-11-19 03:59:37,293 - DEBUG - Coordinator - Sleeping for 200 seconds ...
+2015-11-19 03:59:57,314 - DEBUG - Coordinator - Sleeping for 180 seconds ...
+2015-11-19 04:00:17,316 - DEBUG - Coordinator - Sleeping for 160 seconds ...
+2015-11-19 04:00:37,337 - DEBUG - Coordinator - Sleeping for 140 seconds ...
+2015-11-19 04:00:57,358 - DEBUG - Coordinator - Sleeping for 120 seconds ...
+2015-11-19 04:01:17,374 - DEBUG - Coordinator - Sleeping for 100 seconds ...
+2015-11-19 04:01:37,395 - DEBUG - Coordinator - Sleeping for 80 seconds ...
+2015-11-19 04:01:57,416 - DEBUG - Coordinator - Sleeping for 60 seconds ...
+2015-11-19 04:02:17,430 - DEBUG - Coordinator - Sleeping for 40 seconds ...
+2015-11-19 04:02:37,451 - DEBUG - Coordinator - Sleeping for 20 seconds ...
+2015-11-19 04:02:57,507 - DEBUG - Coordinator - Updated local hosts file
+2015-11-19 04:02:57,508 - DEBUG - Coordinator - Making sure ganglia is running ...
+2015-11-19 04:02:57,652 - DEBUG - Metrics - Missing data for klolos-nodes-7
+2015-11-19 04:02:57,652 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 04:04:03,900 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 04:04:03,903 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 04:05:10,002 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 04:05:10,008 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 04:06:16,214 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 04:06:16,215 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 04:07:22,421 - DEBUG - Metrics - Missing data for klolos-nodes-5
+2015-11-19 04:07:22,424 - DEBUG - Metrics - Data are missing, restarting Ganglia ...
+2015-11-19 04:08:26,902 - DEBUG - YCSBController - Copying hosts files to ycsb clients ...
+2015-11-19 04:08:35,444 - DEBUG - Metrics - Will start collecting data in 30 seconds ...
+2015-11-19 04:09:05,475 - DEBUG - Metrics - Now collecting data ...
+2015-11-19 04:11:43,261 - DEBUG - Metrics - Successfully collected data 15 times
+2015-11-19 04:11:43,262 - DEBUG - Metrics - Results from Ganglia: {'bytes_in': 615892.9495238095, 'cpu_idle': 29.040952380952383, 'load_fifteen': 0.5706666666666667, 'proc_run': 2.247619047619047, 'pkts_in': 4365.538857142857, 'bytes_out': 4284600.388571427, 'mem_shared': 0.0, 'load_five': 0.6336190476190476, 'number_of_threads': 8.961904761904758, 'cpu': 2.7885714285714283, 'mem_cached': 322075.1238095238, 'proc_total': 356.5904761904763, 'pkts_out': 5180.473047619048, 'read_io_reqs': 0.0, 'mem_free': 258311.42857142855, 'cpu_system': 21.40476190476191, 'part_max_used': 32.957142857142856, 'disk_free': 7.061142857142856, 'write_io_reqs': 2.514285714285715, 'cpu_user': 48.87904761904762, 'mem_buffers': 18270.019047619044, 'cpu_wio': 0.6876190476190479, 'cpu_nice': 0.0, 'mem_total': 1017876.0, 'load_one': 1.747047619047619}
+2015-11-19 04:11:43,607 - DEBUG - YCSBController - list index out of range
+2015-11-19 04:11:43,607 - DEBUG - YCSBController - Results not ready for client 1, trying again in 20 seconds ...
+2015-11-19 04:12:04,464 - DEBUG - YCSBController - Successfully collected YCSB results from client 1.
+2015-11-19 04:12:05,283 - DEBUG - YCSBController - Successfully collected YCSB results from client 2.
+2015-11-19 04:12:06,091 - DEBUG - YCSBController - Successfully collected YCSB results from client 3.
+2015-11-19 04:12:06,905 - DEBUG - YCSBController - Successfully collected YCSB results from client 4.
+2015-11-19 04:12:06,907 - DEBUG - Coordinator - Collected measurements: 
+{'%_CPU_usage': 70.95904761904762,
+ '%_cached_RAM': 0.31641882096593676,
+ '%_free_RAM': 0.25377494760798813,
+ '%_read_load': 1.0,
+ '%_read_throughput': 1.0001601754102298,
+ 'RAM_size': 1024,
+ 'bytes_in': 615892.9495238095,
+ 'bytes_out': 4284600.388571427,
+ 'cpu': 2.7885714285714283,
+ 'cpu_idle': 29.040952380952383,
+ 'cpu_nice': 0.0,
+ 'cpu_system': 21.40476190476191,
+ 'cpu_user': 48.87904761904762,
+ 'cpu_wio': 0.6876190476190479,
+ 'disk_free': 7.061142857142856,
+ 'incoming_load': 100000.0,
+ 'io_reqs': 2.514285714285715,
+ 'load_fifteen': 0.5706666666666667,
+ 'load_five': 0.6336190476190476,
+ 'load_one': 1.747047619047619,
+ 'mem_buffers': 18270.019047619044,
+ 'mem_cached': 322075.1238095238,
+ 'mem_free': 258311.42857142855,
+ 'mem_shared': 0.0,
+ 'mem_total': 1017876.0,
+ 'next_load': 100000.0,
+ 'number_of_CPUs': 1,
+ 'number_of_VMs': 8,
+ 'number_of_threads': 8.961904761904758,
+ 'part_max_used': 32.957142857142856,
+ 'pkts_in': 4365.538857142857,
+ 'pkts_out': 5180.473047619048,
+ 'proc_run': 2.247619047619047,
+ 'proc_total': 356.5904761904763,
+ 'read_io_reqs': 0.0,
+ 'read_latency': 3.787675895658131,
+ 'read_throughput': 20877.133333333335,
+ 'storage_capacity': 10,
+ 'total_latency': 3.787595672145704,
+ 'total_throughput': 20873.78986547858,
+ 'update_latency': 0.0192125,
+ 'update_throughput': 0.4444444444444444,
+ 'write_io_reqs': 2.514285714285715}
+2015-11-19 04:12:06,908 - DEBUG - DecisionMaker - Recorded experience
+2015-11-19 04:12:06,909 - DEBUG - Coordinator - Executing action: ('remove_VMs', 1)
+2015-11-19 04:12:06,909 - DEBUG - Coordinator - Removing 1 nodes ...
+2015-11-19 04:12:06,909 - DEBUG - HBaseCluster - Removing: klolos-nodes-7, 192.168.5.202
+2015-11-19 04:12:06,909 - DEBUG - HBaseCluster - Stopping HBase on klolos-nodes-7 ...
+2015-11-19 04:14:10,293 - DEBUG - HBaseCluster - HBase Stopped:
+  2015-11-19T04:12:07 Disabling load balancer
+  2015-11-19T04:12:24 Previous balancer state was true
+  2015-11-19T04:12:24 Unloading klolos-nodes-7 region(s)
+  Valid region move targets: 
+  klolos-nodes-1,16020,1447904021936
+  klolos-nodes-5,16020,1447904047627
+  klolos-nodes-4,16020,1447903389919
+  klolos-nodes-2,16020,1447904021947
+  klolos-nodes-6,16020,1447904694472
+  klolos-nodes-3,16020,1447892830186
+  2015-11-19T04:13:48 Unloaded klolos-nodes-7 region(s)
+  2015-11-19T04:13:48 Stopping regionserver
+  stopping regionserver.........
+  2015-11-19T04:13:57 Restoring balancer state to
+
+2015-11-19 04:14:15,301 - DEBUG - HBaseCluster - Adding klolos-nodes-7 to datanode-excludes ...
+2015-11-19 04:14:20,954 - DEBUG - HBaseCluster - Waiting until decommissioning is done ...
+2015-11-19 04:14:54,985 - DEBUG - HBaseCluster - Decommissioning complete!
+2015-11-19 04:14:54,987 - DEBUG - HBaseCluster - Sleeping for 60 seconds ...
+2015-11-19 04:15:15,000 - DEBUG - HBaseCluster - Sleeping for 40 seconds ...
+2015-11-19 04:15:35,020 - DEBUG - HBaseCluster - Sleeping for 20 seconds ...
+2015-11-19 04:15:55,039 - DEBUG - HBaseCluster - Configuring cluster ...
+2015-11-19 04:15:58,575 - DEBUG - HBaseCluster - Configuring node: 192.168.5.200
+2015-11-19 04:15:59,345 - DEBUG - HBaseCluster - Configuring node: 192.168.5.155
+2015-11-19 04:16:00,170 - DEBUG - HBaseCluster - Configuring node: 192.168.5.199
+2015-11-19 04:16:00,945 - DEBUG - HBaseCluster - Configuring node: 192.168.5.198
+2015-11-19 04:16:01,704 - DEBUG - HBaseCluster - Configuring node: 192.168.5.195
+2015-11-19 04:16:02,455 - DEBUG - HBaseCluster - Configuring node: 192.168.5.197
+2015-11-19 04:16:03,221 - DEBUG - HBaseCluster - Configuring node: 192.168.5.201
+2015-11-19 04:16:03,986 - DEBUG - HBaseCluster - Copying files to: 192.168.5.200
+2015-11-19 04:16:05,235 - DEBUG - HBaseCluster - Copying files to: 192.168.5.155
+2015-11-19 04:16:06,521 - DEBUG - HBaseCluster - Copying files to: 192.168.5.199
+2015-11-19 04:16:07,745 - DEBUG - HBaseCluster - Copying files to: 192.168.5.198
+2015-11-19 04:16:09,106 - DEBUG - HBaseCluster - Copying files to: 192.168.5.195
+2015-11-19 04:16:10,265 - DEBUG - HBaseCluster - Copying files to: 192.168.5.197
+2015-11-19 04:16:11,479 - DEBUG - HBaseCluster - Copying files to: 192.168.5.201
+2015-11-19 04:16:12,775 - DEBUG - HBaseCluster - Uploading hosts files ...

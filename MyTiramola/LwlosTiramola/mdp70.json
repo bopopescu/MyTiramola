@@ -1,0 +1,23 @@
+{
+  "model" : "MDP",
+  "parameters" :
+  {
+    "number_of_VMs" :
+    {
+      "values"   : [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    },
+    "next_load" :
+    {
+      "limits"   : [-100000, 22000, 26000, 30000, 34000, 38000, 1000000]
+    }
+  },
+  "actions" :
+  {
+    "add_VMs"    : [1, 2],
+    "remove_VMs" : [1, 2],
+    "no_op"      : [0]
+  },
+  "initial_qvalues" : 0,
+  "discount"        : 0.5
+}
+

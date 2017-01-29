@@ -1,0 +1,2 @@
+2015-10-29 03:48:06,759 - DEBUG - MDPDTModel - Split with total_load at 22.8116080734 with prob 0.000620707081578 after 0.00493383407593 seconds
+2015-10-29 03:48:06,773 - DEBUG - MDPDTModel - Split with %_read_load at 0.916070854629 with prob 0.000836376617549 after 0.00582504272461 seconds
