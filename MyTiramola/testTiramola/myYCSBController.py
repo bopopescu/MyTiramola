@@ -198,7 +198,7 @@ class YCSBController(object):
 
 if __name__ == "__main__":
 
-    ycsb = YCSBController(15)
+    ycsb = YCSBController(3)
     ycsb.record_count = 10000
     ycsb.execute_load(50000, 1.0)
     time.sleep(180)
