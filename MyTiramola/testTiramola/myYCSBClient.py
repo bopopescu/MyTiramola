@@ -1,23 +1,30 @@
+'''
+Created on Feb 1, 2017
+
+@author: indiana
+'''
+
 #!/usr/bin/env python3
 
-import subprocess
-import sys
-import re
-import time
-import Utils
 import logging
 from pprint import pprint
+import re
+import subprocess
+import sys
+import time
+
 import DecisionMaking
+import Utils
 
-
-class YCSBController(object):
+# Why YCSBController again? Isn't it YCSBClient?
+class YCSBClient(object):
 
     def __init__(self):
 
-        self.ycsb         = '/home/ubuntu/ycsb-0.3.0/bin/ycsb'
+        self.ycsb         = '/home/ubuntu/YCSB/bin/ycsb'
         self.workload     = '/home/ubuntu/tiramola/workload.cfg'
-        self.output       = '/home/ubuntu/ycsb-0.3.0/ycsb.out'
-        self.ycsb_error   = '/home/ubuntu/ycsb-0.3.0/ycsb.err'
+        self.output       = '/home/ubuntu/YCSB/ycsb.out'
+        self.ycsb_error   = '/home/ubuntu/YCSB/ycsb.err'
 
 
     def execute_load(self, target, reads, records, max_time, delay, verbose=True):
@@ -25,7 +32,7 @@ class YCSBController(object):
         self.kill_ycsb()
         time.sleep(delay)
 
-        cmd = [self.ycsb, 'run', 'hbase', '-P', self.workload, '-cp', '/home/ubuntu/ycsb-0.3.0/site']
+        cmd = [self.ycsb, 'run', 'hbase', '-P', self.workload, '-cp', '/home/ubuntu/YCSB/site']
         if verbose:
             cmd.append('-s')
         cmd += ['-p', 'maxexecutiontime=' + str(max_time)]
@@ -36,7 +43,7 @@ class YCSBController(object):
 
 
         with open(self.output, 'wb') as f, open(self.ycsb_error, 'a') as err:
-            subprocess.Popen(cmd, stdout=f, stderr=err)
+            subprocess.Popen(cmd, stdout = f, stderr = err)
 
 
     # Gracefully ask the running ycsb process to terminate
@@ -45,6 +52,7 @@ class YCSBController(object):
         with open("/dev/null", 'w') as null:
             subprocess.call(["killall", "java"], stderr=null, stdout=null) 
 
+# STARTING POINT OF EXECUTION:
 if __name__ == "__main__":
 
     if len(sys.argv) < 5:
@@ -60,6 +68,6 @@ if __name__ == "__main__":
     else:
         delay = 2
 
-    ycsb = YCSBController()
+    ycsb = YCSBClient()
     ycsb.execute_load(target, reads, records, maxtime, delay)
-
+    

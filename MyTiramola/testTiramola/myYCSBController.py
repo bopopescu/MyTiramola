@@ -12,29 +12,29 @@ import logging
 from pprint import pprint
 import DecisionMaking
 
-class YCSBController(object):
+class myYCSBController(object):
 
     def __init__(self, num_clients=None):
 
-        self.utils        = Utils.Utils()
-        self.ycsb         = self.utils.ycsb_binary
-        self.workload     = self.utils.workload_file
-        self.output       = self.utils.ycsb_output
-        self.max_time     = int(self.utils.ycsb_max_time)
+        self.utils = Utils.Utils()
+        self.ycsb = self.utils.ycsb_binary
+        self.workload = self.utils.workload_file
+        self.output = self.utils.ycsb_output
+        self.max_time = int(self.utils.ycsb_max_time)
         self.record_count = None
-        self.ycsb_error   = self.utils.install_dir + '/logs/ycsb.err'
+        self.ycsb_error = self.utils.install_dir + '/logs/ycsb.err'
+        # Check code for num_clients. If are not set, then taken from Configuration.properties
         if num_clients is None:
             self.clients = int(self.utils.ycsb_clients)
         else:
             self.clients = num_clients
 
-        ## Install logger
-        LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+        # # Install logger
+        LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
         self.my_logger = logging.getLogger("YCSBController")
         self.my_logger.setLevel(logging.DEBUG)
 
-        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, 
-                maxBytes=2*1024*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2 * 1024 * 1024 * 1024, backupCount=5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
@@ -53,10 +53,9 @@ class YCSBController(object):
 
         self.my_logger.debug("Copying hosts files to ycsb clients ...")
         for c in range(1, self.clients + 1):
-            hostname = "ycsb-client-" + str(c)
+            hostname = "ycsb" + str(c)
             transport = paramiko.Transport((hostname, 22))
-            transport.connect(username='ubuntu',
-                    pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+            transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
             transport.open_channel("session", hostname, "localhost")
             sftp = paramiko.SFTPClient.from_transport(transport)
             sftp.put("/etc/hosts", "/home/ubuntu/hosts")
@@ -75,7 +74,7 @@ class YCSBController(object):
 
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
         for c in range(1, self.clients + 1):
-            hostname = "ycsb-client-" + str(c)
+            hostname = "ycsb" + str(c)
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username='ubuntu')
@@ -108,8 +107,8 @@ class YCSBController(object):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect("ycsb-client-%d" % c, username='ubuntu', password='secretpw',
-                        key_filename=self.utils.key_file)
+            ssh.connect("ycsb-client-%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+            # The Python-script that is executed in each node:
             cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" % \
                         (int(target / self.clients), reads, self.record_count, self.max_time, delay)
             ssh.exec_command(cmd)
@@ -127,10 +126,9 @@ class YCSBController(object):
         for c in range(1, self.clients + 1):
             for i in range(20):
 
-                hostname = "ycsb-client-" + str(c)
+                hostname = "ycsb" + str(c)
                 transport = paramiko.Transport((hostname, 22))
-                transport.connect(username='ubuntu',
-                        pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+                transport.connect(username='ubuntu', pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
                 transport.open_channel("session", hostname, "localhost")
                 sftp = paramiko.SFTPClient.from_transport(transport)
                 sftp.get("/home/ubuntu/ycsb-0.3.0/ycsb.out", "/tmp/ycsb.out")
@@ -154,30 +152,30 @@ class YCSBController(object):
                             return None
  
                         res[DecisionMaking.TOTAL_THROUGHPUT] = float(throughput[0])
-                        res[DecisionMaking.INCOMING_LOAD]    = float(target[0])
-                        res[DecisionMaking.PC_READ_LOAD]     = float(read_prop[0])
+                        res[DecisionMaking.INCOMING_LOAD] = float(target[0])
+                        res[DecisionMaking.PC_READ_LOAD] = float(read_prop[0])
                         if read_ops:
                             res[DecisionMaking.READ_THROUGHPUT] = float(read_ops[0]) / self.max_time
-                            res[DecisionMaking.READ_LATENCY]    = float(read_latency[0]) / 1000
+                            res[DecisionMaking.READ_LATENCY] = float(read_latency[0]) / 1000
                         else:
                             res[DecisionMaking.READ_THROUGHPUT] = 0.0
-                            res[DecisionMaking.READ_LATENCY]    = float(update_latency[0]) / 1000
+                            res[DecisionMaking.READ_LATENCY] = float(update_latency[0]) / 1000
  
                         if update_ops:
                             res[DecisionMaking.UPDATE_THROUGHPUT] = float(update_ops[0]) / self.max_time
-                            res[DecisionMaking.UPDATE_LATENCY]    = float(update_latency[0]) / 1000
+                            res[DecisionMaking.UPDATE_LATENCY] = float(update_latency[0]) / 1000
                         else:
                             res[DecisionMaking.UPDATE_THROUGHPUT] = 0.0
-                            res[DecisionMaking.UPDATE_LATENCY]    = float(read_latency[0]) / 1000
+                            res[DecisionMaking.UPDATE_LATENCY] = float(read_latency[0]) / 1000
  
                         # self.my_logger.debug("YCSB results: " + str(res))
-                        #self.my_logger.debug("Successfully collected YCSB results from client %d" % c)
+                        # self.my_logger.debug("Successfully collected YCSB results from client %d" % c)
                         client_results.append(res)
                         break
 
                 except Exception as e:
                     self.my_logger.debug(e)
-                    self.my_logger.debug("Results not ready for client %d, trying again in 10 seconds ..."%c)
+                    self.my_logger.debug("Results not ready for client %d, trying again in 10 seconds ..." % c)
                     time.sleep(10)
 
         if len(client_results) != self.clients:
@@ -189,16 +187,16 @@ class YCSBController(object):
     def _aggregate_results(self, results):
 
         aggr = {k: sum([r[k] for r in results]) for k in results[0]}
-        aggr[DecisionMaking.PC_READ_LOAD]   /= self.clients
-        aggr[DecisionMaking.READ_LATENCY]   /= self.clients
+        aggr[DecisionMaking.PC_READ_LOAD] /= self.clients
+        aggr[DecisionMaking.READ_LATENCY] /= self.clients
         aggr[DecisionMaking.UPDATE_LATENCY] /= self.clients
 
         return aggr
 
-
+# STARTING POINT OF EXECUTION:
 if __name__ == "__main__":
 
-    ycsb = YCSBController(3)
+    ycsb = myYCSBController(3)
     ycsb.record_count = 10000
     ycsb.execute_load(50000, 1.0)
     time.sleep(180)

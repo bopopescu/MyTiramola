@@ -17,7 +17,7 @@ class Utils(object):
     '''
     
     def __init__(self):
-        self.read_properties(os.getenv("HOME", "/etc") + "/tiramola/Coordinator.properties")
+        self.read_properties(os.getenv("HOME", "/etc") + "/tiramola/myCoordinator.properties")
 
 
     def return_instance_from_tuple(self, atuple):
@@ -221,7 +221,7 @@ class Utils(object):
         cur.close()
         
     
-    def rem_from_cluster_db(self, cluster_id=None, hostname=None):
+    def rem_from_cluster_db(self, cluster_id = None, hostname = None):
         # # Add cluster to DB (check for existing records with the same id and remove)
         con = create_engine(self.db_file)
         cur = con.connect()
