@@ -35,9 +35,9 @@ username = gargyr
 ## Location of YCSB binary, configuration file, output file and running time	// to diko mou filepath gia ycsb | workload.cfg ??
 #ycsb_binary = /home/ubuntu/ycsb-0.3.0/bin/ycsb
 ycsb_binary = /home/ubuntu/YCSB/bin/ycsb
-workload_file = /home/ubuntu/tiramola/myWorkload.cfg
+workload_file = /home/ubuntu/tiramola/workload.cfg
 ycsb_output = /tmp/ycsb.out
-ycsb_max_time = 300
+ycsb_max_time = 180
 #ycsb_clients = 15
 ycsb_clients = 3
 ## Location of the decision making configuration file		// Ti paizei me auto?

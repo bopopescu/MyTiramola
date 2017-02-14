@@ -15,7 +15,7 @@ class YCSBController(object):
     def __init__(self):
 
         self.ycsb         = '/home/ubuntu/ycsb-0.3.0/bin/ycsb'
-        self.workload     = '/home/ubuntu/tiramola/workload.cfg'
+        self.workload     = '/home/ubuntu/tiramola/Workload.cfg'
         self.output       = '/home/ubuntu/ycsb-0.3.0/ycsb.out'
         self.ycsb_error   = '/home/ubuntu/ycsb-0.3.0/ycsb.err'
 

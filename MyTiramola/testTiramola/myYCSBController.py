@@ -51,7 +51,7 @@ class myYCSBController(object):
     # copy hosts file to all ycsb clients
     def transfer_files(self):
 
-        self.my_logger.debug("Copying hosts files to ycsb clients ...")
+        self.my_logger.debug("Copying hosts files, myWorkload.cfg and myYCSBClient.py to ycsb clients ...")
         for c in range(1, self.clients + 1):
             hostname = "ycsb" + str(c)
             transport = paramiko.Transport((hostname, 22))
@@ -59,7 +59,8 @@ class myYCSBController(object):
             transport.open_channel("session", hostname, "localhost")
             sftp = paramiko.SFTPClient.from_transport(transport)
             sftp.put("/etc/hosts", "/home/ubuntu/hosts")
-            sftp.put(self.workload, "/home/ubuntu/tiramola/workload.cfg")
+            sftp.put(self.workload, "/home/ubuntu/tiramola/myWorkload.cfg")
+            sftp.put("/home/ubuntu/tiramola/myYCSBClient.py", "/home/ubuntu/tiramola/myYCSBClient.py")
             sftp.close()
 
             ssh = paramiko.SSHClient()
@@ -197,9 +198,9 @@ class myYCSBController(object):
 # STARTING POINT OF EXECUTION:
 if __name__ == "__main__":
 
-    ycsb = myYCSBController(2)      #The argument defines the number of ycsb-clients
-    ycsb.record_count = 500000       #record_count defines the number of records to be loaded or (already loaded and) used by run.
-    ycsb.execute_load(4000, 1.0)    #1st arg: ops/sec of all clients. It will be divided per client and extra divided per thread   2nd arg: Read proportion. It automatically deduces the Update proportion
+    ycsb = myYCSBController(3)      #The argument defines the number of ycsb-clients
+    ycsb.record_count = 500000      #record_count defines the number of records to be loaded or (already loaded and) used by run.
+    ycsb.execute_load(6000, 1.0)    #1st arg: ops/sec of all clients. It will be divided per client and extra divided per thread   2nd arg: Read proportion. It automatically deduces the Update proportion
     time.sleep(300)                 #The code waits for argument's amount in seconds! It is equal to ycsb_max_time (.properties) & maxexecutiontime (workload.cfg)
     res = ycsb.parse_results()
     pprint(res)
