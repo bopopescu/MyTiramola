@@ -133,7 +133,7 @@ class myYCSBController(object):
                 transport.connect(username='ubuntu', pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
                 transport.open_channel("session", hostname, "localhost")
                 sftp = paramiko.SFTPClient.from_transport(transport)
-                sftp.get("/home/ubuntu/ycsb-0.3.0/ycsb.out", "/tmp/ycsb.out")
+                sftp.get("/home/ubuntu/YCSB/ycsb.out", "/tmp/ycsb.out")
                 transport.close()
                 sftp.close()
 

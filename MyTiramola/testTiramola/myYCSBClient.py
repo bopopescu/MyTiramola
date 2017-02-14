@@ -16,7 +16,7 @@ class myYCSBClient(object):
     def __init__(self):
 
         self.ycsb         = '/home/ubuntu/YCSB/bin/ycsb'
-        self.workload     = '/home/ubuntu/tiramola/workload.cfg'
+        self.workload     = '/home/ubuntu/tiramola/myWorkload.cfg'
         self.output       = '/home/ubuntu/YCSB/ycsb.out'
         self.ycsb_error   = '/home/ubuntu/YCSB/ycsb.err'
 
