@@ -6,18 +6,12 @@ Created on Feb 1, 2017
 
 #!/usr/bin/env python3
 
-import logging
-from pprint import pprint
-import re
 import subprocess
 import sys
 import time
 
-import DecisionMaking
-import Utils
-
 # Why YCSBController again? Isn't it YCSBClient?
-class YCSBClient(object):
+class myYCSBClient(object):
 
     def __init__(self):
 
@@ -27,12 +21,12 @@ class YCSBClient(object):
         self.ycsb_error   = '/home/ubuntu/YCSB/ycsb.err'
 
 
-    def execute_load(self, target, reads, records, max_time, delay, verbose=True):
+    def execute_load(self, target, reads, records, max_time, delay, verbose = True):
 
         self.kill_ycsb()
         time.sleep(delay)
 
-        cmd = [self.ycsb, 'run', 'hbase', '-P', self.workload, '-cp', '/home/ubuntu/YCSB/site']
+        cmd = [self.ycsb, 'run', 'hbase10', '-cp', '/home/ubuntu/hbase-conf', '-P', self.workload]
         if verbose:
             cmd.append('-s')
         cmd += ['-p', 'maxexecutiontime=' + str(max_time)]
@@ -40,6 +34,8 @@ class YCSBClient(object):
         cmd += ['-p', 'readproportion=' + str(reads)]
         cmd += ['-p', 'updateproportion=' + str(1 - reads)]
         cmd += ['-p', 'recordcount=' + str(records)]
+        
+        print("the cmd = " + str(cmd))
 
 
         with open(self.output, 'wb') as f, open(self.ycsb_error, 'a') as err:
@@ -58,16 +54,30 @@ if __name__ == "__main__":
     if len(sys.argv) < 5:
         print("Usage: python3 %s target reads records maxtime [delay]" % sys.argv[0])
         exit()
+    
+    print("ARGUMENT 0: " + sys.argv[0] + " to WTF")
+    print("ARGUMENT 1: " + sys.argv[1] + " to target")
+    print("ARGUMENT 2: " + sys.argv[2] + " to reads")
+    print("ARGUMENT 3: " + sys.argv[3] + " to records")
+    print("ARGUMENT 4: " + sys.argv[4] + " to maxtime")
+    
 
     target  = int(sys.argv[1])
     reads   = float(sys.argv[2])
     records = int(sys.argv[3])
     maxtime = int(sys.argv[4])
+
     if len(sys.argv) > 4:
         delay = float(sys.argv[5])
     else:
         delay = 2
 
-    ycsb = YCSBClient()
+    ycsb = myYCSBClient()
+    print("Arguments to run in execute_load aka command-line:")
+    print("target = " + str(target))
+    print("reads = " + str(reads))
+    print("records = " + str(records))
+    print("maxtime = " + str(maxtime))
+    print("delay = " + str(delay))
     ycsb.execute_load(target, reads, records, maxtime, delay)
     

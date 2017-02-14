@@ -5,7 +5,7 @@ Created on Jun 8, 2010
 '''
 
 import re
-from boto import ec2
+# from boto import ec2
 from sqlalchemy import exc, create_engine
 import os
 from configparser import ConfigParser
@@ -236,7 +236,7 @@ class Utils(object):
         cur.close()
         
     
-    def read_properties(self, property_file="Coordinator.properties"):
+    def read_properties(self, property_file="myCoordinator.properties"):
             """ process properties file """
             # # Reads the configuration properties
             cfg = ConfigParser()

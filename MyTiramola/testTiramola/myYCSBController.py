@@ -14,24 +14,24 @@ import DecisionMaking
 
 class myYCSBController(object):
 
-    def __init__(self, num_clients=None):
+    def __init__(self, num_clients = None):
 
         self.utils = Utils.Utils()
-        self.ycsb = self.utils.ycsb_binary
-        self.workload = self.utils.workload_file
-        self.output = self.utils.ycsb_output
-        self.max_time = int(self.utils.ycsb_max_time)
+        self.ycsb = self.utils.ycsb_binary                  # ycsb_binary    @ .properties
+        self.workload = self.utils.workload_file            # workload_file  @ .properties
+        self.output = self.utils.ycsb_output                # ycsb_output    @ .properties
+        self.max_time = int(self.utils.ycsb_max_time)       # ycsb_max_time  @ .properties
         self.record_count = None
-        self.ycsb_error = self.utils.install_dir + '/logs/ycsb.err'
+        self.ycsb_error = self.utils.install_dir + '/logs/ycsb.err'     # install_dir @ .properties
         # Check code for num_clients. If are not set, then taken from Configuration.properties
         if num_clients is None:
-            self.clients = int(self.utils.ycsb_clients)
+            self.clients = int(self.utils.ycsb_clients)     # ycsb_client    @ .properties
         else:
             self.clients = num_clients
 
         # # Install logger
         LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
-        self.my_logger = logging.getLogger("YCSBController")
+        self.my_logger = logging.getLogger("myYCSBController")
         self.my_logger.setLevel(logging.DEBUG)
 
         handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2 * 1024 * 1024 * 1024, backupCount=5)
@@ -64,7 +64,7 @@ class myYCSBController(object):
 
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname, username='ubuntu')
+            ssh.connect(hostname, username = 'ubuntu')
             ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
             ssh.close()
 
@@ -77,7 +77,7 @@ class myYCSBController(object):
             hostname = "ycsb" + str(c)
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname, username='ubuntu')
+            ssh.connect(hostname, username = 'ubuntu')
             stdin, stdout, stderr = ssh.exec_command('sudo killall java')
             ssh.close()
 
@@ -107,10 +107,11 @@ class myYCSBController(object):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect("ycsb-client-%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+            ssh.connect("ycsb%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             # The Python-script that is executed in each node:
-            cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" % \
+            cmd = "python3 /home/ubuntu/tiramola/myYCSBClient.py %s %s %s %s %s" % \
                         (int(target / self.clients), reads, self.record_count, self.max_time, delay)
+            print(str(cmd))
             ssh.exec_command(cmd)
             ssh.close()
 
@@ -196,9 +197,9 @@ class myYCSBController(object):
 # STARTING POINT OF EXECUTION:
 if __name__ == "__main__":
 
-    ycsb = myYCSBController(3)
-    ycsb.record_count = 10000
-    ycsb.execute_load(50000, 1.0)
-    time.sleep(180)
+    ycsb = myYCSBController(2)      #The argument defines the number of ycsb-clients
+    ycsb.record_count = 500000       #record_count defines the number of records to be loaded or (already loaded and) used by run.
+    ycsb.execute_load(4000, 1.0)    #1st arg: ops/sec of all clients. It will be divided per client and extra divided per thread   2nd arg: Read proportion. It automatically deduces the Update proportion
+    time.sleep(300)                 #The code waits for argument's amount in seconds! It is equal to ycsb_max_time (.properties) & maxexecutiontime (workload.cfg)
     res = ycsb.parse_results()
     pprint(res)
