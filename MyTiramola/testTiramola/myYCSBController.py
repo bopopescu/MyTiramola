@@ -89,7 +89,7 @@ class myYCSBController(object):
             self.my_logger.error("Data has been already loaded!")
         self.record_count = record_count
 
-        cmd = [self.ycsb, 'load', 'hbase', '-P', self.workload, '-cp', '/tmp']
+        cmd = [self.ycsb, 'load', 'hbase10', '-P', self.workload, '-cp', '/tmp']
         cmd += ['-p', 'recordcount=' + str(self.record_count)]
         if verbose:
             cmd.append('-s')
@@ -130,10 +130,10 @@ class myYCSBController(object):
 
                 hostname = "ycsb" + str(c)
                 transport = paramiko.Transport((hostname, 22))
-                transport.connect(username='ubuntu', pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+                transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
                 transport.open_channel("session", hostname, "localhost")
                 sftp = paramiko.SFTPClient.from_transport(transport)
-                sftp.get("/home/ubuntu/YCSB/ycsb.out", "/tmp/ycsb.out")
+                sftp.get("/home/ubuntu/ycsb-logs/ycsb.out", "/tmp/ycsb.out")
                 transport.close()
                 sftp.close()
 

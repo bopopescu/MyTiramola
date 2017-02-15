@@ -15,10 +15,10 @@ class myYCSBClient(object):
 
     def __init__(self):
 
-        self.ycsb         = '/home/ubuntu/YCSB/bin/ycsb'
+        self.ycsb         = '/home/ubuntu/ycsb-0.13.0-SNAPSHOT/bin/ycsb'
         self.workload     = '/home/ubuntu/tiramola/myWorkload.cfg'
-        self.output       = '/home/ubuntu/YCSB/ycsb.out'
-        self.ycsb_error   = '/home/ubuntu/YCSB/ycsb.err'
+        self.output       = '/home/ubuntu/ycsb-logs/ycsb.out'
+        self.ycsb_error   = '/home/ubuntu/ycsb-logs/ycsb.err'
 
 
     def execute_load(self, target, reads, records, max_time, delay, verbose = True):
@@ -73,11 +73,12 @@ if __name__ == "__main__":
         delay = 2
 
     ycsb = myYCSBClient()
-    print("Arguments to run in execute_load aka command-line:")
+    '''print("Arguments to run in execute_load aka command-line:")
     print("target = " + str(target))
     print("reads = " + str(reads))
     print("records = " + str(records))
     print("maxtime = " + str(maxtime))
-    print("delay = " + str(delay))
+    print("delay = " + str(delay))'''
+    
     ycsb.execute_load(target, reads, records, maxtime, delay)
     
