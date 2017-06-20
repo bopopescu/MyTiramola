@@ -9,7 +9,8 @@ from configparser import ConfigParser
 
 class VUtils(object):
     '''
-    This class holds utility functions. 
+    This class holds utility functions.
+    Not used by Virtulator!! 
     '''
     
     def __init__(self, prop_file):
