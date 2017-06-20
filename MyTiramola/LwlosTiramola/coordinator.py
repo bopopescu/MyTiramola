@@ -126,14 +126,18 @@ class MyDaemon(Daemon):
 
             self.install_logger()
             self.utils = Utils.Utils()
+            # Setting up cluster & parameters
             self.initializeNosqlCluster()
             self.my_logger.debug("Initialized the Cluster")
             self.log_cluster()
             self.update_hosts()
             self.init_flavors()
             self.nosqlCluster.start_hbase()
+            # Preparing to get metrics (termi7 metrics!)
             self.metrics = Metrics()
+            # Starting YCSB
             self.ycsb = YCSBController()
+            # Setting up Decision Making
             self.decision_maker = DecisionMaking.DecisionMaker(self.utils.decision_making_file, self.utils.training_file)
             self.decision_maker.set_splitting(DecisionMaking.ANY_POINT, False)
             self.decision_maker.set_stat_test(DecisionMaking.STUDENT_TTEST)
@@ -142,7 +146,7 @@ class MyDaemon(Daemon):
             self.decision_maker.train()
             self.last_load = None
             self.removed_hosts = []
-
+            # Something regarding reconfiguring... or something
             if eval(self.utils.reconfigure):
                 self.ycsb.set_records(records)
             else:
@@ -368,13 +372,14 @@ class MyDaemon(Daemon):
                 eucacluster = OpenStackCluster.OpenStackCluster()
                 self.my_logger.debug("Created OpenStackCluster with EC2 API and public ipv6 dnsname")    
             instances = eucacluster.describe_instances()
-            instances_names=[]
+            #print(str(instance))
+            instances_names = []
             for instance in instances:
                 instances_names.append(instance.name)	
             self.my_logger.debug("All user instances:" + str(instances_names))
             #NIKO --- ok so far
             ## creates a new Hbase cluster
-            nosqlcluster=None
+            nosqlcluster = None
             
             if self.utils.cluster_type == "HBASE":
                 nosqlcluster = HBaseCluster.HBaseCluster(self.utils.cluster_name)

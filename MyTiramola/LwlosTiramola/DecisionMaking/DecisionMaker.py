@@ -10,10 +10,13 @@ import json
 import os.path
 import logging
 
+#MEINE imports
+from pprint import pprint
+
 
 class DecisionMaker(object):
 
-    def __init__(self, conf_file, training_file=None):
+    def __init__(self, conf_file, training_file = None):
 
         self.training_file = training_file
         self.last_meas = None
@@ -38,7 +41,7 @@ class DecisionMaker(object):
             self.do_vi = False
             self.model = QModel(model_conf)
 
-        self.install_logger()
+#        self.install_logger()
 
 
     def install_logger(self):
@@ -91,8 +94,10 @@ class DecisionMaker(object):
 
         self.add_network_usage(measurements)
         self.last_meas = measurements
+        print("\nself.last_meas after adding network usage:")
+        pprint(self.last_meas)
         self.model.set_state(measurements)
-        self.my_logger.debug("State set")
+#        self.my_logger.debug("State set")
 
 
     def add_network_usage(self, measurements):
@@ -145,9 +150,24 @@ class DecisionMaker(object):
         return self.model.get_legal_actions()
 
 
-    def suggest_action(self):
+    def set_no_update(self):
 
-        return self.model.suggest_action()
+        self.model.set_no_update()
+
+    
+    def set_prioritized_sweeping(self, error=0.1, max_steps=200):
+
+        self.model.set_prioritized_sweeping(error, max_steps)
+
+
+    def set_single_update(self):
+        
+        self.model.set_single_update()
+
+
+    def set_stat_test(self, test):
+
+        self.model.set_stat_test(test)
 
 
     def set_value_iteration(self, error=0.1):
@@ -155,12 +175,7 @@ class DecisionMaker(object):
         self.model.set_value_iteration(error)
 
 
-    def set_prioritized_sweeping(self, error=0.1, max_steps=200):
+    def suggest_action(self):
 
-        self.model.set_prioritized_sweeping(error, max_steps)
-
-
-    def set_stat_test(self, test):
-
-        self.model.set_stat_test(test)
+        return self.model.suggest_action()
 

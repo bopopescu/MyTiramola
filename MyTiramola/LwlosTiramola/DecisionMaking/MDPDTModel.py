@@ -82,8 +82,7 @@ class LeafNode(object):
         self.model.remove_state(self.state_num)
 
         # create the decision node to replace it and add it to the model
-        d_node = DecisionNode(self.parent, self.model, param, limits, self.actions, 
-                              self.initial_qvalues, self.num_states, self.state_num)
+        d_node = DecisionNode(self.parent, self.model, param, limits, self.actions, self.initial_qvalues, self.num_states, self.state_num)
         self.model.add_states(d_node.get_leaves())
         self.parent.replace_node(self, d_node)
 
@@ -102,6 +101,10 @@ class LeafNode(object):
             if max_value < q.get_qvalue():
                 max_value   = q.get_qvalue()
                 best_action = q.get_action()
+                
+        # Added for Virtulator
+        if max_value == 0:
+            best_action = (REMOVE_VMS, 1)
 
         return best_action
 
@@ -278,8 +281,7 @@ class LeafNode(object):
 """
 class DecisionNode(object):
     
-    def __init__(self, parent, model, parameter, limits, actions, 
-                       initial_qvalues, num_states, replaced_state_num):
+    def __init__(self, parent, model, parameter, limits, actions, initial_qvalues, num_states, replaced_state_num):
 
         self.parent     = parent
         self.parameter  = parameter
@@ -287,12 +289,10 @@ class DecisionNode(object):
         self.num_states = num_states + len(limits)
         self.model      = model
 
-        self.children   = [LeafNode(self, model, actions, initial_qvalues,
-                                    replaced_state_num, num_states + len(limits))]
+        self.children   = [LeafNode(self, model, actions, initial_qvalues, replaced_state_num, num_states + len(limits))]
 
         for i in range(len(limits)):
-            l = LeafNode(self, model, actions, initial_qvalues, 
-                         num_states + i, num_states + len(limits))
+            l = LeafNode(self, model, actions, initial_qvalues, num_states + i, num_states + len(limits))
             self.children.append(l)
 
 
@@ -388,12 +388,11 @@ class MDPDTModel:
     """
     def __init__(self, conf):
 
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(get_logging_handler(LOG_FILENAME))
+#        self.logger = logging.getLogger(__name__)
+#        self.logger.setLevel(logging.DEBUG)
+#        self.logger.addHandler(get_logging_handler(LOG_FILENAME))
 
-        required_fields = [INITIAL_PARAMETERS, PARAMETERS, ACTIONS, DISCOUNT, 
-                           INITIAL_QVALUES, SPLIT_ERROR, MIN_MEASUREMENTS]
+        required_fields = [INITIAL_PARAMETERS, PARAMETERS, ACTIONS, DISCOUNT, INITIAL_QVALUES, SPLIT_ERROR, MIN_MEASUREMENTS]
 
         for f in required_fields:
             if not f in conf:
@@ -430,7 +429,7 @@ class MDPDTModel:
         for p in self.parameters:
             self.splits[p] = 0
 
-        self.logger.debug("Initialized MDPDT model with %d states" % len(self.states))
+#        self.logger.debug("Initialized MDPDT model with %d states" % len(self.states))
 
 
     """
@@ -613,8 +612,7 @@ class MDPDTModel:
         self.update_algorithm = PRIORITIZED_SWEEPING
         self.update_error     = update_error
         self.max_updates      = max_updates
-        self.logger.debug("Update algorithm set to PRIORITIZED_SWEEPING with error = " + \
-                          str(update_error) + " and max updates = " + str(max_updates))
+#        self.logger.debug("Update algorithm set to PRIORITIZED_SWEEPING with error = " + str(update_error) + " and max updates = " + str(max_updates))
 
 
     """
@@ -660,7 +658,7 @@ class MDPDTModel:
 
         # consider splitting the initial_state
         if self.allow_splitting:
-            self.split(debug=debug)
+            self.split(debug = debug)
 
         # update the current state and store the last measurements
         self.current_state = new_state
@@ -670,20 +668,20 @@ class MDPDTModel:
     """
         Attempts to split the given node with the chosen splitting algorithm
     """
-    def split(self, state=None, debug=False):
+    def split(self, state = None, debug = True):
 
         if self.split_criterion == MID_POINT:
-            return self.split_mid_point(state=state, debug=debug)
+            return self.split_mid_point(state = state, debug = debug)       # AccordingToThesis:  Q-value test, alla kai Multiple Points (aka any_point?)  
         elif self.split_criterion == ANY_POINT:
-            return self.split_any_point(state=state, debug=debug)
+            return self.split_any_point(state = state, debug = debug)       # Multiple splitting points?
         elif self.split_criterion == MEDIAN_POINT:
-            return self.split_median_point(state=state, debug=debug)
+            return self.split_median_point(state = state, debug = debug)    # Lwlos'? similar to Q-value
         elif self.split_criterion == MAX_POINT:
-            return self.split_max_point(state=state, debug=debug)
+            return self.split_max_point(state = state, debug = debug)       # Parameter? don't know
         elif self.split_criterion == QVALUE_DIFF:
-            return self.split_qvalue_diff(state=state, debug=debug)
-        elif self.split_criterion == INFO_GAIN:
-            return self.split_info_gain(state=state, debug=debug)
+            return self.split_qvalue_diff(state = state, debug = debug)     # Probably Q-value test
+#        elif self.split_criterion == INFO_GAIN:
+#            return self.split_info_gain(state=state, debug=debug)        # Information Gain? oute kan implementeiso!
         else:
             raise InternalError("Unknown splitting algorithm: " + self.split_criterion, self.logger)
 
@@ -783,7 +781,7 @@ class MDPDTModel:
     """
         Runs prioritized sweeping starting from the given state.
     """
-    def prioritized_sweeping(self, initial_state=None, error=None, max_updates=None, debug=False):
+    def prioritized_sweeping(self, initial_state = None, error = None, max_updates = None, debug = True):
 
         if self.current_state is None and initial_state is None:
             raise StateNotSetError(self.logger)
@@ -859,8 +857,7 @@ class MDPDTModel:
 
         self.split_criterion = split_criterion
         self.consider_trans  = consider_transitions
-        self.logger.debug("Splitting criterion set to %s, consider transitions set to %s" % \
-                          (split_criterion, consider_transitions))
+#        self.logger.debug("Splitting criterion set to %s, consider transitions set to %s" %(split_criterion, consider_transitions))
 
 
     def stat_test(self, x1, x2):
@@ -970,7 +967,7 @@ class MDPDTModel:
         Attempts to split the current state on any single point between two recorded values.
         Returns True if the split was made.
     """
-    def split_any_point(self, state=None, debug=False):
+    def split_any_point(self, state = None, debug = True):
 
         start = timer()
 
@@ -995,11 +992,14 @@ class MDPDTModel:
 
         # find the splitting point with the lowest null hypothesis probability
         best_par     = None
-        bast_point   = None
+#        bast_point   = None
         lowest_error = 1
         for par in self.parameters:
             par_values = sorted([(q[0][par], q[1]) for q in q_values])
             # only consider points that leave at least min_measurements points on either side
+            a = self.min_measurements
+            b = len(transitions) - self.min_measurements + 1
+            print(str(a) + " " + str(b))
             for i in range(self.min_measurements, len(transitions) - self.min_measurements + 1):
                 # only split between distinct measurements
                 if par_values[i][0] == par_values[i-1][0]:

@@ -367,6 +367,8 @@ class MDPModel:
 
         self._set_maxima_minima(parameters, conf[ACTIONS])
         self._add_qstates(conf[ACTIONS], conf[INITIAL_QVALUES])
+        
+        print("HERE WE SHOULD print EVERYTHING FROM ALL STATES!!!")
 
         # set the default update algorithm
         self.update_algorithm  = SINGLE_UPDATE
@@ -437,6 +439,7 @@ class MDPModel:
     def set_state(self, measurements):
 
         self.current_state = self._get_state(measurements)
+        print("Current State(from set_state) is: " + str(self.current_state.parameters))
 
 
     """
@@ -647,9 +650,11 @@ class MDPModel:
         
         if error is None:
             error = self.update_error
-
+        
+        i = 0
         repeat = True
         while (repeat):
+            i += 1
             repeat = False
             for s in self.states:
                 old_value = s.get_value()
@@ -657,12 +662,14 @@ class MDPModel:
                 new_value = s.get_value()
                 if abs(old_value - new_value) > error:
                     repeat = True
+        
+        print("I run " + str(i) + " fucking times in order to converge!")
 
 
     """
         Runs prioritized sweeping starting from the given state.
     """
-    def prioritized_sweeping(self, initial_state=None, error=None, max_updates=None, debug=False):
+    def prioritized_sweeping(self, initial_state = None, error = None, max_updates = None, debug = False):
 
         if self.current_state is None and initial_state is None:
             raise StateNotSetError()

@@ -44,61 +44,58 @@ class OpenStackCluster(object):
             
         cur.close()
 
-        ## Install logger
-        LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+        # # Install logger
+        LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
         self.my_logger = logging.getLogger('OpenStackCluster')
         self.my_logger.setLevel(logging.DEBUG)
         
-        handler = logging.handlers.RotatingFileHandler(
-                      LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2 * 1024 * 1024 * 1024, backupCount=5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         
         
         
-    def describe_instances(self, state=None, pattern=None):
+    def describe_instances(self, state = None, pattern = None):
 
         instances = []
         
         if state != "pollDB":
             creds = get_nova_creds()
-            nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), 
-                    creds.get('project_id'), creds.get('auth_url'))
+            nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
             # print("creds = " + str(creds))
             servers = nova.servers.list()
             # print("servers = " + str(servers))
             members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
 
             for server in servers:
-                 details = {}
-                 for member in members:
-                      val = getattr(server, member, "")
-                      if hasattr(val, '__iter__') and not ((type(val) is str) or (type(val) is list)): 
-                           v = val.get('id')
-                           if v == None: v = val.get('private-net')[0]
-                           val = v
-                      # print ("member = " + member + ", val = " + str(val))
-                      details[member] = val
-                 instance = Instance(details)
-                 if state:
-                      if state == instance.status:
-                           instances.append(instance)
-                 else:
-                      instances.append(instance)           
+                details = {}
+                for member in members:
+                    val = getattr(server, member, "")
+                    if hasattr(val, '__iter__') and not ((type(val) is str) or (type(val) is list)): 
+                        v = val.get('id')
+                        if v == None: v = val.get('private-net')[0]
+                        val = v
+                        # print ("member = " + member + ", val = " + str(val))
+                        details[member] = val
+                        instance = Instance(details)
+                if state:
+                    if state == instance.status:
+                        instances.append(instance)
+                else:
+                    instances.append(instance)        
             
-            ## if simple call
+            # # if simple call
             if not state:
                 self.utils.refresh_instance_db(instances)
                         
-        else :
-            ## read from the local database
+        else:
+            # # read from the local database
             con = create_engine(self.utils.db_file)
             cur = con.connect()
             instancesfromDB = []
             try:
-                instancesfromDB = cur.execute('select * from instances'
-                            ).fetchall()
+                instancesfromDB = cur.execute('select * from instances').fetchall()
             except exc.DatabaseError:
                 con.rollback()
                 
@@ -109,7 +106,7 @@ class OpenStackCluster(object):
             for instancefromDB in instancesfromDB:
                 instances.append(self.utils.return_instance_from_tuple(instancefromDB))
         
-        ## if you are using patterns and state, show only matching state and id's
+        # # if you are using patterns and state, show only matching state and id's
         matched_instances = []
         if pattern:
             for instance in instances:
@@ -131,17 +128,16 @@ class OpenStackCluster(object):
 
         # Euca-describe-images
         creds = get_nova_creds()
-        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), 
-                creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
         images = nova.images.list()
         
         # print(images)
         
-        ## if you are using patterns, show only matching names and emi's
+        # # if you are using patterns, show only matching names and emi's
         matched_images = []
         if pattern:
             for image in images:
-                if image.name==pattern or image.id==pattern:
+                if image.name == pattern or image.id == pattern:
                     matched_images.append(image)
 #        else:
 #            print images[1].location
@@ -150,14 +146,14 @@ class OpenStackCluster(object):
             else:
                 return None
         else:
-            return _images
+            # correction in the returned variable!
+            return images
     
 
     def describe_flavors(self):
 
         creds = get_nova_creds()
-        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), 
-                creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
         flavors = nova.flavors.list()
         flavors_dict = {}
         for f in flavors:
@@ -173,19 +169,19 @@ class OpenStackCluster(object):
         keypair_name=None): 
         # euca-run-instances
         creds = get_nova_creds()
-        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), 
+        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'),
                 creds.get('project_id'), creds.get('auth_url'))
         _flavor = nova.flavors.find(name=flavor)
         lock = threading.Lock()
         reservation = []
         def create():
-               _name = self.utils.cluster_name +'-'+(str)(uuid.uuid1())
+               _name = self.utils.cluster_name + '-' + (str)(uuid.uuid1())
                instance = nova.servers.create(
                                 name=_name,
                                 image=image,
-                                flavor=_flavor, 
-                                min_count=1, 
-                                max_count=1,  
+                                flavor=_flavor,
+                                min_count=1,
+                                max_count=1,
                                 key_name=keypair_name)
                status = instance.status
                while status == 'BUILD':
@@ -196,7 +192,7 @@ class OpenStackCluster(object):
                with lock:
                       reservation.append(instance)
 
-        t=[]
+        t = []
         for i in range(0, int(float(maxcount))):
               t.append(threading.Thread(target=create))
               t[i].daemon = True
@@ -205,16 +201,16 @@ class OpenStackCluster(object):
               t[j].join()
 
        
-        #print(reservation)
+        # print(reservation)
             
 #        print reservation.id
         instances = []
 
-        ## add the newly run instances to the database
+        # # add the newly run instances to the database
         
         members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
         for instance in reservation:
-            ## get instance details
+            # # get instance details
             details = {}
             for member in members:
                 val = getattr(instance, member, "")
@@ -223,7 +219,7 @@ class OpenStackCluster(object):
                     v = val.get('id')
                     if v == None: v = val.get('private-net')[0]
                     val = v
-                #print (val)
+                # print (val)
                 details[member] = val
             _instance = Instance(details)     
             instances.append(_instance)
@@ -235,7 +231,7 @@ class OpenStackCluster(object):
 
     def terminate_instances(self, instances):
         creds = get_nova_creds()
-        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), 
+        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'),
                 creds.get('project_id'), creds.get('auth_url'))
 
         deleted_instances = []
@@ -281,7 +277,7 @@ class OpenStackCluster(object):
     def find_by_id(self, server_id):
 
         creds = get_nova_creds()
-        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), 
+        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'),
                 creds.get('project_id'), creds.get('auth_url'))
         servers = nova.servers.list()
         for server in servers:
@@ -290,13 +286,13 @@ class OpenStackCluster(object):
 
 
 #         
-## Utilities
+# # Utilities
 #   
     def block_until_running (self, instances, target_status='ACTIVE'):
         ''' Blocks until all defined instances have reached running state and an ip has been assigned'''
         creds = get_nova_creds()
         nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
-        ## Run describe instances until everyone is running
+        # # Run describe instances until everyone is running
         tmpinstances = instances.copy()
         instances = []
         members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
@@ -304,14 +300,14 @@ class OpenStackCluster(object):
 #             time.sleep(10)
             sys.stdout.flush()
             all_running_instances = nova.servers.list(search_opts={'status':target_status})
-            for i in range(0,len(all_running_instances)):
-                for j in range(0,len(tmpinstances)):
+            for i in range(0, len(all_running_instances)):
+                for j in range(0, len(tmpinstances)):
                     ping = subprocess.getoutput("/bin/ping -q -c 1 " + str(all_running_instances[i].networks['private-net'][0]))
-                    nc = subprocess.getoutput("nc -z  -v "+ str(all_running_instances[i].networks['private-net'][0])+" 22")                    
+                    nc = subprocess.getoutput("nc -z  -v " + str(all_running_instances[i].networks['private-net'][0]) + " 22")                    
                     if (all_running_instances[i].id == tmpinstances[j].id) \
                     and ping.count('1 received') > 0 and nc.count("succeeded") > 0:
                         tmpinstances.pop(j)
-                        ## get instance details
+                        # # get instance details
                         details = {}
                         for member in members:
                             val = getattr(all_running_instances[i], member, "")
@@ -320,11 +316,11 @@ class OpenStackCluster(object):
                                 v = val.get('id')
                                 if v == None: v = val.get('private-net')[0]
                                 val = v
-                            #print (val)
+                            # print (val)
                             details[member] = val
                         _instance = Instance(details)     
                         instances.append(_instance)
-                        #instances.append(all_running_instances[i])
+                        # instances.append(all_running_instances[i])
                         break
         self.describe_instances()
         return instances

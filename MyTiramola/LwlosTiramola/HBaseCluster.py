@@ -35,17 +35,12 @@ class HBaseCluster(object):
         con = create_engine(self.utils.db_file)
         cur = con.connect()
         try:
-            clusters = cur.execute('select * from clusters',
-                            ).fetchall()
+            clusters = cur.execute('select * from clusters',).fetchall()
             if len(clusters) > 0 :
                 print("""Already discovered cluster id from previous database file. Will select the defined one to work with (if it exists).""")
-                # print ("Found records:\n", str(clusters)) 
-
-                clustersfromcid = cur.execute('select * from clusters where cluster_id=\"'+self.cluster_id+"\"",
-                            ).fetchall()
-                            
+                # print ("Found records:\n", str(clusters))
+                clustersfromcid = cur.execute('select * from clusters where cluster_id=\"'+self.cluster_id+"\"",).fetchall()
                 print (str(clustersfromcid))
-                
                 if len(clustersfromcid) > 0 :
                     self.cluster = self.utils.get_cluster_from_db(self.cluster_id)
                     print ("Cluster:" + str(self.cluster))
@@ -69,8 +64,7 @@ class HBaseCluster(object):
         self.my_logger = logging.getLogger('HBaseCluster')
         self.my_logger.setLevel(logging.DEBUG)
         
-        handler = logging.handlers.RotatingFileHandler(
-                      LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
@@ -649,8 +643,7 @@ class HBaseCluster(object):
         master = self.host_template+"master"
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[master].networks, username='root', password='secretpw', 
-                key_filename=self.utils.key_file)
+        ssh.connect(self.cluster[master].networks, username='root', password='secretpw', key_filename=self.utils.key_file)
         stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.1.2/bin/start-hbase.sh')
         self.my_logger.debug("Started HBase:\n  " + '  '.join(stdout.readlines()))
         ssh.close()

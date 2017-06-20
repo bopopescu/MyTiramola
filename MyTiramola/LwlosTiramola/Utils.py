@@ -81,8 +81,7 @@ class Utils(object):
         con = create_engine(self.db_file)
         cur = con.connect()
         try:
-            cur.execute('delete from instances'
-                    )
+            cur.execute('delete from instances')
         except exc.DatabaseError:
             print ("ERROR in truncate")
             
