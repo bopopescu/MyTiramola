@@ -106,10 +106,8 @@ class YCSBController(object):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect("ycsb-client-%d" % c, username='ubuntu', password='secretpw',
-                        key_filename=self.utils.key_file)
-            cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" % \
-                        (int(target / self.clients), reads, self.record_count, self.max_time, delay)
+            ssh.connect("ycsb-client-%d" % c, username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
+            cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
             ssh.exec_command(cmd)
             ssh.close()
 

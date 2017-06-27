@@ -23,6 +23,10 @@ class Virtulator:
         ## Setting DecisionMaker according to virtual properties
         self.decision_maker = DecisionMaking.DecisionMaker(DMjson)
         
+        ## Setting the Update Algorithm according to virtual properties
+        if self.decision_maker.model_type == DecisionMaking.MDP or self.decision_maker.model_type == DecisionMaking.MDP_DT:
+            self.select_Ualgorithm(float(self.ualgorithm_error), self.max_steps)   # Set update_algotithm in the proper way!
+        
         ## Setting splitting method
         if self.decision_maker.model_type == DecisionMaking.MDP_DT:
             self.decision_maker.set_splitting(DecisionMaking.ANY_POINT, False)
@@ -30,10 +34,6 @@ class Virtulator:
         ## Setting statistical test    #to be continued! (more methods and define in Virtual Properties)
         if self.decision_maker.model_type == DecisionMaking.MDP_DT:
             self.decision_maker.set_stat_test(DecisionMaking.STUDENT_TTEST)
-        
-        ## Setting the Update Algorithm according to virtual properties
-        if self.decision_maker.model_type == DecisionMaking.MDP or self.decision_maker.model_type == DecisionMaking.MDP_DT:
-            self.select_Ualgorithm(float(self.ualgorithm_error), self.max_steps)   # Set update_algotithm in the proper way!
 
         self.calc_exp_attributes()
         vmeas_start_file = conf_dir + self.vmeas_start

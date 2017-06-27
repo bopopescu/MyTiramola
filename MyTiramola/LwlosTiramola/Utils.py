@@ -237,35 +237,67 @@ class Utils(object):
     
     def read_properties(self, property_file="myCoordinator.properties"):
             """ process properties file """
-            # # Reads the configuration properties
+            ## Reads the configuration properties
+            
             cfg = ConfigParser()
             cfg.read(property_file)
-            self.install_dir = cfg.get("config", "install_dir")
-            self.keypair_name = cfg.get("config", "keypair_name")
-            self.key_file = cfg.get("config", "key_file")
-            self.euca_rc_dir = cfg.get("config", "euca_rc_dir")
-            self.initial_cluster_size = cfg.get("config", "initial_cluster_size")
-            self.max_cluster_size = cfg.get("config", "max_cluster_size")
-            self.bucket_name = cfg.get("config", "bucket_name")
-            self.instance_type = cfg.get("config", "instance_type")
-            self.possible_flavors = cfg.get("config", "possible_flavors")
-            self.cluster_name = cfg.get("config", "cluster_name")
-            self.hostname_template = cfg.get("config", "hostname_template")
-            self.reconfigure = cfg.get("config", "reconfigure")
-            self.cluster_type = cfg.get("config", "cluster_type")
-            self.db_file = cfg.get("config", "db_file")
-            self.cloud_api_type = cfg.get("config", "cloud_api_type")
-            self.trans_cost = cfg.get("config", "trans_cost")
-            self.gain = cfg.get("config", "gain")
-            self.serv_throughput = cfg.get("config", "serv_throughput")
-            self.username = cfg.get("config", "username")
-            self.ycsb_binary = cfg.get("config", "ycsb_binary")
-            self.workload_file = cfg.get("config", "workload_file")
-            self.ycsb_output = cfg.get("config", "ycsb_output")
-            self.ycsb_max_time = cfg.get("config", "ycsb_max_time")
-            self.ycsb_clients = cfg.get("config", "ycsb_clients")
-            self.decision_making_file = cfg.get("config", "decision_making_file")
-            self.training_file = cfg.get("config", "training_file")
+            
+            # PROPERTIES FOR: Deamon.__init__:
+            self.install_dir            = cfg.get("config", "install_dir")     # a bit global!
+            self.euca_rc_dir            = cfg.get("config", "euca_rc_dir")
+            self.initial_cluster_size   = cfg.get("config", "initial_cluster_size")
+            self.bucket_name            = cfg.get("config", "bucket_name")
+            self.instance_type          = cfg.get("config", "instance_type")
+            self.cluster_name           = cfg.get("config", "cluster_name")
+            self.hostname_template      = cfg.get("config", "hostname_template")
+            self.reconfigure            = cfg.get("config", "reconfigure")
+            self.cluster_type           = cfg.get("config", "cluster_type")
+            self.db_file                = cfg.get("config", "db_file")
+            self.cloud_api_type         = cfg.get("config", "cloud_api_type")
+            
+            # PROPERTIES FOR: DecisionMaking setup
+            self.decision_making_file   = cfg.get("config", "decision_making_file")
+            self.training_file          = cfg.get("config", "training_file")
+            self.udate_algorithm        = cfg.get("config", "update_algorithm")     # gioargyr-property
+            self.ualgorithm_error       = cfg.get("config", "ualgorithm_error")     # gioargyr-property
+            self.max_steps              = cfg.get("config", "max_steps")            # gioargyr-property
+            
+            # PROPERTIES FOR: run_warm_up()
+            self.warm_up_tests  = cfg.get("config", "warm_up_tests")    # gioargyr-property
+            self.warm_up_target = cfg.get("config", "warm_up_target")   # gioargyr-property
+            # PROPERTIES FOR: run_benchmark()
+            self.bench          = cfg.get("config", "bench")            # gioargyr-property
+            # PROPERTIES FOR: e_greedy
+            self.epsilon        = cfg.get("config", "epsilon")          # gioargyr-property
+            
+            # PROPERTIES FOR: YCSB
+            ## ycsb type of load
+            self.load_type      = cfg.get("config", "load_type")        # gioargyr-property
+            self.ycsb_max_time  = cfg.get("config", "ycsb_max_time")
+            self.total_run_time = cfg.get("config", "total_run_time")   # gioargyr-property
+            self.offset         = cfg.get("config", "offset")           # gioargyr-property
+            self.amplitude      = cfg.get("config", "amplitude")        # gioargyr-property
+            self.num_periods    = cfg.get("config", "num_periods")      # gioargyr-property
+            self.training_perc  = cfg.get("config", "training_perc")    # gioargyr-property
+            self.read           = cfg.get("config", "read")             # gioargyr-property
+            ## ycsb records-to-load
+            self.records        = cfg.get("config", "records")          # gioargyr-property
+            ## ycsb configuration/nstallation files
+            self.ycsb_binary    = cfg.get("config", "ycsb_binary")
+            self.workload_file  = cfg.get("config", "workload_file")
+            self.ycsb_output    = cfg.get("config", "ycsb_output")
+            self.ycsb_clients   = cfg.get("config", "ycsb_clients")
+            
+            # PROPERTIES FOR:...
+            self.keypair_name       = cfg.get("config", "keypair_name")
+            self.key_file           = cfg.get("config", "key_file")
+            self.max_cluster_size   = cfg.get("config", "max_cluster_size")
+            self.possible_flavors   = cfg.get("config", "possible_flavors")
+            self.trans_cost         = cfg.get("config", "trans_cost")
+            self.gain               = cfg.get("config", "gain")
+            self.serv_throughput    = cfg.get("config", "serv_throughput")
+            self.username           = cfg.get("config", "username")
+            
             try:
                 self.gamma = cfg.get("config", "gamma")
             except:

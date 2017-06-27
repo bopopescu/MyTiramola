@@ -117,3 +117,6 @@ WELCH_TTEST        = "welch_ttest"
 MANN_WHITNEY_UTEST = "mann_whitney_utest"
 KOLMOGOROV_SMIRNOV = "kolmogorov_smirnov"
 
+# experiment setup
+SINUSOIDAL  = "sinusoidal"
+PEAKY       = "peaky"
