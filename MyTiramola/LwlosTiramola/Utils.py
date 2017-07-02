@@ -3,6 +3,7 @@ Created on Jun 8, 2010
 
 @author: vagos
 '''
+''' modified by gioargyr, 2017-06-26... '''
 
 import re
 # from boto import ec2
@@ -17,7 +18,7 @@ class Utils(object):
     '''
     
     def __init__(self):
-        self.read_properties(os.getenv("HOME", "/etc") + "/tiramola/myCoordinator.properties")
+        self.read_properties(os.getenv("HOME", "/etc") + "/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")
 
 
     def return_instance_from_tuple(self, atuple):
@@ -26,7 +27,7 @@ class Utils(object):
         i = 0
         for member in members:
             details[member] = atuple[i]
-            i=i+1
+            i = i + 1
         instance = Instance(details)
         return instance
         
@@ -169,10 +170,8 @@ class Utils(object):
             con = create_engine(self.db_file)
             cur = con.connect()
             try:
-                clusterfromDB = cur.execute('select * from clusters where cluster_id = \"' + cluster_id + "\""
-                        ).fetchall()
-                print (str(clusterfromDB))
-                
+                clusterfromDB = cur.execute('select * from clusters where cluster_id = \"' + cluster_id + "\"").fetchall()
+                print (str(clusterfromDB))                
             except exc.DatabaseError:
                 print ("ERROR in select")
                 return None
@@ -199,10 +198,8 @@ class Utils(object):
         # # Add cluster to DB (check for existing records with the same id and remove)
         con = create_engine(self.db_file)
         cur = con.connect()
-            
         try:
             cur.execute('delete from clusters where cluster_id = \"' + cluster_id + "\"")
-            
         except exc.DatabaseError:
             print ("No previous entries")
             
@@ -216,7 +213,6 @@ class Utils(object):
             except exc.DatabaseError as e:
                 print((e.message))
                 print ("ERROR in insert")
-
         cur.close()
         
     
@@ -235,33 +231,38 @@ class Utils(object):
         cur.close()
         
     
-    def read_properties(self, property_file="myCoordinator.properties"):
-            """ process properties file """
-            ## Reads the configuration properties
-            
+    def read_properties(self, property_file = "MyCoordinator.properties"):
+            """ 
+                process properties file
+            """
             cfg = ConfigParser()
             cfg.read(property_file)
-            
-            # PROPERTIES FOR: Deamon.__init__:
-            self.install_dir            = cfg.get("config", "install_dir")     # a bit global!
-            self.euca_rc_dir            = cfg.get("config", "euca_rc_dir")
-            self.initial_cluster_size   = cfg.get("config", "initial_cluster_size")
-            self.bucket_name            = cfg.get("config", "bucket_name")
-            self.instance_type          = cfg.get("config", "instance_type")
-            self.cluster_name           = cfg.get("config", "cluster_name")
-            self.hostname_template      = cfg.get("config", "hostname_template")
-            self.reconfigure            = cfg.get("config", "reconfigure")
-            self.cluster_type           = cfg.get("config", "cluster_type")
-            self.db_file                = cfg.get("config", "db_file")
+            # PROPERTIES FOR: Backend Setup:
+            self.install_dir            = cfg.get("config", "install_dir")
             self.cloud_api_type         = cfg.get("config", "cloud_api_type")
-            
+            self.euca_rc_dir            = cfg.get("config", "euca_rc_dir")
+            self.rc_file                = cfg.get("config", "rc_file")              # gioargyr-property
+            self.db_file                = cfg.get("config", "db_file")
+            self.cluster_name           = cfg.get("config", "cluster_name")
+            self.cluster_type           = cfg.get("config", "cluster_type")
+            self.instance_type          = cfg.get("config", "instance_type")
+            self.hostname_template      = cfg.get("config", "hostname_template")
+            self.initial_cluster_size   = cfg.get("config", "initial_cluster_size")
+            self.key_file               = cfg.get("config", "key_file")
+            self.keypair_name           = cfg.get("config", "keypair_name")
+            self.possible_flavors       = cfg.get("config", "possible_flavors")
+            self.username               = cfg.get("config", "username")
+            self.bucket_name            = cfg.get("config", "bucket_name")
+            self.reconfigure            = cfg.get("config", "reconfigure")
             # PROPERTIES FOR: DecisionMaking setup
             self.decision_making_file   = cfg.get("config", "decision_making_file")
             self.training_file          = cfg.get("config", "training_file")
             self.udate_algorithm        = cfg.get("config", "update_algorithm")     # gioargyr-property
             self.ualgorithm_error       = cfg.get("config", "ualgorithm_error")     # gioargyr-property
             self.max_steps              = cfg.get("config", "max_steps")            # gioargyr-property
-            
+            self.split_crit             = cfg.get("config", "split_crit")           # gioargyr-property
+            self.cons_trans             = cfg.get("config", "cons_trans")           # gioargyr-property
+            self.stat_test              = cfg.get("config", "stat_test")            # gioargyr-property
             # PROPERTIES FOR: run_warm_up()
             self.warm_up_tests  = cfg.get("config", "warm_up_tests")    # gioargyr-property
             self.warm_up_target = cfg.get("config", "warm_up_target")   # gioargyr-property
@@ -269,7 +270,6 @@ class Utils(object):
             self.bench          = cfg.get("config", "bench")            # gioargyr-property
             # PROPERTIES FOR: e_greedy
             self.epsilon        = cfg.get("config", "epsilon")          # gioargyr-property
-            
             # PROPERTIES FOR: YCSB
             ## ycsb type of load
             self.load_type      = cfg.get("config", "load_type")        # gioargyr-property
@@ -288,21 +288,15 @@ class Utils(object):
             self.ycsb_output    = cfg.get("config", "ycsb_output")
             self.ycsb_clients   = cfg.get("config", "ycsb_clients")
             
-            # PROPERTIES FOR:...
-            self.keypair_name       = cfg.get("config", "keypair_name")
-            self.key_file           = cfg.get("config", "key_file")
+            # PROPERTIES WITH UNKOWN USAGE FOR TIRAMOLA_V2.0(LWLOS-EDITION)
             self.max_cluster_size   = cfg.get("config", "max_cluster_size")
-            self.possible_flavors   = cfg.get("config", "possible_flavors")
             self.trans_cost         = cfg.get("config", "trans_cost")
             self.gain               = cfg.get("config", "gain")
             self.serv_throughput    = cfg.get("config", "serv_throughput")
-            self.username           = cfg.get("config", "username")
-            
             try:
                 self.gamma = cfg.get("config", "gamma")
             except:
                 self.gamma = 0
-            
             # # Reads the monitoring thresholds
             self.thresholds_add = {}
             self.thresholds_remove = {}
@@ -310,6 +304,3 @@ class Utils(object):
                 self.thresholds_add[option] = cfg.get("thresholds_add", option)
             for option in cfg.options("thresholds_remove"):
                 self.thresholds_remove[option] = cfg.get("thresholds_remove", option)
-            
-            
-            

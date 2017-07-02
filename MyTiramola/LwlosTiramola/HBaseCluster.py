@@ -19,17 +19,16 @@ class HBaseCluster(object):
     files as needed. 
     '''
 
-
     def __init__(self, initial_cluster_id = "default"):
         '''
         Constructor
         '''
         ## Necessary variables
-        self.cluster = {}
-        self.host_template = ""
-        self.cluster_id = initial_cluster_id
-        self.utils = Utils.Utils()
-        self.quorum = ""
+        self.cluster        = {}
+        self.host_template  = ""
+        self.cluster_id     = initial_cluster_id
+        self.utils          = Utils.Utils()
+        self.quorum         = ""
         
         # Make sure the sqlite file exists. if not, create it and add the table we need
         con = create_engine(self.utils.db_file)
@@ -39,7 +38,7 @@ class HBaseCluster(object):
             if len(clusters) > 0 :
                 print("""Already discovered cluster id from previous database file. Will select the defined one to work with (if it exists).""")
                 # print ("Found records:\n", str(clusters))
-                clustersfromcid = cur.execute('select * from clusters where cluster_id=\"'+self.cluster_id+"\"",).fetchall()
+                clustersfromcid = cur.execute('select * from clusters where cluster_id=\"' + self.cluster_id + "\"",).fetchall()
                 print (str(clustersfromcid))
                 if len(clustersfromcid) > 0 :
                     self.cluster = self.utils.get_cluster_from_db(self.cluster_id)
@@ -51,26 +50,21 @@ class HBaseCluster(object):
                     self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
                 else:
                     print("No known cluster with this id - run configure before you proceed")
-                     
         except exc.DatabaseError:
             cur.execute('create table clusters(cluster_id text, hostname text, euca_id text)')
-            
-            
         cur.close()
         
-        
         ## Install logger
-        LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+        LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
         self.my_logger = logging.getLogger('HBaseCluster')
         self.my_logger.setLevel(logging.DEBUG)
-        
-        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         
         
-    def configure_cluster(self, nodes=None, host_template="", reconfigure=True, update_db=True):
+    def configure_cluster(self, nodes = None, host_template = "", reconfigure = True, update_db = True):
         
         self.my_logger.debug("Configuring cluster ...")
         ## Check installation and print errors for nodes that do not exist/
@@ -79,7 +73,6 @@ class HBaseCluster(object):
         hosts = open('/tmp/hosts', 'w')
         masters = open('/tmp/masters', 'w')
         slaves = open('/tmp/slaves', 'w')
-        
         # copy necessary templates to /tmp to alter them
         shutil.copy("./templates/hadoop252/core-site.xml", "/tmp/core-site.xml")
         shutil.copy("./templates/hadoop252/mapred-site.xml", "/tmp/mapred-site.xml")
@@ -92,30 +85,24 @@ class HBaseCluster(object):
         # shutil.copy("./templates/hbase112/hadoop-env.sh","/tmp/hadoop-env.sh")
         shutil.copy("./templates/hadoop252/hadoop-env.sh","/tmp/hadoop-env.sh")
         shutil.copy("./templates/hbase112/init_db_table.sh","/tmp/init_db_table.sh")
-        
-        
         core_site = '/tmp/core-site.xml'
         mapred_site = '/tmp/mapred-site.xml'
         hbase_site = '/tmp/hbase-site.xml'
         # yarn_site = '/tmp/yarn-site.xml'
         hadoop_properties = "/tmp/hadoop-metrics.properties"
         hbase_properties = "/tmp/hadoop-metrics2-hbase.properties"
-
         local_scripts_dir = self.utils.install_dir + '/scripts/'
         remote_scripts_dir = '/home/ubuntu/'
 
         i = 0
         hosts.write("127.0.0.1\tlocalhost\n")
-
         self.enable_root_login(nodes)
-
         for node in nodes:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.my_logger.debug("Configuring node: " + node.networks) 
             ssh.connect(node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
             # self.my_logger.debug("Connected to node: " + node.networks) 
-            
             ## Check for installation dirs, otherwise exit with error message
             stderr_all = []
             stdin, stdout, stderr = ssh.exec_command('ls /opt/hadoop-2.5.2/')
@@ -133,90 +120,73 @@ class HBaseCluster(object):
                 if len(stderr) > 0 :
                     self.my_logger.debug("ERROR - some installation files are missing:\n" + str(stderr_all))
                     return
-            
             # self.my_logger.debug("Installation files are ok")
-
             if i == 0:
                 # Add the master to the /etc/hosts file
-                hosts.write(node.networks + "\t" + host_template+"master\n")
+                hosts.write(node.networks + "\t" + host_template + "master\n")
                 # Add the master to the masters file
-                masters.write(host_template+"master\n")
+                masters.write(host_template + "master\n")
                 # Set hostname on the machine
-                stdin, stdout, stderr = ssh.exec_command('echo \"'+host_template+"master\" > /etc/hostname")
+                stdin, stdout, stderr = ssh.exec_command('echo \"' + host_template + "master\" > /etc/hostname")
                 stdout.readlines()
-                stdin, stdout, stderr = ssh.exec_command('hostname \"'+host_template+"master\"")
+                stdin, stdout, stderr = ssh.exec_command('hostname \"' + host_template + "master\"")
                 stdout.readlines()
                 
                 for line in fileinput.FileInput(core_site,inplace=1):
-                    line = line.replace("NAMENODE_IP",host_template+"master").strip()
+                    line = line.replace("NAMENODE_IP", host_template + "master").strip()
                     print(line)
                 for line in fileinput.FileInput(hbase_site,inplace=1):
-                    line = line.replace("NAMENODE_IP",host_template+"master").strip()
+                    line = line.replace("NAMENODE_IP", host_template + "master").strip()
                     print(line)
                 # for line in fileinput.FileInput(yarn_site,inplace=1):
                 #     line = line.replace("NAMENODE_IP",host_template+"master").strip()
                 #     print(line)
                 for line in fileinput.FileInput(mapred_site,inplace=1):
-                    line = line.replace("JOBTRACKER_IP",host_template+"master").strip()
+                    line = line.replace("JOBTRACKER_IP", host_template + "master").strip()
                     print(line)
                 for line in fileinput.FileInput(hadoop_properties,inplace=1):
-                    line = line.replace("GMETADHOST_IP",host_template+"master").strip()
+                    line = line.replace("GMETADHOST_IP", host_template + "master").strip()
                     print(line)
                 for line in fileinput.FileInput(hbase_properties,inplace=1):
-                    line = line.replace("GMETADHOST_IP",host_template+"master").strip()
+                    line = line.replace("GMETADHOST_IP", host_template + "master").strip()
                     print(line)
-                
                 ## create namenode/datanode dirs
                 stdin, stdout, stderr = ssh.exec_command('mkdir /opt/hdfsnames/')
                 stdout.readlines()
                 # stdin, stdout, stderr = ssh.exec_command('mkdir /opt/hadooptmp/')
-                
                 # Add node to cluster
-                self.cluster[host_template+"master"] = node
-                
+                self.cluster[host_template + "master"] = node
             else:
                 # Make a /etc/hosts file as you go
                 hosts.write(node.networks + "\t" + host_template + str(i) +"\n")
-                
                 # Add all to the slaves file
-                slaves.write(host_template+ str(i)+"\n")
-                
+                slaves.write(host_template + str(i)+"\n")
                 # Set hostname on the machine
-                stdin, stdout, stderr = ssh.exec_command('echo \"'+host_template+str(i)+"\" > /etc/hostname")
+                stdin, stdout, stderr = ssh.exec_command('echo \"' + host_template + str(i) + "\" > /etc/hostname")
                 stdout.readlines()
-                stdin, stdout, stderr = ssh.exec_command('hostname \"'+host_template+str(i)+"\"")
+                stdin, stdout, stderr = ssh.exec_command('hostname \"' + host_template + str(i) + "\"")
                 stdout.readlines()
-                
                 ## create namenode/datanode dirs
                 stdin, stdout, stderr = ssh.exec_command('mkdir /opt/hdfsdata/')
                 stdout.readlines()
                 # stdin, stdout, stderr = ssh.exec_command('mkdir /opt/hadooptmp/')
-                
                 # Add node to cluster
-                self.cluster[host_template+ str(i)] = node
-                
-                
+                self.cluster[host_template + str(i)] = node
             ssh.close()
-
-            
             # Save all collected known keys
-            ssh.get_host_keys().save(("/tmp/known_hosts_"+str(i)))
-            
+            ssh.get_host_keys().save(("/tmp/known_hosts_" + str(i)))
             # Increase i
-            i = i+1
-        
+            i = i + 1
         # Decrase to have the last node in i
-        i = i-1
-        
+        i = i - 1
         # Add the last node to the masters file (secondary namenode)
         #k masters.write(host_template+ str(i)+"\n")
         masters.write(host_template+ str(1)+"\n")
-        
         ## make the quorum
-        if self.quorum=="":
+        if self.quorum == "":
             # self.quorum = host_template+"master,"+host_template+str((int(self.utils.initial_cluster_size)/2))+","+host_template+str(int(self.utils.initial_cluster_size)-1)
             # self.quorum = host_template+"master"
-            self.quorum = host_template+'master,'+host_template+'1,'+host_template+'2'
+            self.quorum = host_template + 'master,' + host_template + '1,' + host_template + '2'
         for line in fileinput.FileInput(hbase_site, inplace=1):
             line = line.replace("ZK_QUORUM_IPs", self.quorum).strip()
             print(line)
@@ -225,7 +195,7 @@ class HBaseCluster(object):
         masters.close()
         slaves.close()
         
-        key_template_path="./templates/ssh_keys"
+        key_template_path = "./templates/ssh_keys"
         rsa_key = paramiko.RSAKey.from_private_key_file(self.utils.key_file)
         
         # for node in nodes:
@@ -240,15 +210,12 @@ class HBaseCluster(object):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
-
             ## Enlarge the user limit on open file descriptors 
             ## (workaround for HDFS-127:http://wiki.apache.org/hadoop/Hbase/Troubleshooting#A7) 
             stdin, stdout, stderr = ssh.exec_command('ulimit -HSn 32768')
             stdout.readlines()
-            
             ## Sync clocks over IPv6
             # stdin, stdout, stderr = ssh.exec_command('ntpdate 2.pool.ntp.org')
-            
             transport = paramiko.Transport((node.networks, 22))
             transport.connect(username = 'root', pkey = rsa_key)
             transport.open_channel("session", node.networks, "localhost")
@@ -257,16 +224,13 @@ class HBaseCluster(object):
             sftp.put( key_template_path+"/id_rsa","/root/.ssh/id_rsa")
             sftp.put( key_template_path+"/id_rsa.pub", "/root/.ssh/id_rsa.pub")
             sftp.put( key_template_path+"/config", "/root/.ssh/config")
-            
             ## Change permissions for private key
             stdin, stdout, stderr = ssh.exec_command('chmod 0600 /root/.ssh/id_rsa')
             stdout.readlines()
-            
             ## Add public key to authorized_keys
             stdin, stdout, stderr = ssh.exec_command('cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys')
             stdout.readlines()
             # print stdout.readlines()
-            
             # Copy files (/etc/hosts, masters, slaves and conf templates) removing empty lines
             sftp.put( "/tmp/hosts", "/etc/hosts")
             # os.system("sed -i '/^$/d' /tmp/yarn-site.xml")
@@ -280,13 +244,13 @@ class HBaseCluster(object):
             sftp.put( "/tmp/masters", "/opt/hadoop-2.5.2/etc/hadoop/masters")
             sftp.put( "/tmp/slaves", "/opt/hadoop-2.5.2/etc/hadoop/slaves")
             os.system("sed -i '/^$/d' /tmp/hbase-site.xml")
-            sftp.put( "/tmp/hbase-site.xml", "/opt/hbase-1.1.2/conf/hbase-site.xml")
-            sftp.put( "/tmp/slaves", "/opt/hbase-1.1.2/conf/regionservers")
+            sftp.put( "/tmp/hbase-site.xml", "/opt/hbase-1.2.3/conf/hbase-site.xml")
+            sftp.put( "/tmp/slaves", "/opt/hbase-1.2.3/conf/regionservers")
             os.system("sed -i '/^$/d' /tmp/hadoop-metrics.properties")
             sftp.put( "/tmp/hadoop-metrics.properties", "/opt/hadoop-2.5.2/etc/hadoop/hadoop-metrics.properties")
             os.system("sed -i '/^$/d' /tmp/hadoop-metrics2-hbase.properties")
-            sftp.put( "/tmp/hadoop-metrics2-hbase.properties", "/opt/hbase-1.1.2/conf/hadoop-metrics2-hbase.properties")
-            sftp.put( "/tmp/hbase-env.sh", "/opt/hbase-1.1.2/conf/hbase-env.sh")
+            sftp.put( "/tmp/hadoop-metrics2-hbase.properties", "/opt/hbase-1.2.3/conf/hadoop-metrics2-hbase.properties")
+            sftp.put( "/tmp/hbase-env.sh", "/opt/hbase-1.2.3/conf/hbase-env.sh")
             sftp.put( "/tmp/hadoop-env.sh", "/opt/hadoop-2.5.2/etc/hadoop/hadoop-env.sh")
             sftp.put( "/tmp/init_db_table.sh", "/opt/init_db_table.sh")
             sftp.close()
@@ -381,24 +345,23 @@ class HBaseCluster(object):
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='root', password='secretpw', key_filename=self.utils.key_file)
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
         self.my_logger.debug("Starting the dfs ...")
         stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/start-dfs.sh')
         self.my_logger.debug("Started the dfs:\n  " + '  '.join(stdout.readlines()))
         stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
         self.my_logger.debug("Refreshed dfsadmin: " + str(stdout.readlines()))
         self.my_logger.debug("Starting HBase ...")
-        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.1.2/bin/start-hbase.sh')
+        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/start-hbase.sh')
         self.my_logger.debug("Started hbase:\n  " + '  '.join(stdout.readlines()))
         ssh.close()
-            
+
+
     def stop_cluster (self):
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='root', password='secretpw', key_filename=self.utils.key_file)
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
         # Manipulation to stop H2RDF servers
         stdin, stdout, stderr = ssh.exec_command('/opt/stopH2RDF.sh')
         self.my_logger.debug(str(stdout.readlines()))
@@ -445,7 +408,7 @@ class HBaseCluster(object):
                 key_filename=self.utils.key_file)
         if debug:
             self.my_logger.debug("Starting the regionserver on " + hostname + " ...")
-        stdin,stdout,stderr = ssh.exec_command('/opt/hbase-1.1.2/bin/hbase-daemon.sh start regionserver')
+        stdin,stdout,stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/hbase-daemon.sh start regionserver')
         output = stdout.readlines()
         ssh.close()
         if debug:
@@ -461,10 +424,9 @@ class HBaseCluster(object):
         master_node = self.cluster[self.host_template+"master"]
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(master_node.networks, username='root', password='secretpw', 
-                key_filename=self.utils.key_file)
+        ssh.connect(master_node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
         self.my_logger.debug("Triggerring the balancer ...")
-        stdin, stdout, stderr = ssh.exec_command('echo balancer | /opt/hbase-1.1.2/bin/hbase shell')
+        stdin, stdout, stderr = ssh.exec_command('echo balancer | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
         #self.my_logger.debug("Balancer triggered:\n  " + '  '.join(stdout.readlines()))
         ssh.close()
@@ -524,30 +486,27 @@ class HBaseCluster(object):
         ssh.close()
 
         
-    def remove_node (self, hostname, stop_dfs=True, update_db=True):
+    def remove_node (self, hostname, stop_dfs = True, update_db = True):
 
-        ## Remove node by hostname -- DOES NOST REMOVE THE MASTER
-        self.my_logger.debug("Removing: "+hostname+', '+self.cluster[hostname].networks)
+        ## Remove node by hostname -- DOES NOT REMOVE THE MASTER
+        self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
         nodes = []
-        master_node = self.cluster[self.host_template+"master"]
+        master_node = self.cluster[self.host_template + "master"]
         nodes.append(master_node)
         for i in range(1,len(self.cluster)):
             if not (self.host_template+str(i)).endswith(hostname):
-                nodes.append(self.cluster[self.host_template+str(i)])
-                
+                nodes.append(self.cluster[self.host_template+str(i)])    
         # self.my_logger.debug("Nodes after removal:\n" + pprint.pformat(nodes))
-        
         ## keep node
         node = self.cluster.pop(hostname)
-
         ## Add the removed node to the datanode excludes and refresh the namenodes
         self.stop_hbase(hostname, node)
         if stop_dfs:
             self.my_logger.debug("Adding "+hostname+" to datanode-excludes ...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(master_node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
-            stdin, stdout, stderr = ssh.exec_command('echo '+node.networks+' >> /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes')
+            ssh.connect(master_node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+            stdin, stdout, stderr = ssh.exec_command('echo ' + node.networks + ' >> /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes')
             stdout.readlines()
             time.sleep(5)
             stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
@@ -585,18 +544,17 @@ class HBaseCluster(object):
         self.my_logger.debug("Stopping HBase on " + hostname + " ...")
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(node.networks, username='root', password='secretpw', 
-                key_filename=self.utils.key_file)
+        ssh.connect(node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
         self.my_logger.debug("Stopping the balancer ...")
-        stdin, stdout, stderr = ssh.exec_command('echo balance_switch false | /opt/hbase-1.1.2/bin/hbase shell')
+        stdin, stdout, stderr = ssh.exec_command('echo balance_switch false | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
         #self.my_logger.debug("Balancer stopped:\n  " + '  '.join(stdout.readlines()))
         self.my_logger.debug("Stopping HBase ...")
-        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.1.2/bin/graceful_stop.sh ' + hostname)
+        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/graceful_stop.sh ' + hostname)
         stdout.readlines()
         #self.my_logger.debug("HBase Stopped:\n  " + '  '.join(stdout.readlines()))
         self.my_logger.debug("Starting the balancer ...")
-        stdin, stdout, stderr = ssh.exec_command('echo balance_switch true | /opt/hbase-1.1.2/bin/hbase shell')
+        stdin, stdout, stderr = ssh.exec_command('echo balance_switch true | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
         #self.my_logger.debug("Balancer started:\n  " + '  '.join(stdout.readlines()))
         ssh.close()
@@ -640,11 +598,11 @@ class HBaseCluster(object):
 
     def start_hbase (self):
 
-        master = self.host_template+"master"
+        master = self.host_template + "master"
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[master].networks, username='root', password='secretpw', key_filename=self.utils.key_file)
-        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.1.2/bin/start-hbase.sh')
+        ssh.connect(self.cluster[master].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/start-hbase.sh')
         self.my_logger.debug("Started HBase:\n  " + '  '.join(stdout.readlines()))
         ssh.close()
 
@@ -747,7 +705,7 @@ class HBaseCluster(object):
         transport.connect(username = 'root', pkey = rsa_key)
         transport.open_channel("session", node.networks, "localhost")
         sftp = paramiko.SFTPClient.from_transport(transport)
-        sftp.put("/opt/hbase-1.1.2-bin.tar.gz", "/opt/hbase-1.1.2-bin.tar.gz")
+        sftp.put("/opt/hbase-1.2.3-bin.tar.gz", "/opt/hbase-1.2.3-bin.tar.gz")
         transport.close()
         sftp.close()
         self.my_logger.debug("Copied the tarball")
@@ -760,7 +718,7 @@ class HBaseCluster(object):
         self.my_logger.debug("Set missing key policy")
         ssh.connect(node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
         self.my_logger.debug("Connected")
-        stdin, stdout, stderr = ssh.exec_command("tar xzvf /opt/hbase-1.1.2-bin.tar.gz -C /opt/")
+        stdin, stdout, stderr = ssh.exec_command("tar xzvf /opt/hbase-1.2.3-bin.tar.gz -C /opt/")
         self.my_logger.debug("executed the command")
         stdout.readlines()
         self.my_logger.debug("read the stdout")

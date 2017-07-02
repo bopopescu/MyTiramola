@@ -24,15 +24,14 @@ class OpenStackCluster(object):
     It can create and stop new instances - and working in conjuction with the
     db specific classes set up various environments. 
     '''
-
-
+    
     def __init__(self):
         '''
         Constructor
         ''' 
         self.utils = Utils.Utils()
         
-#        Make sure the sqlite file exists. if not, create it and the table we need
+        # Make sure the sqlite file exists. if not, create it and the table we need
         con = create_engine(self.utils.db_file)
         cur = con.connect()
         try:
@@ -41,21 +40,18 @@ class OpenStackCluster(object):
             print("Found records: ", instances)
         except exc.DatabaseError:
             cur.execute('create table instances(id text, networks text, flavor text, image text, status text, key_name text, name text,created text)')
-            
         cur.close()
 
-        # # Install logger
+        # Install logger
         LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
         self.my_logger = logging.getLogger('OpenStackCluster')
         self.my_logger.setLevel(logging.DEBUG)
-        
-        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2 * 1024 * 1024 * 1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         
-        
-        
+
     def describe_instances(self, state = None, pattern = None):
 
         instances = []
@@ -152,9 +148,9 @@ class OpenStackCluster(object):
 
     def describe_flavors(self):
 
-        creds = get_nova_creds()
-        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
-        flavors = nova.flavors.list()
+        creds       = get_nova_creds()
+        nova        = client.Client(1.1, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
+        flavors     = nova.flavors.list()
         flavors_dict = {}
         for f in flavors:
             flavors_dict[f.name] = f
@@ -162,15 +158,10 @@ class OpenStackCluster(object):
         return flavors_dict
 
 
-    def run_instances(self, image=None,
-        flavor=None,
-        mincount=1,
-        maxcount=1,
-        keypair_name=None): 
+    def run_instances(self, image = None, flavor = None, mincount = 1, maxcount = 1, keypair_name = None): 
         # euca-run-instances
         creds = get_nova_creds()
-        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'),
-                creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(1.1, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
         _flavor = nova.flavors.find(name=flavor)
         lock = threading.Lock()
         reservation = []

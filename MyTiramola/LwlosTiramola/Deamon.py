@@ -16,75 +16,65 @@ class Daemon:
         Usage: subclass the Daemon class and override the run() method
         """
 
-        def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
-                self.stdin = stdin
+        def __init__(self, pidfile, stdin = '/dev/null', stdout = '/dev/null', stderr = '/dev/null'):
+            
+                self.stdin  = stdin
                 self.stdout = stdout
                 self.stderr = stderr
-                self.pidfile = pidfile
-                
+                self.pidfile = pidfile               
                 ## Read properties from file
-                self.utils = Utils.Utils()
-                
+                self.utils = Utils.Utils()            
                 ## Make log directory
-                os.system('mkdir -p '+self.utils.install_dir+"/logs")
-                
+                os.system('mkdir -p ' + self.utils.install_dir + "/logs")
                 ## Install stdout
-                self.stdout = self.utils.install_dir+"/logs/Coordinator.out"
-                
+                self.stdout = self.utils.install_dir + "/logs/Coordinator.out"
                 ## Install stderr
-                self.stderr = self.utils.install_dir+"/logs/Coordinator.err"
-                
+                self.stderr = self.utils.install_dir + "/logs/Coordinator.err"
                 
                 ## Install logger
-                LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+                LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
                 self.my_logger = logging.getLogger('Deamon')
                 self.my_logger.setLevel(logging.DEBUG)
-                
-                handler = logging.handlers.RotatingFileHandler(
-                              LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+                handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
                 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
                 handler.setFormatter(formatter)
                 self.my_logger.addHandler(handler)
                 
-                
                 ## log the properties loaded
                 self.my_logger.debug(self.utils.euca_rc_dir)
+                self.my_logger.debug(self.utils.db_file)
+                self.my_logger.debug(self.utils.cluster_name)
+                self.my_logger.debug(self.utils.cluster_type)
+                self.my_logger.debug(self.utils.instance_type)
+                self.my_logger.debug(self.utils.hostname_template)
                 self.my_logger.debug(self.utils.initial_cluster_size)
                 self.my_logger.debug(self.utils.bucket_name)
-                self.my_logger.debug(self.utils.instance_type)
-                self.my_logger.debug(self.utils.cluster_name)
-                self.my_logger.debug(self.utils.hostname_template)
                 self.my_logger.debug(self.utils.reconfigure)
-                self.my_logger.debug(self.utils.cluster_type)
-                self.my_logger.debug(self.utils.db_file)
-                
                 
                 ## Set environment
                 if self.utils.cloud_api_type == "EC2":
-                    eucarc_file = open(self.utils.euca_rc_dir+"/ec2rc.sh", "r")
+                    eucarc_file = open(self.utils.euca_rc_dir + self.utils.rc_file, "r")
                     for line in eucarc_file.readlines():
                         if line.startswith("export"):
                             tokens = line.strip().split('=')
                             os.environ[tokens[0].replace("export ","")] = tokens[1].replace("${EUCA_KEY_DIR}", self.utils.euca_rc_dir).replace("'","")
                 if self.utils.cloud_api_type == "EC2_OS":
-                    eucarc_file = open(self.utils.euca_rc_dir+"/klolos-openrc.sh", "r")
+                    eucarc_file = open(self.utils.euca_rc_dir + self.utils.rc_file, "r")
                     for line in eucarc_file.readlines():
                         if line.startswith("export"):
                             tokens = line.strip().split('=')
                             os.environ[tokens[0].replace("export ","")] = str(tokens[1].replace("${NOVA_KEY_DIR}", self.utils.euca_rc_dir).replace("'","").replace("\"",""))
-
                 ## Return the environment with which the daemon is run
 #                self.my_logger.debug(os.environ)
-                
-        
-        def daemonize(self):
-                
-                """
-                do the UNIX double-fork magic, see Stevens' "Advanced
-                Programming in the UNIX Environment" for details (ISBN 0201563177)
-                http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
-                """
-                
+
+
+        """
+        do the UNIX double-fork magic, see Stevens' "Advanced
+        Programming in the UNIX Environment" for details (ISBN 0201563177)
+        http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+        """        
+        def daemonize(self):                
+    
                 try:
                         pid = os.fork()
                         if pid > 0:
@@ -127,15 +117,16 @@ class Daemon:
                 atexit.register(self.delpid)
                 pid = str(os.getpid())
                 open(self.pidfile,'w+').write("%s\n" % pid)
-       
+
+
         def delpid(self):
+
                 os.remove(self.pidfile)
- 
+
+
         def start(self):
                 """
-#
                 Start the daemon
-#
                 """
                 # Check for a pidfile to see if the daemon already runs
                 try:
@@ -153,12 +144,11 @@ class Daemon:
                 # Start the daemon
                 self.daemonize()
                 self.run()
- 
+
+
         def stop(self):
                 """
-#
                 Stop the daemon
-#
                 """
                 # Get the pid from the pidfile
                 try:
@@ -172,7 +162,6 @@ class Daemon:
                         message = "pidfile %s does not exist. Daemon not running?\n"
                         sys.stderr.write(message % self.pidfile)
                         return # not an error in a restart
- 
                 # Try killing the daemon process       
                 try:
                         while 1:
@@ -186,19 +175,18 @@ class Daemon:
                         else:
                                 print((str(err)))
                                 sys.exit(1)
- 
+
+
         def restart(self):
                 """
                 Restart the daemon
                 """
                 self.stop()
                 self.start()
- 
+
+
         def run(self):
                 """
                 You should override this method when you subclass Daemon. It will be called after the process has been
                 daemonized by start() or restart().
                 """
-                
-       
-            

@@ -13,33 +13,31 @@ import DecisionMaking
 
 class Metrics(object):
 
-    def __init__(self, iaas_host="termi7", iaas_port=8649, hbase_port=8649):
+    def __init__(self, iaas_host = "termi7", iaas_port = 8649, hbase_port = 8649):
 
-        self.utils = Utils.Utils()
-        self.username = self.utils.username
+        self.utils      = Utils.Utils()
+        self.username   = self.utils.username
         self.hbase_host = self.utils.hostname_template + "master"
         self.hbase_port = hbase_port
-        self.iaas_host = iaas_host
-        self.iaas_port = iaas_port
-        self.max_time  = self.utils.ycsb_max_time
-
+        self.iaas_host  = iaas_host
+        self.iaas_port  = iaas_port
+        self.max_time   = self.utils.ycsb_max_time
+        
         ## Install logger
         LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
         self.my_logger = logging.getLogger("Metrics")
         self.my_logger.setLevel(logging.DEBUG)
-
         handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
 
 
-    """
-        Returns the average metrics from both the iaas and cluster ganglia daemons for a duration
-        equal to the YCSB running time
-    """
     def collect_all_metrics(self, cluster):
-
+        """
+            Returns the average metrics from both the iaas and cluster ganglia daemons for a duration
+            equal to the YCSB running time
+        """
         timeseries = []
         start = timer()
         end = start + int(self.utils.ycsb_max_time)
@@ -147,7 +145,7 @@ class Metrics(object):
             self.my_logger.error("No ids provided")
             return None
 
-        template       = 'openstack_'+self.username+'_%s_%s'
+        template       = 'openstack_' + self.username + '_%s_%s'
         metric_names   = [template % (i, m) for i in ids for m in DecisionMaking.IAAS_METRICS]
         flattened_data = {n: v for _, m in data.items() for n, v in m.items()}
         cluster_meas   = {m: 0.0 for m in DecisionMaking.IAAS_METRICS}

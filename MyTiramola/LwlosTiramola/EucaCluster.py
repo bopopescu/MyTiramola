@@ -28,18 +28,12 @@ class EucaCluster(object):
         con = create_engine(self.utils.db_file)
         cur = con.connect()
         try:
-            instances = cur.execute('select * from instances'
-                            ).fetchall()
-            print("""Already discovered instances from previous database file. Use describe_instances without arguments to update.
-            """)
+            instances = cur.execute('select * from instances').fetchall()
+            print("""Already discovered instances from previous database file. Use describe_instances without arguments to update.""")
             # print("Found records:\n", instances)
         except exc.DatabaseError:
             cur.execute('create table instances(id text, image_id text, public_dns_name text, private_dns_name text,state text, key_name text, ami_launch_index text, product_codes text,instance_type text, launch_time text, placement text, kernel text, ramdisk text)')
-            
-            
         cur.close()
-        
-        
         
         
     def describe_instances(self, state=None, pattern=None):

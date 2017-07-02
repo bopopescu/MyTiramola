@@ -18,6 +18,7 @@ from MyTCPServer import MyTCPServer, MyTCPServerHandler
 import DecisionMaking
 from YCSBController import YCSBController
 from Metrics import Metrics
+from DecisionMaking.Constants import *
 
 
 class MyDaemon(Daemon):
@@ -29,54 +30,51 @@ class MyDaemon(Daemon):
             self.init(int(self.utils.records))
             self.run_warm_up(int(self.utils.warm_up_tests), int(self.utils.warm_up_target)) # always run a warm up even with zero. warm_up_target == self.utils.offset?
             if self.utils.bench:
-                self.run_benchmark(int(self.utils.warm_up_target))
+                #self.run_benchmark(int(self.utils.warm_up_target))
+                self.exec_rem_actions(1, 1)
             
             self.epsilon = float(self.utils.epsilon)
             self.selecting_load_type(self.utils.load_type)
-            self.e_greedy(self.num_actions, self.epsilon)    # Different e_greedy like Virtulator!
+            self.e_greedy(self.num_actions, self.epsilon)
 
             self.exit()
 
 
         def init(self, records):
             
-            # preparation
-            self.install_logger()
-#            self.utils = Utils.Utils()
-            
+            self.install_logger()        
             # Setting up cluster & parameters
             self.initializeNosqlCluster()
             self.my_logger.debug("Initialized the Cluster")
             self.log_cluster()
             self.update_hosts()
             self.init_flavors()
-            self.nosqlCluster.start_hbase()
-            
+            if self.utils.cluster_type == "HBASE":
+                self.nosqlCluster.start_hbase()     # Be sure than Hadoop alreadu runs!
+            else:
+                self.nosqlCluster.start_cluster()
             # Preparing to get metrics (termi7 metrics!)
             self.metrics = Metrics()
-            
             # Initializing YCSB
-            self.ycsb = YCSBController()
+            self.ycsb = YCSBController(int(self.utils.ycsb_clients))
             
             # Setting up Decision Making
-            self.decision_maker = DecisionMaking.DecisionMaker(self.utils.decision_making_file, self.utils.training_file)
+            self.decision_maker = DecisionMaking.DecisionMaker(self.utils.decision_making_file, self.utils.training_file)            
+            if self.decision_maker.model_type == MDP_DT:
+                ## Splitting Method
+                self.decision_maker.set_splitting(self.utils.split_crit, self.utils.cons_trans)
+                ## Statistical Test
+                self.decision_maker.set_stat_test(self.utils.stat_test)
+            else:
+                self.my_logger.error("MDP-DT is NOT selected. split_crit, cons_trans and stat_test are ignored!")
             ## Update Algorithm
-            if self.decision_maker.model_type == DecisionMaking.MDP or self.decision_maker.model_type == DecisionMaking.MDP_DT:
+            if self.decision_maker.model_type == MDP or self.decision_maker.model_type == MDP_DT:
                 self.select_Ualgorithm(float(self.utils.ualgorithm_error), int(self.utils.max_steps))
-            ## Splitting Method
-            if self.decision_maker.model_type == DecisionMaking.MDP_DT:
-                self.decision_maker.set_splitting(DecisionMaking.ANY_POINT, False)      # to be more configured, exei karfwmeno to ANY.POINT
-            ## Statistical Test
-            if self.decision_maker.model_type == DecisionMaking.MDP_DT:
-                self.decision_maker.set_stat_test(DecisionMaking.STUDENT_TTEST)         # to be more configured, exei karfwmeno to STUDENT_TTEST
-            
-#            self.decision_maker.set_splitting(DecisionMaking.ANY_POINT, False)
-#            self.decision_maker.set_stat_test(DecisionMaking.STUDENT_TTEST)
-#            self.decision_maker.set_value_iteration(0.1)
-            #self.decision_maker.set_prioritized_sweeping(0.1, 200)
-            
+            else:
+                self.my_logger.error("Neither MDP, nor MDP-DT is selected. udate_algorithm, ualgorithm_error and max_steps are ignored!")
+
             # More configurations...
-            self.decision_maker.train() # Einai ok, kanei ton elegxo mono tou. An den prosdioristei training.data, kanei abort kai paei parakatw
+            self.decision_maker.train() # If no training.data, training is ignored and continues
             self.last_load = None
             self.removed_hosts = []
             
@@ -129,15 +127,14 @@ class MyDaemon(Daemon):
                 meas = self.run_test(target, self.reads)
                 self.decision_maker.update(action, meas)
 
-####################################################################################################
+#########################END OF 4 BASIC METHODS! The rest following are in alphabetical order##################
 
         def add_nodes_physical(self, num_nodes):
 
             self.my_logger.debug("Adding " + str(num_nodes) + " nodes ...")
             current_flavor = self.flavors[self.flavor_index].name
             images = self.eucacluster.describe_images(self.utils.bucket_name)
-            instances = self.eucacluster.run_instances(images[0], current_flavor,
-                    num_nodes, num_nodes, self.utils.keypair_name)
+            instances = self.eucacluster.run_instances(images[0], current_flavor, num_nodes, num_nodes, self.utils.keypair_name)
             self.my_logger.debug("Waiting for the new instances ...")
             instances = self.eucacluster.block_until_running(instances)
             self.sleep(60)
@@ -146,7 +143,6 @@ class MyDaemon(Daemon):
             self.update_hosts() # update local /etc/hosts
             self.nosqlCluster.init_ganglia()
             self.nosqlCluster.trigger_balancer()
-
             ## Wait for the nodes to get ready
             self.sleep(300)
 
@@ -155,15 +151,13 @@ class MyDaemon(Daemon):
 
             self.my_logger.debug("Adding " + str(num_nodes) + " nodes ...")
             if num_nodes > len(self.removed_hosts):
-                self.my_logger.debug("Only %d available, adding %d nodes instead ..." % \
-                        (len(self.removed_hosts), len(self.removed_hosts)))
+                self.my_logger.debug("Only %d available, adding %d nodes instead ..." % (len(self.removed_hosts), len(self.removed_hosts)))
 
             new_nodes = self.removed_hosts[:num_nodes]
             self.removed_hosts = self.removed_hosts[num_nodes:]
             for hostname, host in new_nodes:
                 self.nosqlCluster.start_node(hostname, host)
             self.log_cluster()
-
             ## Wait for the nodes to get ready
             self.wake_up_nodes()
             self.sleep(60)
@@ -179,14 +173,12 @@ class MyDaemon(Daemon):
 
             meas = ganglia_metrics.copy()
             meas.update(ycsb_metrics)
-
             # cluster size and flavor
             curr_flavor = self.flavors[self.flavor_index].to_dict()
             meas[DecisionMaking.NUMBER_OF_VMS]    = len(self.nosqlCluster.cluster)
             meas[DecisionMaking.RAM_SIZE]         = curr_flavor.get('ram')
             meas[DecisionMaking.NUMBER_OF_CPUS]   = curr_flavor.get('vcpus')
             meas[DecisionMaking.STORAGE_CAPACITY] = curr_flavor.get('disk')
-
             # extra metrics deriving from the existing ones
             meas[DecisionMaking.IO_REQS]       = meas[DecisionMaking.IO_READ_REQS] + \
                                                  meas[DecisionMaking.IO_WRITE_REQS]
@@ -237,16 +229,14 @@ class MyDaemon(Daemon):
             rem_vm  = (DecisionMaking.REMOVE_VMS, num_removes)
 
             for i in range(num_actions):
- 
+
                 #self.time += 1
                 target = self.get_load()
-
                 self.my_logger.debug("Time = %d, executing remove action" % self.time)
                 self.execute_action(rem_vm)
                 self.run_test(target, self.reads, update_load=False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
-
                 meas = self.run_test(target, self.reads)
                 self.decision_maker.update(rem_vm, meas)
 
@@ -258,8 +248,15 @@ class MyDaemon(Daemon):
 
 
         def get_load(self):
-
-            return self.offset + self.amplitude * math.sin(2 * math.pi * self.time / self.period)
+            
+            if self.utils.load_type == SINUSOIDAL:
+                return self.offset + self.amplitude * math.sin(2 * math.pi * self.time / self.period)
+            if self.utils.load_type == PEAKY:
+                print("peaky load is not implemented yet. Choose another load and start the experiment again.")
+                self.exit()
+            else:
+                print("Unknown type of load. Choose another load and start the experiment again.")
+                self.exit()
 
 
         def initializeNosqlCluster(self):
@@ -272,15 +269,13 @@ class MyDaemon(Daemon):
                 eucacluster = OpenStackCluster.OpenStackCluster()
                 self.my_logger.debug("Created OpenStackCluster with EC2 API and public ipv6 dnsname")    
             instances = eucacluster.describe_instances()
-            #print(str(instance))
             instances_names = []
             for instance in instances:
                 instances_names.append(instance.name)    
             self.my_logger.debug("All user instances:" + str(instances_names))
-            #NIKO --- ok so far
+            
             ## creates a new Hbase cluster
             nosqlcluster = None
-            
             if self.utils.cluster_type == "HBASE":
                 nosqlcluster = HBaseCluster.HBaseCluster(self.utils.cluster_name)
             elif self.utils.cluster_type == "HBASE92":
@@ -305,22 +300,20 @@ class MyDaemon(Daemon):
                 self.my_logger.debug("Found image in db: " + str(images) + ", id = " + str(images[0].id))
                 self.my_logger.debug("Launching %s new instances ..." % self.utils.initial_cluster_size)
 
-                instances = eucacluster.run_instances(
-                                images[0],  
-                                self.utils.instance_type, 
-                                self.utils.initial_cluster_size, 
-                                self.utils.initial_cluster_size, 
-                                self.utils.keypair_name)
-
+                instances = eucacluster.run_instances(images[0],
+                                                      self.utils.instance_type,
+                                                      self.utils.initial_cluster_size,
+                                                      self.utils.initial_cluster_size,
+                                                      self.utils.keypair_name)
                 # self.my_logger.debug("Launched new instances:\n" + \
                 #         pprint.pformat(instances))
                 instances = eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str([i.networks for i in instances]))
 
             else:
-                instances.append(nosqlcluster.cluster[nosqlcluster.host_template+"master"])
+                instances.append(nosqlcluster.cluster[nosqlcluster.host_template + "master"])
                 for i in range(1,len(nosqlcluster.cluster)):
-                    instances.append(nosqlcluster.cluster[nosqlcluster.host_template+str(i)])
+                    instances.append(nosqlcluster.cluster[nosqlcluster.host_template + str(i)])
                 self.my_logger.debug("Found old instances: " + str(instances))
                 self.my_logger.debug("WARNING: Will block forever if they are not running.")
                 eucacluster.block_until_running(instances)
@@ -335,24 +328,21 @@ class MyDaemon(Daemon):
 
         def init_flavors(self):
 
-            f_dict = self.eucacluster.describe_flavors()
-            flavor_names = self.utils.possible_flavors.split(',')
-            self.flavors = [f_dict[f] for f in flavor_names]
-            self.flavor_index = self.flavors.index(f_dict[self.utils.instance_type])
+            f_dict              = self.eucacluster.describe_flavors()
+            flavor_names        = self.utils.possible_flavors.split(',')
+            self.flavors        = [f_dict[f] for f in flavor_names]
+            self.flavor_index   = self.flavors.index(f_dict[self.utils.instance_type])
             
             
         def install_logger(self):
 
-            LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+            LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
             self.my_logger = logging.getLogger('Coordinator')
             self.my_logger.setLevel(logging.DEBUG)
-            
-            handler = logging.handlers.RotatingFileHandler(
-                          LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+            handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
             formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
             handler.setFormatter(formatter)
             self.my_logger.addHandler(handler)
-            
             ## Log the environment with which the daemon is run
             self.my_logger.debug(os.environ)
             self.my_logger.debug(self.utils.bucket_name)
@@ -363,7 +353,7 @@ class MyDaemon(Daemon):
             cluster = self.nosqlCluster.cluster
             log_str = "Current cluster:"
             for hostname in cluster:
-                log_str += '\n  '+hostname+': '+cluster[hostname].networks
+                log_str += '\n  ' + hostname + ': ' + cluster[hostname].networks
             self.my_logger.debug(log_str)
 
 
@@ -380,7 +370,7 @@ class MyDaemon(Daemon):
                         self.nosqlCluster.remove_node(hostname)
                         removed_hosts.append(host)
                         break
-
+                    
             for host in removed_hosts:
                 terminated_instances = self.eucacluster.terminate_instances([host])
                 self.my_logger.debug("Terminated: " + str(terminated_instances))
@@ -406,7 +396,7 @@ class MyDaemon(Daemon):
                 for hostname, host in cluster.items():
                     number = hostname.replace(self.nosqlCluster.host_template, "")
                     if number == str(cluster_length - 1):
-                        self.nosqlCluster.remove_node(hostname, stop_dfs=False, update_db=False)
+                        self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
                         self.removed_hosts = [(hostname, host)] + self.removed_hosts
                         break
 
@@ -444,14 +434,12 @@ class MyDaemon(Daemon):
 
             self.my_logger.debug("Risizing issued")
             self.sleep(240)
-
             # Wait for the machines to get ready and confirm the resize
             cluster_instances = self.eucacluster.describe_instances(pattern=self.utils.cluster_name)
             instances = [i for i in cluster_instances if not 'master' in i.name]
             self.my_logger.debug("Waiting for the instances: " + str(instances))
             self.eucacluster.confirm_resizes(resized_vms)
             self.eucacluster.block_until_running(instances)
-
             # Start the cluster again
             self.nosqlCluster.start_cluster()
             self.nosqlCluster.init_ganglia()
@@ -532,7 +520,8 @@ class MyDaemon(Daemon):
             egreedy_iter_time   = (2 * ycsb_max_time + 60) / 60
             total_run_time      = int(self.utils.total_run_time)
             self.num_actions    = round(total_run_time / egreedy_iter_time + 0.5) + 2
-            self.train_actions  = round(float(self.utils.training_perc) * self.num_actions + 0.5)
+            training_perc       = float(self.utils.training_perc)
+            self.train_actions  = round(training_perc * self.num_actions + 0.5)
             eval_actions        = self.num_actions - self.train_actions
             self.period         = self.num_actions / float(self.utils.num_periods) - 1
             self.time           = self.period / 2    # self.time = 0 => sinus,    self.time = period / 2 => cosinus
@@ -540,6 +529,8 @@ class MyDaemon(Daemon):
             self.amplitude      = int(self.utils.amplitude)
             
             print("\n\tYCSB-Experiment Report:")
+            if training_perc == 0 or self.epsilon == 0:
+                print("training_perc or epsilon is 0. No actual training will be performed!")
             print(str(ycsb_max_time / 60) + "\tmins. Running time of the run_test() method(YCSB cycle).")
             print(str(egreedy_iter_time) + "\tmins. Running time of each e_greedy() iteration.")
             print(str(total_run_time) + "\tmins. Total running time of the whole experiment.")
@@ -566,7 +557,6 @@ class MyDaemon(Daemon):
             # Remove all the host entries from /etc/hosts
             call(["sed", "-i", "/%s/d" % self.nosqlCluster.host_template, "/etc/hosts"])
             cluster = self.nosqlCluster.cluster
-
             # Add all the current nodes of the cluster
             with open("/etc/hosts", "a") as hosts_file:
                 for hostname in cluster:
@@ -586,7 +576,7 @@ class MyDaemon(Daemon):
 
             self.my_logger.debug("Waking up all nodes ...")
             for hostname, host in self.nosqlCluster.cluster.items():
-                self.nosqlCluster.start_node(hostname, host, rebalance=False, debug=False)
+                self.nosqlCluster.start_node(hostname, host, rebalance = False, debug = False)
 
             time.sleep(10)
             self.nosqlCluster.trigger_balancer()
@@ -610,6 +600,3 @@ if __name__ == "__main__":
         else:
                 print(("usage: %s start|stop|restart" % sys.argv[0]))
                 sys.exit(2)
-
-
-

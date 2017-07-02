@@ -12,7 +12,7 @@ import DecisionMaking
 
 class YCSBController(object):
 
-    def __init__(self, num_clients=None):
+    def __init__(self, num_clients = None):
 
         self.utils        = Utils.Utils()
         self.ycsb         = self.utils.ycsb_binary
@@ -30,9 +30,7 @@ class YCSBController(object):
         LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
         self.my_logger = logging.getLogger("YCSBController")
         self.my_logger.setLevel(logging.DEBUG)
-
-        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, 
-                maxBytes=2*1024*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
@@ -51,10 +49,9 @@ class YCSBController(object):
 
         self.my_logger.debug("Copying hosts files to ycsb clients ...")
         for c in range(1, self.clients + 1):
-            hostname = "ycsb-client-" + str(c)
+            hostname = "ycsb" + str(c)
             transport = paramiko.Transport((hostname, 22))
-            transport.connect(username='ubuntu',
-                    pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+            transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
             transport.open_channel("session", hostname, "localhost")
             sftp = paramiko.SFTPClient.from_transport(transport)
             sftp.put("/etc/hosts", "/home/ubuntu/hosts")
@@ -73,7 +70,7 @@ class YCSBController(object):
 
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
         for c in range(1, self.clients + 1):
-            hostname = "ycsb-client-" + str(c)
+            hostname = "ycsb" + str(c)
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username='ubuntu')
@@ -106,7 +103,7 @@ class YCSBController(object):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect("ycsb-client-%d" % c, username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
+            ssh.connect("ycsb%d" % c, username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
             cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
             ssh.exec_command(cmd)
             ssh.close()
@@ -123,7 +120,7 @@ class YCSBController(object):
         for c in range(1, self.clients + 1):
             for i in range(20):
 
-                hostname = "ycsb-client-" + str(c)
+                hostname = "ycsb" + str(c)
                 transport = paramiko.Transport((hostname, 22))
                 transport.connect(username='ubuntu',
                         pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))

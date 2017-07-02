@@ -850,7 +850,7 @@ class MDPDTModel:
     """
        Set the splitting criterion
     """
-    def set_splitting(self, split_criterion, consider_transitions=True):
+    def set_splitting(self, split_criterion, consider_transitions = True):
 
         if not split_criterion in SPLIT_CRITERIA:
             raise ParameterError("Unknown splitting algorithm: " + split_criterion, self.logger)

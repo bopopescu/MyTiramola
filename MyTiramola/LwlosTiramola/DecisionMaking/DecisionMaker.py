@@ -127,7 +127,7 @@ class DecisionMaker(object):
         return self.model
 
 
-    def set_splitting(self, split_crit, cons_trans=True):
+    def set_splitting(self, split_crit, cons_trans = True):
 
         if self.model_type != MDP_DT:
             self.my_logger.error("Splitting criteria apply only to MDP_DT models!")
