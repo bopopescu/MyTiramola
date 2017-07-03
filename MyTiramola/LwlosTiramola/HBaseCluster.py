@@ -63,6 +63,12 @@ class HBaseCluster(object):
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         
+        print("HBase selfs:")
+        print("cluster = " + str(self.cluster))
+        print("host_template = " + str(self.host_template))
+        print("cluster_id = " + str(self.cluster_id))
+        print("quorum = " + str(self.quorum))
+        
         
     def configure_cluster(self, nodes = None, host_template = "", reconfigure = True, update_db = True):
         
