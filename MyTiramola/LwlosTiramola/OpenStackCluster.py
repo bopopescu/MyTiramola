@@ -34,12 +34,14 @@ class OpenStackCluster(object):
         # Make sure the sqlite file exists. if not, create it and the table we need
         con = create_engine(self.utils.db_file)
         cur = con.connect()
+        print("OpenStackCluster, going to try")
         try:
             instances = cur.execute('select * from instances').fetchall()
             print("""Already discovered instances from previous database file. Use describe_instances without arguments to update.""")
             print("Found records: ", instances)
         except exc.DatabaseError:
-            cur.execute('create table instances(id text, networks text, flavor text, image text, status text, key_name text, name text,created text)')
+            print("OpenStackCluster, didn't manage it, going to create table")
+            cur.execute('create table instances(id text, networks text, flavor text, image text, status text, key_name text, name text, created text)')
         cur.close()
 
         # Install logger
@@ -58,10 +60,10 @@ class OpenStackCluster(object):
         
         if state != "pollDB":
             creds = get_nova_creds()
-            #nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))    # DEPRECATED
+            #nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))    # DEPRECATED, not working
             nova = client.Client(2.0,
                                  username = creds.get('username'),
-                                 password = "john@ntua2015",
+                                 password = self.utils.rc_pwd,
                                  project_name = creds.get('project_id'),
                                  auth_url = creds.get('auth_url'))
             servers = nova.servers.list()
@@ -91,7 +93,9 @@ class OpenStackCluster(object):
                        
             
             # # if simple call
+            print("OpenStackCluster, state = " + str(state))
             if not state:
+                print("OpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
                 self.utils.refresh_instance_db(instances)
                         
         else:
@@ -129,15 +133,18 @@ class OpenStackCluster(object):
             return instances
 
         
-    def describe_images(self, pattern=None):
+    def describe_images(self, pattern = None):
 
         # Euca-describe-images
         creds = get_nova_creds()
-        nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
         images = nova.images.list()
-        
-        # print(images)
-        
+
         # # if you are using patterns, show only matching names and emi's
         matched_images = []
         if pattern:
@@ -158,7 +165,12 @@ class OpenStackCluster(object):
     def describe_flavors(self):
 
         creds       = get_nova_creds()
-        nova        = client.Client(2, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
+#        nova        = client.Client(2.0, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
         flavors     = nova.flavors.list()
         flavors_dict = {}
         for f in flavors:
@@ -168,46 +180,48 @@ class OpenStackCluster(object):
 
 
     def run_instances(self, image = None, flavor = None, mincount = 1, maxcount = 1, keypair_name = None): 
-        # euca-run-instances
+
         creds = get_nova_creds()
-        nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
         _flavor = nova.flavors.find(name=flavor)
         lock = threading.Lock()
         reservation = []
+        
         def create():
-               _name = self.utils.cluster_name + '-' + (str)(uuid.uuid1())
-               instance = nova.servers.create(
-                                name=_name,
-                                image=image,
-                                flavor=_flavor,
-                                min_count=1,
-                                max_count=1,
-                                key_name=keypair_name)
-               status = instance.status
-               while status == 'BUILD':
-                      time.sleep(5)
-                     # Retrieve the instance again so the status field updates
-                      instance = nova.servers.get(instance.id)
-                      status = instance.status
-               with lock:
-                      reservation.append(instance)
+            _name = self.utils.cluster_name + '-' + (str)(uuid.uuid1())
+            instance = nova.servers.create(name = _name,
+                                           image = image,
+                                           flavor = _flavor,
+                                           min_count = 1,
+                                           max_count = 1,
+                                           key_name = keypair_name)
+            status = instance.status
+            while status == 'BUILD':
+                time.sleep(5)
+                # Retrieve the instance again so the status field updates
+                instance = nova.servers.get(instance.id)
+                status = instance.status
+            with lock:
+                reservation.append(instance)
 
         t = []
         for i in range(0, int(float(maxcount))):
-              t.append(threading.Thread(target=create))
-              t[i].daemon = True
-              t[i].start()
-        for j in range(0, int(float(maxcount))):
-              t[j].join()
-
-       
-        # print(reservation)
             
-#        print reservation.id
+            t.append(threading.Thread(target=create))
+            t[i].daemon = True
+            t[i].start()
+            
+        for j in range(0, int(float(maxcount))):
+            t[j].join()
+
         instances = []
 
         # # add the newly run instances to the database
-        
         members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
         for instance in reservation:
             # # get instance details
@@ -231,7 +245,12 @@ class OpenStackCluster(object):
 
     def terminate_instances(self, instances):
         creds = get_nova_creds()
-        nova = client.Client(2, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
+#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
 
         deleted_instances = []
         for i in instances:
@@ -276,7 +295,12 @@ class OpenStackCluster(object):
     def find_by_id(self, server_id):
 
         creds = get_nova_creds()
-        nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
         servers = nova.servers.list()
         for server in servers:
             if server.id == server_id:
@@ -289,7 +313,12 @@ class OpenStackCluster(object):
     def block_until_running (self, instances, target_status='ACTIVE'):
         ''' Blocks until all defined instances have reached running state and an ip has been assigned'''
         creds = get_nova_creds()
-        nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
         # # Run describe instances until everyone is running
         tmpinstances = instances.copy()
         instances = []

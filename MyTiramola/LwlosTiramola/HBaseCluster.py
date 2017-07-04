@@ -33,9 +33,10 @@ class HBaseCluster(object):
         # Make sure the sqlite file exists. if not, create it and add the table we need
         con = create_engine(self.utils.db_file)
         cur = con.connect()
+        print("HBaseCluster, going to try")
         try:
-            clusters = cur.execute('select * from clusters',).fetchall()
-            if len(clusters) > 0 :
+            clusters = cur.execute('select * from clusters').fetchall()
+            if len(clusters) > 0:
                 print("""Already discovered cluster id from previous database file. Will select the defined one to work with (if it exists).""")
                 # print ("Found records:\n", str(clusters))
                 clustersfromcid = cur.execute('select * from clusters where cluster_id=\"' + self.cluster_id + "\"",).fetchall()
@@ -50,7 +51,10 @@ class HBaseCluster(object):
                     self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
                 else:
                     print("No known cluster with this id - run configure before you proceed")
+#            else:
+#                self.utils.refresh_cluster_db(cluster)
         except exc.DatabaseError:
+            print("HBaseCluster, didn't manage it, going to create table clusters")
             cur.execute('create table clusters(cluster_id text, hostname text, euca_id text)')
         cur.close()
         
@@ -68,8 +72,32 @@ class HBaseCluster(object):
         print("host_template = " + str(self.host_template))
         print("cluster_id = " + str(self.cluster_id))
         print("quorum = " + str(self.quorum))
+    
+    
+    def create_cluster(self, nodes = None):
+        """
+            This method creates the self.cluster without configurating the nodes.
+            It takes all the instances previously defined in euca_cluster, filters them and
+            adds the necessary ones in db's clusters table.
+        """
+        self.my_logger.debug("Creating cluster without configurations!")
+        host_template = self.host_template
+        if nodes == None:
+            self.my_logger.debug("I can't see any nodes mate!")
+            return
         
-        
+        i = 0
+        for node in nodes:
+            self.my_logger.debug("Configuring node: " + node.networks)
+            if i == 0:
+                self.cluster[host_template + "master"] = node
+            else:
+                self.cluster[host_template + str(i)] = node
+            
+        self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
+#        return self.cluster
+   
+
     def configure_cluster(self, nodes = None, host_template = "", reconfigure = True, update_db = True):
         
         self.my_logger.debug("Configuring cluster ...")
@@ -107,7 +135,7 @@ class HBaseCluster(object):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.my_logger.debug("Configuring node: " + node.networks) 
-            ssh.connect(node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
+            ssh.connect(node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
             # self.my_logger.debug("Connected to node: " + node.networks) 
             ## Check for installation dirs, otherwise exit with error message
             stderr_all = []
@@ -193,7 +221,7 @@ class HBaseCluster(object):
             # self.quorum = host_template+"master,"+host_template+str((int(self.utils.initial_cluster_size)/2))+","+host_template+str(int(self.utils.initial_cluster_size)-1)
             # self.quorum = host_template+"master"
             self.quorum = host_template + 'master,' + host_template + '1,' + host_template + '2'
-        for line in fileinput.FileInput(hbase_site, inplace=1):
+        for line in fileinput.FileInput(hbase_site, inplace = 1):
             line = line.replace("ZK_QUORUM_IPs", self.quorum).strip()
             print(line)
             
@@ -215,7 +243,7 @@ class HBaseCluster(object):
             self.my_logger.debug("Copying files to: " + node.networks)
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
+            ssh.connect(node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
             ## Enlarge the user limit on open file descriptors 
             ## (workaround for HDFS-127:http://wiki.apache.org/hadoop/Hbase/Troubleshooting#A7) 
             stdin, stdout, stderr = ssh.exec_command('ulimit -HSn 32768')
@@ -292,7 +320,7 @@ class HBaseCluster(object):
             transport.open_channel("session", node.networks, "localhost")
             sftp = paramiko.SFTPClient.from_transport(transport)
             os.system("sed -i '/^$/d' /tmp/known_hosts_"+str(j))
-            sftp.put( "/tmp/known_hosts", "/root/.ssh/known_hosts", confirm=True)
+            sftp.put( "/tmp/known_hosts", "/root/.ssh/known_hosts", confirm = True)
             transport.close()
             sftp.close()
 
@@ -303,8 +331,7 @@ class HBaseCluster(object):
         if not reconfigure:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(self.cluster[host_template+"master"].networks, 
-                        username='root', password='secretpw', key_filename=self.utils.key_file)
+            ssh.connect(self.cluster[host_template + "master"].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
             ## format the namenode (all previous data will be lost!!!)
             self.my_logger.debug("Formatting namenode ...")
             stdin, stdout, stderr = ssh.exec_command('echo "Y" | /opt/hadoop-2.5.2/bin//hdfs namenode -format')
@@ -618,8 +645,7 @@ class HBaseCluster(object):
         master_node = self.cluster[self.host_template+"master"]
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(master_node.networks, username='root', password='secretpw', 
-                key_filename=self.utils.key_file)
+        ssh.connect(master_node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
         for hostname in self.cluster:
             ip = self.cluster[hostname].networks
             stdin, stdout, stderr = ssh.exec_command("sed -i '/"+ip+"/d' /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes")

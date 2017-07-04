@@ -76,26 +76,45 @@ class Utils(object):
             instances.append(self.return_instance_from_tuple(instancefromDB))
                 
         return instances
-    
+
+
     def refresh_instance_db(self, instances):
         # # Update instance DB with provided instances (removes all previous entries!)
+        print("Utils, running refresh_instance_db")
         con = create_engine(self.db_file)
         cur = con.connect()
+        print("Utils, gonna try execute delete")
         try:
             cur.execute('delete from instances')
         except exc.DatabaseError:
+            print("Utils, delete didn't make it")
             print ("ERROR in truncate")
-            
+
         for instance in instances:
+            print("\n\tINSERTing instance - " + str(instance))
+            print("Instance's variables:")
+            print("instance.id =\t\t" + str(instance.id))
+            print("instance.networks =\t" + str(instance.networks))
+            print("instance.flavor =\t" + str(instance.flavor))
+            print("instance.image =\t" + str(instance.image))
+            print("instance.status =\t" + str(instance.status))
+            print("instance.key_name =\t" + str(instance.key_name))
+            print("instance.name =\t\t" + str(instance.name))
+            print("instance.created =\t" + str(instance.created) + "\n")
             try:
-                cur.execute(""" insert into instances(id, networks, flavor, image,
-                                                   status, key_name, name, created) 
-                                                    values  (?,?,?,?,?,?,?,?)""",
-                            (instance.id, instance.networks, instance.flavor, instance.image,
-                                                            instance.status, instance.key_name, instance.name, instance.created)
+                cur.execute("insert into instances(id, networks, flavor, image, status, key_name, name, created) values (?,?,?,?,?,?,?,?)",
+                            (instance.id,
+                             instance.networks,
+                             instance.flavor,
+                             instance.image,
+                             instance.status,
+                             instance.key_name,
+                             instance.name,
+                             instance.created)
                             )
                 
             except exc.DatabaseError as e:
+                print("Utils, INSERT didn't make it!")
                 print((e.message))
                 print ("ERROR in insert")
 
@@ -127,7 +146,8 @@ class Utils(object):
     # #     Cluster DB functions
     ########################################################
     
-    def delete_cluster_from_db(self, clusterid="default"):
+    def delete_cluster_from_db(self, clusterid = "default"):
+        
         con = create_engine(self.db_file)
         cur = con.connect()
         try:
@@ -138,23 +158,19 @@ class Utils(object):
         cur.close()
         
         
-    def refresh_cluster_db(self, cluster=None):
+    def refresh_cluster_db(self, cluster = None):
         # # Update cluster DB with provided cluster (removes all previous entries!)
         con = create_engine(self.db_file)
         cur = con.connect()
         try:
-            cur.execute('delete from clusters'
-                    )
+            cur.execute('delete from clusters')
             
         except exc.DatabaseError:
             print ("ERROR in truncate")
             
         for (clusterkey, clustervalue) in list(cluster.items()):
             try:
-                cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) 
-                                                    values  (?,?,?)""",
-                            ("default", clusterkey, clustervalue.id)
-                            )
+                cur.execute("insert into clusters(cluster_id, hostname, euca_id ) values  (?,?,?)", ("default", clusterkey, clustervalue.id))
                 
             except exc.DatabaseError as e:
                 print((e.message))
@@ -194,22 +210,23 @@ class Utils(object):
                 return cluster
         return None
     
-    def add_to_cluster_db(self, cluster=None, cluster_id=None):
+    def add_to_cluster_db(self, cluster = None, cluster_id = None):
         # # Add cluster to DB (check for existing records with the same id and remove)
         con = create_engine(self.db_file)
         cur = con.connect()
+        print("add_to_cluster_db is trying to delete")
         try:
             cur.execute('delete from clusters where cluster_id = \"' + cluster_id + "\"")
         except exc.DatabaseError:
             print ("No previous entries")
             
         for (clusterkey, clustervalue) in list(cluster.items()):
+            print("add_to_cluster_db, tries INSERTing (clusterkey, clustervalue):")
+            print("(" + str(clusterkey) + "\t" + str(clustervalue) + ")")
             try:
-                cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) 
-                                                    values  (?,?,?)""",
+                cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) values  (?,?,?)""",
                             (cluster_id, clusterkey, clustervalue.id)
-                            )
-                
+                            )  
             except exc.DatabaseError as e:
                 print((e.message))
                 print ("ERROR in insert")
@@ -242,6 +259,7 @@ class Utils(object):
             self.cloud_api_type         = cfg.get("config", "cloud_api_type")
             self.euca_rc_dir            = cfg.get("config", "euca_rc_dir")
             self.rc_file                = cfg.get("config", "rc_file")              # gioargyr-property
+            self.rc_pwd                 = cfg.get("config", "rc_pwd")              # gioargyr-property
             self.db_file                = cfg.get("config", "db_file")
             self.cluster_name           = cfg.get("config", "cluster_name")
             self.cluster_type           = cfg.get("config", "cluster_type")
