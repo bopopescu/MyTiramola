@@ -79,6 +79,8 @@ class HBaseCluster(object):
             This method creates the self.cluster without configurating the nodes.
             It takes all the instances previously defined in euca_cluster, filters them and
             adds the necessary ones in db's clusters table.
+            fyi: Later, we call "wake_up_nodes()" on self.cluster triggering regionserver to start!
+                So, self.cluster must contain only master+nodes that form the nosql-cluster!
         """
         self.my_logger.debug("Creating cluster without configurations!")
         host_template = self.host_template
@@ -86,14 +88,14 @@ class HBaseCluster(object):
             self.my_logger.debug("I can't see any nodes mate!")
             return
         
-        i = 0
         for node in nodes:
             self.my_logger.debug("Configuring node: " + node.networks)
-            if i == 0:
+            if node.name == "master":
                 self.cluster[host_template + "master"] = node
-            else:
-                self.cluster[host_template + str(i)] = node
-            
+            elif node.name[0:4] == "node":
+                self.cluster[host_template + node.name[-1]] = node
+        
+        print("self.cluster = " + str(self.cluster))  
         self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
 #        return self.cluster
    
@@ -430,15 +432,14 @@ class HBaseCluster(object):
         return nodes
 
 
-    def start_node(self, hostname, host, rebalance=True, debug=True):
+    def start_node(self, hostname, host, rebalance = True, debug = True):
 
         self.cluster[hostname] = host
 
         # start the regionserver
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(host.networks, username='root', password='secretpw', 
-                key_filename=self.utils.key_file)
+        ssh.connect(host.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
         if debug:
             self.my_logger.debug("Starting the regionserver on " + hostname + " ...")
         stdin,stdout,stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/hbase-daemon.sh start regionserver')

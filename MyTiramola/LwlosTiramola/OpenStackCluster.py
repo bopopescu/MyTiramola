@@ -310,7 +310,7 @@ class OpenStackCluster(object):
 #         
 # # Utilities
 #   
-    def block_until_running (self, instances, target_status='ACTIVE'):
+    def block_until_running (self, instances, target_status = 'ACTIVE'):
         ''' Blocks until all defined instances have reached running state and an ip has been assigned'''
         creds = get_nova_creds()
 #        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
@@ -324,10 +324,14 @@ class OpenStackCluster(object):
         instances = []
         members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
         while len(tmpinstances) > 0 :
+            print("tmpinstances1" + str(tmpinstances))
 #             time.sleep(10)
             sys.stdout.flush()
-            all_running_instances = nova.servers.list(search_opts={'status':target_status})
+            all_running_instances = nova.servers.list(search_opts = {'status':target_status})
+            print("all_running_instances" + str(all_running_instances))
+            print("length_all = " + str(len(all_running_instances)))
             for i in range(0, len(all_running_instances)):
+                print("length_temp = " + str(len(tmpinstances)))
                 for j in range(0, len(tmpinstances)):
                     ping = subprocess.getoutput("/bin/ping -q -c 1 " + str(all_running_instances[i].networks['private-net'][0]))
                     nc = subprocess.getoutput("nc -z  -v " + str(all_running_instances[i].networks['private-net'][0]) + " 22")                    
@@ -350,6 +354,7 @@ class OpenStackCluster(object):
                         # instances.append(all_running_instances[i])
                         break
         self.describe_instances()
+        print("instances = " + str(instances))
         return instances
         
             

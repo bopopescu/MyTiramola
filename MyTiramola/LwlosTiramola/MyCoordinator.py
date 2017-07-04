@@ -312,9 +312,12 @@ class MyDaemon(Daemon):
                 self.my_logger.debug("Running instances: " + str([i.networks for i in instances]))
 
             else:
+                print("instances1 = " + str(instances))
                 instances.append(nosqlcluster.cluster[nosqlcluster.host_template + "master"])
-                for i in range(1,len(nosqlcluster.cluster)):
+                print("instances2 = " + str(instances))
+                for i in range(1, len(nosqlcluster.cluster)):
                     instances.append(nosqlcluster.cluster[nosqlcluster.host_template + str(i)])
+                print("instances3 = " + str(instances))
                 self.my_logger.debug("Found old instances: " + str(instances))
                 self.my_logger.debug("WARNING: Will block forever if they are not running.")
                 eucacluster.block_until_running(instances)
@@ -577,7 +580,9 @@ class MyDaemon(Daemon):
 
             self.my_logger.debug("Waking up all nodes ...")
             for hostname, host in self.nosqlCluster.cluster.items():
-                self.nosqlCluster.start_node(hostname, host, rebalance = False, debug = False)
+                print("\nhostname: " + hostname)
+                print("host: " + host)
+                self.nosqlCluster.start_node(hostname, host, rebalance = False, debug = True)
 
             time.sleep(10)
             self.nosqlCluster.trigger_balancer()

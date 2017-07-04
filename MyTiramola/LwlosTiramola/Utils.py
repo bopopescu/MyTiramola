@@ -221,8 +221,12 @@ class Utils(object):
             print ("No previous entries")
             
         for (clusterkey, clustervalue) in list(cluster.items()):
-            print("add_to_cluster_db, tries INSERTing (clusterkey, clustervalue):")
-            print("(" + str(clusterkey) + "\t" + str(clustervalue) + ")")
+            print("\nadd_to_cluster_db, tries INSERTing (cluster_id, clusterkey, clustervalue.id):")
+            print("cluster_id =\t\t" + str(cluster_id))
+            print("clusterkey =\t\t" + str(clusterkey))
+            print("clustervalue =\t\t" + str(clustervalue))
+            print("clustervalue.id =\t" + str(clustervalue.id) + "\n")
+            print("(" + str(clusterkey) + "\t\t" + str(clustervalue) + ")")
             try:
                 cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) values  (?,?,?)""",
                             (cluster_id, clusterkey, clustervalue.id)
