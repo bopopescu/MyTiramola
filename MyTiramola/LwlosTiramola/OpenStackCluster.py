@@ -324,11 +324,11 @@ class OpenStackCluster(object):
         instances = []
         members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
         while len(tmpinstances) > 0 :
-            print("tmpinstances1" + str(tmpinstances))
+            print("tmpinstances1:\t" + str(tmpinstances))
 #             time.sleep(10)
             sys.stdout.flush()
             all_running_instances = nova.servers.list(search_opts = {'status':target_status})
-            print("all_running_instances" + str(all_running_instances))
+            print("all_running_instances:\t" + str(all_running_instances))
             print("length_all = " + str(len(all_running_instances)))
             for i in range(0, len(all_running_instances)):
                 print("length_temp = " + str(len(tmpinstances)))

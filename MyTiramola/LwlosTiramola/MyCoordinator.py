@@ -49,10 +49,10 @@ class MyDaemon(Daemon):
             self.log_cluster()
             self.update_hosts()
             self.init_flavors()
-            if self.utils.cluster_type == "HBASE":
-                self.nosqlCluster.start_hbase()     # Be sure than Hadoop alreadu runs!
-            else:
-                self.nosqlCluster.start_cluster()
+#            if self.utils.cluster_type == "HBASE":
+#                self.nosqlCluster.start_hbase()     # Be sure than Hadoop alreadu runs!
+#            else:
+#                self.nosqlCluster.start_cluster()
             # Preparing to get metrics (termi7 metrics!)
             self.metrics = Metrics()
             # Initializing YCSB
@@ -324,7 +324,10 @@ class MyDaemon(Daemon):
                 self.my_logger.debug("Running instances: " + str(instances))
 
             if eval(self.utils.reconfigure):
-                self.wake_up_nodes()
+#                self.wake_up_nodes()
+                self.nosqlCluster.start_cluster()
+                time.sleep(10)
+                self.nosqlCluster.trigger_balancer()
             else:
                 nosqlcluster.configure_cluster(instances, self.utils.hostname_template, False)
                 nosqlcluster.start_cluster()
@@ -580,8 +583,8 @@ class MyDaemon(Daemon):
 
             self.my_logger.debug("Waking up all nodes ...")
             for hostname, host in self.nosqlCluster.cluster.items():
-                print("\nhostname: " + hostname)
-                print("host: " + host)
+                print("\nhostname: " + str(hostname))
+                print("host: " + str(host))
                 self.nosqlCluster.start_node(hostname, host, rebalance = False, debug = True)
 
             time.sleep(10)

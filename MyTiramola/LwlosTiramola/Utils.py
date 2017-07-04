@@ -226,7 +226,6 @@ class Utils(object):
             print("clusterkey =\t\t" + str(clusterkey))
             print("clustervalue =\t\t" + str(clustervalue))
             print("clustervalue.id =\t" + str(clustervalue.id) + "\n")
-            print("(" + str(clusterkey) + "\t\t" + str(clustervalue) + ")")
             try:
                 cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) values  (?,?,?)""",
                             (cluster_id, clusterkey, clustervalue.id)

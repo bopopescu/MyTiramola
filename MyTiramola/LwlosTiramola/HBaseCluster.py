@@ -137,7 +137,7 @@ class HBaseCluster(object):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.my_logger.debug("Configuring node: " + node.networks) 
-            ssh.connect(node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+            ssh.connect(node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             # self.my_logger.debug("Connected to node: " + node.networks) 
             ## Check for installation dirs, otherwise exit with error message
             stderr_all = []
@@ -245,7 +245,7 @@ class HBaseCluster(object):
             self.my_logger.debug("Copying files to: " + node.networks)
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+            ssh.connect(node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             ## Enlarge the user limit on open file descriptors 
             ## (workaround for HDFS-127:http://wiki.apache.org/hadoop/Hbase/Troubleshooting#A7) 
             stdin, stdout, stderr = ssh.exec_command('ulimit -HSn 32768')
@@ -253,7 +253,7 @@ class HBaseCluster(object):
             ## Sync clocks over IPv6
             # stdin, stdout, stderr = ssh.exec_command('ntpdate 2.pool.ntp.org')
             transport = paramiko.Transport((node.networks, 22))
-            transport.connect(username = 'root', pkey = rsa_key)
+            transport.connect(username = 'ubuntu', pkey = rsa_key)
             transport.open_channel("session", node.networks, "localhost")
             sftp = paramiko.SFTPClient.from_transport(transport)
             ## Copy private and public key
@@ -318,7 +318,7 @@ class HBaseCluster(object):
         self.my_logger.debug("Uploading hosts files ...")
         for node in nodes:
             transport = paramiko.Transport((node.networks, 22))
-            transport.connect(username = 'root', pkey = rsa_key)
+            transport.connect(username = 'ubuntu', pkey = rsa_key)
             transport.open_channel("session", node.networks, "localhost")
             sftp = paramiko.SFTPClient.from_transport(transport)
             os.system("sed -i '/^$/d' /tmp/known_hosts_"+str(j))
@@ -333,7 +333,7 @@ class HBaseCluster(object):
         if not reconfigure:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(self.cluster[host_template + "master"].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+            ssh.connect(self.cluster[host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             ## format the namenode (all previous data will be lost!!!)
             self.my_logger.debug("Formatting namenode ...")
             stdin, stdout, stderr = ssh.exec_command('echo "Y" | /opt/hadoop-2.5.2/bin//hdfs namenode -format')
@@ -358,7 +358,7 @@ class HBaseCluster(object):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='root', password='secretpw', key_filename=self.utils.key_file)
+                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
         while True:
             self.my_logger.debug("Initializing the db table ...")
             stdin, stdout, stderr = ssh.exec_command('/bin/bash /opt/init_db_table.sh')
@@ -380,7 +380,7 @@ class HBaseCluster(object):
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         self.my_logger.debug("Starting the dfs ...")
         stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/start-dfs.sh')
         self.my_logger.debug("Started the dfs:\n  " + '  '.join(stdout.readlines()))
@@ -396,7 +396,7 @@ class HBaseCluster(object):
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         # Manipulation to stop H2RDF servers
         stdin, stdout, stderr = ssh.exec_command('/opt/stopH2RDF.sh')
         self.my_logger.debug(str(stdout.readlines()))
@@ -439,7 +439,7 @@ class HBaseCluster(object):
         # start the regionserver
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(host.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+        ssh.connect(host.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         if debug:
             self.my_logger.debug("Starting the regionserver on " + hostname + " ...")
         stdin,stdout,stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/hbase-daemon.sh start regionserver')
@@ -458,7 +458,7 @@ class HBaseCluster(object):
         master_node = self.cluster[self.host_template+"master"]
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(master_node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
+        ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         self.my_logger.debug("Triggerring the balancer ...")
         stdin, stdout, stderr = ssh.exec_command('echo balancer | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
@@ -472,7 +472,7 @@ class HBaseCluster(object):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='root', password='secretpw', key_filename=self.utils.key_file)
+                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
 
         for i in range(40):
             stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -report')
@@ -496,7 +496,7 @@ class HBaseCluster(object):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='root', password='secretpw', key_filename=self.utils.key_file)
+                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
 
         while True:
             stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -report')
@@ -539,7 +539,7 @@ class HBaseCluster(object):
             self.my_logger.debug("Adding "+hostname+" to datanode-excludes ...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(master_node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+            ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             stdin, stdout, stderr = ssh.exec_command('echo ' + node.networks + ' >> /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes')
             stdout.readlines()
             time.sleep(5)
@@ -555,7 +555,7 @@ class HBaseCluster(object):
         #try:
         #    ssh = paramiko.SSHClient()
         #    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        #    ssh.connect(node.networks, username='root', password='secretpw', 
+        #    ssh.connect(node.networks, username='ubuntu', password='secretpw', 
         #            key_filename=self.utils.key_file)
         #    stdin, stdout, stderr = ssh.exec_command('pkill java')
         #    ssh.close()
@@ -578,7 +578,7 @@ class HBaseCluster(object):
         self.my_logger.debug("Stopping HBase on " + hostname + " ...")
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+        ssh.connect(node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         self.my_logger.debug("Stopping the balancer ...")
         stdin, stdout, stderr = ssh.exec_command('echo balance_switch false | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
@@ -635,7 +635,7 @@ class HBaseCluster(object):
         master = self.host_template + "master"
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[master].networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+        ssh.connect(self.cluster[master].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/start-hbase.sh')
         self.my_logger.debug("Started HBase:\n  " + '  '.join(stdout.readlines()))
         ssh.close()
@@ -646,7 +646,7 @@ class HBaseCluster(object):
         master_node = self.cluster[self.host_template+"master"]
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(master_node.networks, username = 'root', password = 'secretpw', key_filename = self.utils.key_file)
+        ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         for hostname in self.cluster:
             ip = self.cluster[hostname].networks
             stdin, stdout, stderr = ssh.exec_command("sed -i '/"+ip+"/d' /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes")
@@ -666,7 +666,7 @@ class HBaseCluster(object):
         ganglia_dir = self.utils.install_dir + "/templates/ganglia/"
         for name, node in self.cluster.items():
             transport = paramiko.Transport((node.networks, 22))
-            transport.connect(username = 'root', pkey = rsa_key)
+            transport.connect(username = 'ubuntu', pkey = rsa_key)
             transport.open_channel("session", node.networks, "localhost")
             sftp = paramiko.SFTPClient.from_transport(transport)
             if name.endswith("master"):
@@ -683,7 +683,7 @@ class HBaseCluster(object):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                username='root', password='secretpw', 
+                username='ubuntu', password='secretpw', 
                 key_filename=self.utils.key_file)
         stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor stop')
         stdout.readlines()
@@ -704,7 +704,7 @@ class HBaseCluster(object):
             #self.my_logger.debug("Starting Ganglia on " + str(name))
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(node.networks, username='root', password='secretpw', 
+            ssh.connect(node.networks, username='ubuntu', password='secretpw', 
                     key_filename=self.utils.key_file)
             stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor stop')
             stdout.readlines()
@@ -735,7 +735,7 @@ class HBaseCluster(object):
 
         rsa_key = paramiko.RSAKey.from_private_key_file(self.utils.key_file)
         transport = paramiko.Transport((node.networks, 22))
-        transport.connect(username = 'root', pkey = rsa_key)
+        transport.connect(username = 'ubuntu', pkey = rsa_key)
         transport.open_channel("session", node.networks, "localhost")
         sftp = paramiko.SFTPClient.from_transport(transport)
         sftp.put("/opt/hbase-1.2.3-bin.tar.gz", "/opt/hbase-1.2.3-bin.tar.gz")
@@ -749,7 +749,7 @@ class HBaseCluster(object):
         self.my_logger.debug("Created ssh object")
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.my_logger.debug("Set missing key policy")
-        ssh.connect(node.networks, username='root', password='secretpw', key_filename=self.utils.key_file)
+        ssh.connect(node.networks, username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
         self.my_logger.debug("Connected")
         stdin, stdout, stderr = ssh.exec_command("tar xzvf /opt/hbase-1.2.3-bin.tar.gz -C /opt/")
         self.my_logger.debug("executed the command")
