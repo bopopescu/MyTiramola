@@ -74,7 +74,7 @@ class MyDaemon(Daemon):
                 self.my_logger.error("Neither MDP, nor MDP-DT is selected. udate_algorithm, ualgorithm_error and max_steps are ignored!")
 
             # More configurations...
-            self.decision_maker.train() # If no training.data, training is ignored and continues
+#            self.decision_maker.train() # If no training.data, training is ignored and continues
             self.last_load = None
             self.removed_hosts = []
             
