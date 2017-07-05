@@ -24,13 +24,15 @@ class Metrics(object):
         self.max_time   = self.utils.ycsb_max_time
         
         ## Install logger
-        LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+        LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
         self.my_logger = logging.getLogger("Metrics")
         self.my_logger.setLevel(logging.DEBUG)
-        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
+        
+        self.my_logger.debug("Metrics, initialized!")
 
 
     def collect_all_metrics(self, cluster):

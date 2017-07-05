@@ -13,6 +13,9 @@ import DecisionMaking
 class YCSBController(object):
 
     def __init__(self, num_clients = None):
+        """
+            Constructor
+        """
 
         self.utils        = Utils.Utils()
         self.ycsb         = self.utils.ycsb_binary
@@ -27,41 +30,34 @@ class YCSBController(object):
             self.clients = num_clients
 
         ## Install logger
-        LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+        LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
         self.my_logger = logging.getLogger("YCSBController")
         self.my_logger.setLevel(logging.DEBUG)
-        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
 
         self.killall_jobs()
         self.transfer_files()
+        
+        self.my_logger.debug("YCSBController initialized!")
 
 
-    def set_records(self, records):
+    def execute_load(self, target, reads):
 
-        self.record_count = records
-
-
-    # copy hosts file to all ycsb clients
-    def transfer_files(self):
-
-        self.my_logger.debug("Copying hosts files to ycsb clients ...")
+        self.my_logger.debug("Ordering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
+        delay_per_client = 0.7
+        delay = self.clients * delay_per_client + 2
         for c in range(1, self.clients + 1):
-            hostname = "ycsb" + str(c)
-            transport = paramiko.Transport((hostname, 22))
-            transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
-            transport.open_channel("session", hostname, "localhost")
-            sftp = paramiko.SFTPClient.from_transport(transport)
-            sftp.put("/etc/hosts", "/home/ubuntu/hosts")
-            sftp.put(self.workload, "/home/ubuntu/tiramola/workload.cfg")
-            sftp.close()
-
+            delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname, username='ubuntu')
-            ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
+            print("Connecting to ycsb" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
+            ssh.connect("ycsb%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+            cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
+            print("Running command: " + str(cmd))
+            ssh.exec_command(cmd)
             ssh.close()
 
 
@@ -71,9 +67,10 @@ class YCSBController(object):
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
         for c in range(1, self.clients + 1):
             hostname = "ycsb" + str(c)
+            print("Connecting to: " + str(hostname) + "and killing all java...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname, username='ubuntu')
+            ssh.connect(hostname, username = 'ubuntu')
             stdin, stdout, stderr = ssh.exec_command('sudo killall java')
             ssh.close()
 
@@ -94,19 +91,49 @@ class YCSBController(object):
             subprocess.call(cmd, stderr=err)
 
 
-    def execute_load(self, target, reads):
+    def set_records(self, records):
 
-        self.my_logger.debug("Ordering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
-        delay_per_client = 0.7
-        delay = self.clients * delay_per_client + 2
+        self.record_count = records
+
+
+    # copy hosts file to all ycsb clients
+    def transfer_files(self):
+
+        self.my_logger.debug("Copying hosts files to ycsb clients ...")
         for c in range(1, self.clients + 1):
-            delay -= delay_per_client
+            hostname = "ycsb" + str(c)
+            print("\nConnecting to: " + str(hostname) + "and transfering files.")
+            transport = paramiko.Transport((hostname, 22))
+            transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+            transport.open_channel("session", hostname, "localhost")
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            print("copying host machine's /etc/hosts to " + str(hostname) + "/home/ubuntu/hosts")
+            sftp.put("/etc/hosts", "/home/ubuntu/hosts")
+            print("copying host machine's " + str(self.workload) + " to " + str(hostname) + " dir: /home/ubuntu/tiramola/, as workload.cfg")
+            sftp.put(self.workload, "/home/ubuntu/tiramola/workload.cfg")
+            print("copying host machine's /home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/YCSBClient.py to " + str(hostname) + " in dir: /home/ubuntu/tiramola")
+            sftp.put("/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/YCSBClient.py", "/home/ubuntu/tiramola/YCSBClient.py")
+            sftp.close()
+
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect("ycsb%d" % c, username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
-            cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
-            ssh.exec_command(cmd)
+            ssh.connect(hostname, username = 'ubuntu')
+            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname))
+            ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
             ssh.close()
+
+
+####################################### PROCESSING RESULTS (Lwlos mode?) #####################################
+
+
+    def _aggregate_results(self, results):
+
+        aggr = {k: sum([r[k] for r in results]) for k in results[0]}
+        aggr[DecisionMaking.PC_READ_LOAD]   /= self.clients
+        aggr[DecisionMaking.READ_LATENCY]   /= self.clients
+        aggr[DecisionMaking.UPDATE_LATENCY] /= self.clients
+
+        return aggr
 
 
     def parse_results(self):
@@ -122,11 +149,10 @@ class YCSBController(object):
 
                 hostname = "ycsb" + str(c)
                 transport = paramiko.Transport((hostname, 22))
-                transport.connect(username='ubuntu',
-                        pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+                transport.connect(username='ubuntu', pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
                 transport.open_channel("session", hostname, "localhost")
                 sftp = paramiko.SFTPClient.from_transport(transport)
-                sftp.get("/home/ubuntu/ycsb-0.3.0/ycsb.out", "/tmp/ycsb.out")
+                sftp.get("/home/ubuntu/ycsb-0.13.0-SNAPSHOT/ycsb.out", "/tmp/ycsb.out")
                 transport.close()
                 sftp.close()
 
@@ -179,21 +205,12 @@ class YCSBController(object):
         return self._aggregate_results(client_results)
 
 
-    def _aggregate_results(self, results):
-
-        aggr = {k: sum([r[k] for r in results]) for k in results[0]}
-        aggr[DecisionMaking.PC_READ_LOAD]   /= self.clients
-        aggr[DecisionMaking.READ_LATENCY]   /= self.clients
-        aggr[DecisionMaking.UPDATE_LATENCY] /= self.clients
-
-        return aggr
-
 
 if __name__ == "__main__":
 
-    ycsb = YCSBController(15)
-    ycsb.record_count = 10000
-    ycsb.execute_load(50000, 1.0)
+    ycsb = YCSBController(1)
+    ycsb.record_count = 500000
+    ycsb.execute_load(12000, 1.0)
     time.sleep(180)
     res = ycsb.parse_results()
     pprint(res)

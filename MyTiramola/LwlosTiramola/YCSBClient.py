@@ -13,19 +13,34 @@ import DecisionMaking
 class YCSBController(object):
 
     def __init__(self):
+        """
+            Constructor
+        """
+        self.ycsb         = "/home/ubuntu/ycsb-0.13.0-SNAPSHOT/bin/ycsb"
+        self.workload     = "/home/ubuntu/tiramola/workload.cfg"
+        self.output       = '/home/ubuntu/ycsb-0.13.0-SNAPSHOT/ycsb.out'
+        self.ycsb_error   = '/home/ubuntu/ycsb-0.13.0-SNAPSHOT/ycsb.err'
+        
+        LOG_FILENAME = "/home/ubuntu/tiramola/YCSBClient.log"
+        self.my_logger = logging.getLogger("YCSBClient")
+        self.my_logger.setLevel(logging.DEBUG)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+        handler.setFormatter(formatter)
+        self.my_logger.addHandler(handler)
+        
+        self.my_logger.debug("YCSBClient initialized!")
 
-        self.ycsb         = '/home/ubuntu/ycsb-0.3.0/bin/ycsb'
-        self.workload     = '/home/ubuntu/tiramola/Workload.cfg'
-        self.output       = '/home/ubuntu/ycsb-0.3.0/ycsb.out'
-        self.ycsb_error   = '/home/ubuntu/ycsb-0.3.0/ycsb.err'
 
-
-    def execute_load(self, target, reads, records, max_time, delay, verbose=True):
-
+    def execute_load(self, target, reads, records, max_time, delay, verbose = True):
+        """
+            This method executes YCSB-load.
+            The .py should be in a ycsb-client machine.
+        """
         self.kill_ycsb()
         time.sleep(delay)
 
-        cmd = [self.ycsb, 'run', 'hbase', '-P', self.workload, '-cp', '/home/ubuntu/ycsb-0.3.0/site']
+        cmd = [self.ycsb, 'run', 'hbase10', '-cp', '/home/ubuntu/hbase-conf', '-P', self.workload,]
         if verbose:
             cmd.append('-s')
         cmd += ['-p', 'maxexecutiontime=' + str(max_time)]
@@ -33,17 +48,21 @@ class YCSBController(object):
         cmd += ['-p', 'readproportion=' + str(reads)]
         cmd += ['-p', 'updateproportion=' + str(1 - reads)]
         cmd += ['-p', 'recordcount=' + str(records)]
-
+        
+        self.my_logger.debug("cmd to run: " + str(cmd))
 
         with open(self.output, 'wb') as f, open(self.ycsb_error, 'a') as err:
             subprocess.Popen(cmd, stdout=f, stderr=err)
 
 
-    # Gracefully ask the running ycsb process to terminate
     def kill_ycsb(self):
-
+        """
+            Gracefully ask the running ycsb process to terminate
+        """
         with open("/dev/null", 'w') as null:
             subprocess.call(["killall", "java"], stderr=null, stdout=null) 
+
+
 
 if __name__ == "__main__":
 

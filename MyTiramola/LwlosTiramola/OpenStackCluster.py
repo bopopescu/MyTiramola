@@ -53,6 +53,8 @@ class OpenStackCluster(object):
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         
+        self.my_logger.debug("OpenStackCluster initialized.")
+        
 
     def describe_instances(self, state = None, pattern = None):
 

@@ -72,6 +72,8 @@ class HBaseCluster(object):
         print("host_template = " + str(self.host_template))
         print("cluster_id = " + str(self.cluster_id))
         print("quorum = " + str(self.quorum))
+        
+        self.my_logger.debug("HBaseCluster initialized.")
     
     
     def create_cluster(self, nodes = None):
