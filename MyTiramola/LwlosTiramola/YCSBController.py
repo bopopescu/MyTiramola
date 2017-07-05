@@ -67,7 +67,7 @@ class YCSBController(object):
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
         for c in range(1, self.clients + 1):
             hostname = "ycsb" + str(c)
-            print("Connecting to: " + str(hostname) + "and killing all java...")
+            print("\nConnecting to: " + str(hostname) + " and killing all java...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username = 'ubuntu')
@@ -102,7 +102,7 @@ class YCSBController(object):
         self.my_logger.debug("Copying hosts files to ycsb clients ...")
         for c in range(1, self.clients + 1):
             hostname = "ycsb" + str(c)
-            print("\nConnecting to: " + str(hostname) + "and transfering files.")
+            print("\nConnecting to: " + str(hostname) + " and transfering files.")
             transport = paramiko.Transport((hostname, 22))
             transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
             transport.open_channel("session", hostname, "localhost")
@@ -152,7 +152,7 @@ class YCSBController(object):
                 transport.connect(username='ubuntu', pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
                 transport.open_channel("session", hostname, "localhost")
                 sftp = paramiko.SFTPClient.from_transport(transport)
-                sftp.get("/home/ubuntu/ycsb-0.13.0-SNAPSHOT/ycsb.out", "/tmp/ycsb.out")
+                sftp.get("/home/ubuntu/tiramola/ycsb.out", "/tmp/ycsb.out")
                 transport.close()
                 sftp.close()
 

@@ -565,7 +565,7 @@ class MyDaemon(Daemon):
             call(["sed", "-i", "/%s/d" % self.nosqlCluster.host_template, "/etc/hosts"])
             cluster = self.nosqlCluster.cluster
             # Add all the current nodes of the cluster
-            with open("/etc/hosts", "a") as hosts_file:
+            with open("/etc/hosts", "a") as hosts_file:     # changed the /etc/hosts file's permissions in order to run!
                 for hostname in cluster:
                     hosts_file.write("%s\t%s\n" % (cluster[hostname].networks, hostname))
 
