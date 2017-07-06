@@ -7,7 +7,7 @@ from timeit import default_timer as timer
 import Utils
 import logging
 import paramiko
-import random
+import random 
 import DecisionMaking
 
 
@@ -17,7 +17,8 @@ class Metrics(object):
 
         self.utils      = Utils.Utils()
         self.username   = self.utils.username
-        self.hbase_host = self.utils.hostname_template + "master"
+#        self.hbase_host = self.utils.hostname_template + "master"
+        self.hbase_host = "master"
         self.hbase_port = hbase_port
         self.iaas_host  = iaas_host
         self.iaas_port  = iaas_port
@@ -72,17 +73,26 @@ class Metrics(object):
     """
     def get_cluster_metrics(self, cluster):
 
+#        print("The cluster is: " + str(cluster))
         hostnames = self._get_monitored_hosts(cluster)
+        self.my_logger.debug("Monitored hosts are: " + str(hostnames))
+        # fere mou ta value twn instance.name pou einai sto value otan to key einai to hostname.
         while True:
+#            print("Metrics.get_all_metrics from host: " + str(self.hbase_host) + " in port: " + str(self.hbase_port))
             data = get_all_metrics((self.hbase_host, self.hbase_port))
+            print("\n\nMetrics.get_cluster_metrics, raw:")
+            pprint(data)
             metrics = self._cluster_averages(data, hostnames)
+            print("\n\nMetrics.get_cluster_metrics, averages:")
+            pprint(metrics)
             if not metrics is None:
                 break
 
             self.my_logger.debug("Data are missing, restarting Ganglia ...")
             self._restart_ganglia(cluster)
             time.sleep(30)
-
+        
+        self.my_logger.debug("Metrics collected and averaged.")
         return metrics
 
 
@@ -91,14 +101,18 @@ class Metrics(object):
         given hosts, else returns None
     """
     def _cluster_averages(self, data, hostnames):
-
+        
+        self.my_logger.debug("Getting metrics and calculating averages")
         num_meas = len(hostnames)
+#        print("num_meas = " + str(num_meas))
         if num_meas == 0:
             self.my_logger.error("No hostnames provided")
             return None
 
         averages = {n: 0.0 for n in DecisionMaking.CLUSTER_METRICS}
+#        print("averages = " + str(averages))
         for hostname in hostnames:
+            print("Averaging for hostname: " + str(hostname))
             if not hostname in data:
                 self.my_logger.debug("Missing data for " + hostname)
                 return None
@@ -122,17 +136,20 @@ class Metrics(object):
     """
     def get_iaas_metrics(self, cluster):
 
+        self.my_logger.debug("Metrics.get_iaas_metrics running")
         ids = self._get_monitored_ids(cluster)
         while True:
             data = get_all_metrics((self.iaas_host, self.iaas_port))
             metrics = self._iaas_averages(data, ids)
+            print("\n\nMetrics.get_iaas_metrics:")
+            pprint(metrics)
             if not metrics is None:
                 break
 
-            self.my_logger.debug("Could not collect metrics from " + str(self.iaas_host) + \
-                                 ", will try again in 10 seconds.")
+            self.my_logger.debug("Could not collect metrics from " + str(self.iaas_host) + ", will try again in 10 seconds.")
             time.sleep(10)
-
+        
+        self.my_logger.debug("Metrics from IAAS collected.")
         return metrics
 
 
@@ -214,20 +231,21 @@ class Metrics(object):
         hosts = list(cluster.items())
         random.shuffle(hosts) # ...
         for hostname, node in hosts:
-            # self.my_logger.debug("Restarting ganglia daemons on " + hostname)
+            self.my_logger.debug("Restarting ganglia daemons on hostname: " + str(hostname))
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
-                ssh.connect(node.networks, username='root', password='secretpw', 
-                            key_filename=self.utils.key_file)
+                self.my_logger.debug("Trying to connect on node: " + str(node))
+                ssh.connect(node.networks, username = "ubuntu", password = 'secretpw', key_filename = self.utils.key_file)
             except paramiko.SSHException:
                 self.my_logger.error("Failed to invoke shell!")
                 continue
 
             if hostname.endswith("master"):
-                ssh.exec_command('/etc/init.d/gmetad restart')
+                ssh.exec_command("/etc/init.d/gmetad restart")
 
-            ssh.exec_command('/etc/init.d/ganglia-monitor restart')
+            ssh.exec_command("/etc/init.d/ganglia-monitor restart")
+            self.my_logger.debug("Ganglia daemon restarted at hostname: " + str(hostname) + ", node: " + str(node) + "\n")
             ssh.close()
 
 

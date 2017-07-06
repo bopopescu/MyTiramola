@@ -12,22 +12,25 @@ import re
 from sqlalchemy import exc, create_engine
 import pexpect, os, shutil, fileinput, sys, logging
 
-class HBaseCluster(object):
-    '''
+
+'''
     This class holds all nodes of the db in the virtual cluster. It can start/stop individual 
     daemons as needed, thus adding/removing nodes at will. It also sets up the configuration 
     files as needed. 
-    '''
+'''
+class HBaseCluster(object):
 
-    def __init__(self, initial_cluster_id = "default"):
-        '''
+    '''
         Constructor
-        '''
+    '''
+    def __init__(self, initial_cluster_id = "default"):
+        
         ## Necessary variables
-        self.cluster        = {}
-        self.host_template  = ""
-        self.cluster_id     = initial_cluster_id
         self.utils          = Utils.Utils()
+        self.host_template  = ""
+#        self.host_template  = self.utils.hostname_template
+        self.cluster_id     = initial_cluster_id
+        self.cluster        = {}
         self.quorum         = ""
         
         # Make sure the sqlite file exists. if not, create it and add the table we need
@@ -74,18 +77,19 @@ class HBaseCluster(object):
         print("quorum = " + str(self.quorum))
         
         self.my_logger.debug("HBaseCluster initialized.")
-    
-    
+        
+        
+    """
+        This method creates the self.cluster without configurating the nodes.
+        It takes all the instances previously defined in euca_cluster, filters them and
+        adds the necessary ones in db's clusters table.
+        fyi: Later, we call "wake_up_nodes()" on self.cluster triggering regionserver to start!
+        So, self.cluster must contain only master+nodes that form the nosql-cluster!
+    """
     def create_cluster(self, nodes = None):
-        """
-            This method creates the self.cluster without configurating the nodes.
-            It takes all the instances previously defined in euca_cluster, filters them and
-            adds the necessary ones in db's clusters table.
-            fyi: Later, we call "wake_up_nodes()" on self.cluster triggering regionserver to start!
-                So, self.cluster must contain only master+nodes that form the nosql-cluster!
-        """
+
         self.my_logger.debug("Creating cluster without configurations!")
-        host_template = self.host_template
+#        host_template = self.host_template
         if nodes == None:
             self.my_logger.debug("I can't see any nodes mate!")
             return
@@ -93,9 +97,11 @@ class HBaseCluster(object):
         for node in nodes:
             self.my_logger.debug("Configuring node: " + node.networks)
             if node.name == "master":
-                self.cluster[host_template + "master"] = node
+#                self.cluster[host_template + "master"] = node
+                self.cluster["master"] = node
             elif node.name[0:4] == "node":
-                self.cluster[host_template + node.name[-1]] = node
+#                self.cluster[host_template + node.name[-1]] = node
+                self.cluster["node" + node.name[-1]] = node
         
         print("self.cluster = " + str(self.cluster))  
         self.utils.add_to_cluster_db(self.cluster, self.cluster_id)

@@ -50,7 +50,7 @@ class MyDaemon(Daemon):
             self.update_hosts()
             self.init_flavors()
 #            if self.utils.cluster_type == "HBASE":
-#                self.nosqlCluster.start_hbase()     # Be sure than Hadoop alreadu runs!
+#                self.nosqlCluster.start_hbase()     # Be sure that Hadoop already runs!
 #            else:
 #                self.nosqlCluster.start_cluster()
             # Preparing to get metrics (termi7 metrics!)
@@ -95,7 +95,7 @@ class MyDaemon(Daemon):
 
             for i in range(num_tests):
                 self.my_logger.debug("Running warm-up test %d/%d ..." % (i+1, num_tests))
-                self.run_test(target, self.reads, update_load=False)
+                self.run_test(target, float(self.utils.read), update_load = False)
                 self.sleep(60)
 
             self.my_logger.debug("Running initial state test")
@@ -316,7 +316,8 @@ class MyDaemon(Daemon):
                 instances.append(nosqlcluster.cluster[nosqlcluster.host_template + "master"])
                 print("instances2 = " + str(instances))
                 for i in range(1, len(nosqlcluster.cluster)):
-                    instances.append(nosqlcluster.cluster[nosqlcluster.host_template + str(i)])
+#                    instances.append(nosqlcluster.cluster[nosqlcluster.host_template + str(i)])
+                    instances.append(nosqlcluster.cluster["node" + str(i)])
                 print("instances3 = " + str(instances))
                 self.my_logger.debug("Found old instances: " + str(instances))
                 self.my_logger.debug("WARNING: Will block forever if they are not running.")

@@ -18,17 +18,20 @@ import sqlalchemy
 import threading
 import uuid
 
-class OpenStackCluster(object):
-    '''
+
+'''
     This class holds all instances that take part in the virtual cluster.
     It can create and stop new instances - and working in conjuction with the
     db specific classes set up various environments. 
-    '''
+'''
+class OpenStackCluster(object):
     
-    def __init__(self):
-        '''
+    
+    '''
         Constructor
-        ''' 
+    '''
+    def __init__(self):
+
         self.utils = Utils.Utils()
         
         # Make sure the sqlite file exists. if not, create it and the table we need

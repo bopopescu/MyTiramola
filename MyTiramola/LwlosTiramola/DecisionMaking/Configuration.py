@@ -8,7 +8,10 @@ from DecisionMaking.Exceptions import *
     Class to read a model configuration from a .json file
 """
 class ModelConf:
-    
+
+    """
+        COnstructor
+    """
     def __init__(self, conf_file):
 
         with open(conf_file, 'r') as f:

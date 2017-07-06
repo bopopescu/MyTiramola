@@ -7,11 +7,12 @@ import logging.handlers
 
 
 class YCSBController(object):
-
+    
+    """
+        Constructor
+    """
     def __init__(self):
-        """
-            Constructor
-        """
+
         self.ycsb         = "/home/ubuntu/ycsb-0.13.0-SNAPSHOT/bin/ycsb"
         self.workload     = "/home/ubuntu/tiramola/workload.cfg"
         self.output       = "/home/ubuntu/tiramola/ycsb.out"
@@ -33,11 +34,12 @@ class YCSBController(object):
         self.my_logger.debug("YCSBClient initialized!\n\n")
 
 
+    """
+        This method executes YCSB-load.
+        The .py should be in a ycsb-client machine.
+    """
     def execute_load(self, target, reads, records, max_time, delay, verbose = True):
-        """
-            This method executes YCSB-load.
-            The .py should be in a ycsb-client machine.
-        """
+
         self.kill_ycsb()
         time.sleep(delay)
 
@@ -56,15 +58,18 @@ class YCSBController(object):
             subprocess.Popen(cmd, stdout=f, stderr=err)
 
 
+    """
+        Gracefully ask the running ycsb process to terminate
+    """
     def kill_ycsb(self):
-        """
-            Gracefully ask the running ycsb process to terminate
-        """
+
         with open("/dev/null", 'w') as null:
             subprocess.call(["killall", "java"], stderr = null, stdout = null) 
 
 
-
+"""
+    YCSBClient workflow when run individually.
+"""
 if __name__ == "__main__":
 
     if len(sys.argv) < 5:

@@ -12,10 +12,11 @@ import DecisionMaking
 
 class YCSBController(object):
 
+    """
+        Constructor
+    """
     def __init__(self, num_clients = None):
-        """
-            Constructor
-        """
+
 
         self.utils        = Utils.Utils()
         self.ycsb         = self.utils.ycsb_binary
@@ -45,6 +46,9 @@ class YCSBController(object):
 
 
     def execute_load(self, target, reads):
+        
+        self.target = target / self.clients
+        self.reads  = reads
 
         self.my_logger.debug("Ordering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
         delay_per_client = 0.7
@@ -145,36 +149,44 @@ class YCSBController(object):
 
         client_results = []
         for c in range(1, self.clients + 1):
-            for i in range(20):
+            for i in range(10):
 
                 hostname = "ycsb" + str(c)
                 transport = paramiko.Transport((hostname, 22))
-                transport.connect(username='ubuntu', pkey=paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+                transport.connect(username = "ubuntu", pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
                 transport.open_channel("session", hostname, "localhost")
                 sftp = paramiko.SFTPClient.from_transport(transport)
                 sftp.get("/home/ubuntu/tiramola/ycsb.out", "/tmp/ycsb.out")
+                sftp.get("/home/ubuntu/tiramola/ycsb.err", "/tmp/ycsb.err")
                 transport.close()
                 sftp.close()
 
                 try:
-                    res = {}
+                    res         = {}
+                    target      = [self.target]
+                    read_prop   = [self.reads]
+#                    with open("/tmp/ycsb.err", 'r') as er:
+#                        target = re.findall("-target " + int_re, er)
+#                        read_prop = re.findall("readproportion=" + float_re, er)
+
+                    
                     with open(self.output, 'r') as f:
                         data = f.read()
-                        target = re.findall("-target " + int_re, data)
+#                        target = re.findall("-target " + int_re, data)                                      # BUG "-target" is in ycsb.err !!!
                         throughput = re.findall("\[OVERALL\]\, Throughput\(ops\/sec\)\, " + float_re, data)
                         read_ops = re.findall("\[READ\]\, Operations\, " + int_re, data)
                         read_latency = re.findall("\[READ\]\, AverageLatency\(us\)\, " + float_re, data)
                         update_ops = re.findall("\[UPDATE\]\, Operations\, " + int_re, data)
                         update_latency = re.findall("\[UPDATE\]\, AverageLatency\(us\)\, " + float_re, data)
                         zero_results = re.findall("operations; 0 current ops/sec;", data)
-                        read_prop = re.findall("readproportion=" + float_re, data)
+#                        read_prop = re.findall("readproportion=" + float_re, data)                          # BUG "-target" is in ycsb.err !!!
                         if len(zero_results) > 1:
                             self.my_logger.debug("YCSB test failed!")
                             return None
  
                         res[DecisionMaking.TOTAL_THROUGHPUT] = float(throughput[0])
-                        res[DecisionMaking.INCOMING_LOAD]    = float(target[0])
-                        res[DecisionMaking.PC_READ_LOAD]     = float(read_prop[0])
+                        res[DecisionMaking.INCOMING_LOAD]    = float(target[0])                         ## list out of range
+                        res[DecisionMaking.PC_READ_LOAD]     = float(read_prop[0])                      ## list out of range
                         if read_ops:
                             res[DecisionMaking.READ_THROUGHPUT] = float(read_ops[0]) / self.max_time
                             res[DecisionMaking.READ_LATENCY]    = float(read_latency[0]) / 1000

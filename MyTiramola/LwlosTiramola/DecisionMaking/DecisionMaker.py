@@ -17,9 +17,9 @@ from pprint import pprint
 class DecisionMaker(object):
 
     def __init__(self, conf_file, training_file = None):
-
-        self.training_file = training_file
-        self.last_meas = None
+        
+        self.training_file  = training_file
+        self.last_meas      = None
 
         conf = ModelConf(conf_file)
         self.model_type = conf.get_model_type()
@@ -41,16 +41,18 @@ class DecisionMaker(object):
             self.do_vi = False
             self.model = QModel(model_conf)
 
-#        self.install_logger()
+        self.install_logger()
+        
+        self.my_logger.debug("DecisionMaker initialized.")
+        print("DecisionMaker initialized.")
 
 
     def install_logger(self):
-
+        
+        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
         self.my_logger = logging.getLogger('DecisionMaker')
         self.my_logger.setLevel(logging.DEBUG)
-
-        handler = logging.handlers.RotatingFileHandler(
-            LOG_FILENAME, maxBytes=2*1024*1024, backupCount=5)
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024, backupCount = 5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
