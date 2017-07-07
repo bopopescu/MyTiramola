@@ -95,5 +95,5 @@ if __name__ == "__main__":
     ycsb.my_logger.debug("Due to frequent inability of the YCSB to stop in the specifically defined maxtime, we force it to stop.")
     ycsb.my_logger.debug("Killing YCSB (and any other java procedure) running in this machine...")
     ycsb.kill_ycsb()
-    ycsb.my_logger.debug("END OF YCSBClient.py")
+    ycsb.my_logger.debug("END OF YCSBClient.py\n\n\n")
 

@@ -513,7 +513,7 @@ class MDPModel:
     """
         Returns the state that corresponds to given set of measurementes
     """
-    def _get_state(self, measurements): # TODO this with indexing
+    def _get_state(self, measurements): # TODO this with indexing //Lwlos' comment!
 
         for name, values in self.index_params:
             if not name in measurements:

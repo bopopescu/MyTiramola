@@ -99,7 +99,9 @@ class MyDaemon(Daemon):
                 self.sleep(60)
 
             self.my_logger.debug("Running initial state test")
-            meas = self.run_test(self.get_load(), self.reads)
+            target *= 1.2   # Set state with 20% more load than the target. Seems more interesting
+#            meas = self.run_test(self.get_load(), float(self.utils.read))    # Set state with 20% more load than the target. Seems more interesting
+            meas = self.run_test(round(target), float(self.utils.read))
             self.decision_maker.set_state(meas)
 
 
@@ -163,7 +165,7 @@ class MyDaemon(Daemon):
             self.sleep(60)
 
 
-        def collect_measurements(self, update_load=True):
+        def collect_measurements(self, update_load = True):
 
             # collect the metrics from ganglia and ycsb
             ganglia_metrics = self.metrics.collect_all_metrics(self.nosqlCluster.cluster)
@@ -197,15 +199,20 @@ class MyDaemon(Daemon):
                                                   meas[DecisionMaking.UPDATE_THROUGHPUT])
 
             # simple linear prediction for the load on the next step
+            print("self.last_load1 = " + str(self.last_load))
             if self.last_load is None:
                 last_load = meas[DecisionMaking.INCOMING_LOAD]
             else:
                 last_load = self.last_load
+            print("last_load1 = " + str(last_load))
 
             meas[DecisionMaking.NEXT_LOAD] = 2 * meas[DecisionMaking.INCOMING_LOAD] - last_load
-
+            print("meas[DecisionMaking.NEXT_LOAD]1 = " + str(meas[DecisionMaking.NEXT_LOAD]))
+            
+            print("update_load1 = " + str(update_load))
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
+            print("self.last_load2 = " + str(self.last_load))
 
             self.my_logger.debug("Collected measurements: \n" + pprint.pformat(meas))
             return meas
@@ -224,7 +231,7 @@ class MyDaemon(Daemon):
                 self.resize_vms(action_value)
 
 
-        def exec_rem_actions(self, num_actions, num_removes=1):
+        def exec_rem_actions(self, num_actions, num_removes = 1):
 
             rem_vm  = (DecisionMaking.REMOVE_VMS, num_removes)
 
@@ -480,7 +487,7 @@ class MyDaemon(Daemon):
             while True:
                 self.wake_up_ganglia()
                 self.ycsb.execute_load(target, reads)
-                meas = self.collect_measurements(update_load=update_load)
+                meas = self.collect_measurements(update_load = update_load)
                 if not meas is None:
                     return meas
 

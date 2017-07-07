@@ -202,7 +202,7 @@ class YCSBController(object):
                             res[DecisionMaking.UPDATE_LATENCY]    = float(read_latency[0]) / 1000
  
                         # self.my_logger.debug("YCSB results: " + str(res))
-                        #self.my_logger.debug("Successfully collected YCSB results from client %d" % c)
+                        self.my_logger.debug("Successfully collected YCSB results from client %d" % c)
                         client_results.append(res)
                         break
 

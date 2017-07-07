@@ -99,7 +99,7 @@ class DecisionMaker(object):
         print("\nself.last_meas after adding network usage:")
         pprint(self.last_meas)
         self.model.set_state(measurements)
-#        self.my_logger.debug("State set")
+        self.my_logger.debug("State set")
 
 
     def add_network_usage(self, measurements):

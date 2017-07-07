@@ -463,7 +463,7 @@ class HBaseCluster(object):
 
     def trigger_balancer(self):
 
-        master_node = self.cluster[self.host_template+"master"]
+        master_node = self.cluster[self.host_template + "master"]
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
@@ -479,8 +479,7 @@ class HBaseCluster(object):
         time.sleep(30)
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
 
         for i in range(40):
             stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -report')
@@ -536,15 +535,15 @@ class HBaseCluster(object):
         master_node = self.cluster[self.host_template + "master"]
         nodes.append(master_node)
         for i in range(1,len(self.cluster)):
-            if not (self.host_template+str(i)).endswith(hostname):
-                nodes.append(self.cluster[self.host_template+str(i)])    
+            if not (self.host_template + str(i)).endswith(hostname):
+                nodes.append(self.cluster[self.host_template + str(i)])   
         # self.my_logger.debug("Nodes after removal:\n" + pprint.pformat(nodes))
         ## keep node
         node = self.cluster.pop(hostname)
         ## Add the removed node to the datanode excludes and refresh the namenodes
         self.stop_hbase(hostname, node)
         if stop_dfs:
-            self.my_logger.debug("Adding "+hostname+" to datanode-excludes ...")
+            self.my_logger.debug("Adding " + hostname + " to datanode-excludes ...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)

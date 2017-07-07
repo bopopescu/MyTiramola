@@ -46,7 +46,7 @@ class Metrics(object):
         end = start + int(self.utils.ycsb_max_time)
         self.my_logger.debug("Will start collecting data in 30 seconds ...")
         time.sleep(30)
-        self.my_logger.debug("Now collecting data ...")
+        self.my_logger.debug("Now collecting data ...\n")
         while True:
             now = timer()
             if now < end:
@@ -62,7 +62,7 @@ class Metrics(object):
             self.my_logger.error("Only %d metrics collected from Ganglia" % len(timeseries))
             return None
 
-        self.my_logger.debug("Successfully collected data %s times" % len(timeseries))
+        self.my_logger.debug("Successfully collected data %s times" % len(timeseries) + "\n\n")
         results = {n: sum([m[n] for m in timeseries]) / len(timeseries) for n in timeseries[0]}
         #self.my_logger.debug("Results from Ganglia: " + str(results))
         return results
@@ -149,7 +149,7 @@ class Metrics(object):
             self.my_logger.debug("Could not collect metrics from " + str(self.iaas_host) + ", will try again in 10 seconds.")
             time.sleep(10)
         
-        self.my_logger.debug("Metrics from IAAS collected.")
+        self.my_logger.debug("Metrics from IAAS collected.\n")
         return metrics
 
 
