@@ -238,10 +238,11 @@ class MyDaemon(Daemon):
             for i in range(num_actions):
 
                 #self.time += 1
-                target = self.get_load()
-                self.my_logger.debug("Time = %d, executing remove action" % self.time)
+#                target = self.get_load()
+                target = int(self.utils.offset)
+#                self.my_logger.debug("Time = %d, executing remove action" % self.time)
                 self.execute_action(rem_vm)
-                self.run_test(target, self.reads, update_load=False)
+                self.run_test(target, float(self.utils.read), update_load = False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)

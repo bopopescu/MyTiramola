@@ -107,7 +107,7 @@ class DecisionMaker(object):
         measurements[NETWORK_USAGE] = measurements[BYTES_IN] + measurements[BYTES_OUT]
 
 
-    def update(self, action, meas, reward=None):
+    def update(self, action, meas, reward = None):
 
         experience = [self.last_meas, action, meas]
         if not self.training_file is None:
