@@ -245,7 +245,7 @@ class MyDaemon(Daemon):
                 self.run_test(target, float(self.utils.read), update_load = False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
-                meas = self.run_test(target, self.reads)
+                meas = self.run_test(target, float(self.utils.read))
                 self.decision_maker.update(rem_vm, meas)
 
 
