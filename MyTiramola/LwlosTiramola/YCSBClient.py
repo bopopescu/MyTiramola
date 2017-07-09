@@ -31,7 +31,7 @@ class YCSBController(object):
         self.my_logger.debug("ycsb.out WILL be in /home/ubuntu/tiramola")
         self.my_logger.debug("ycsb.err WILL be in /home/ubuntu/tiramola\n")
         
-        self.my_logger.debug("YCSBClient initialized!\n\n")
+        self.my_logger.debug("YCSBClient initialized!\n")
 
 
     """

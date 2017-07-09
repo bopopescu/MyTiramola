@@ -42,6 +42,13 @@ class MyDaemon(Daemon):
 
         def init(self, records):
             
+            # method variables
+            if os.path.isfile(self.utils.training_file):
+                training_file = self.utils.training_file
+            else:
+                training_file = None
+            
+            
             self.install_logger()        
             # Setting up cluster & parameters
             self.initializeNosqlCluster()
@@ -59,7 +66,7 @@ class MyDaemon(Daemon):
             self.ycsb = YCSBController(int(self.utils.ycsb_clients))
             
             # Setting up Decision Making
-            self.decision_maker = DecisionMaking.DecisionMaker(self.utils.decision_making_file, self.utils.training_file)            
+            self.decision_maker = DecisionMaking.DecisionMaker(self.utils.decision_making_file, training_file)            
             if self.decision_maker.model_type == MDP_DT:
                 ## Splitting Method
                 self.decision_maker.set_splitting(self.utils.split_crit, self.utils.cons_trans)
@@ -112,7 +119,7 @@ class MyDaemon(Daemon):
                 self.time += 1
                 target = self.get_load()
                 
-                if i >= self.train_actions:
+                if i >= self.train_actions:     # Defining epsilon according to the selected training time from properties
                     epsilon = 0
 
                 if random.uniform(0, 1) <= epsilon:
@@ -231,9 +238,14 @@ class MyDaemon(Daemon):
                 self.resize_vms(action_value)
 
 
+        """
+            (Probably) A dedicated method for removing VMs.
+            Used (only) for testing.
+            Doing the usual iteration:  (load - action - update) with no Decision taking place. 
+        """
         def exec_rem_actions(self, num_actions, num_removes = 1):
 
-            rem_vm  = (DecisionMaking.REMOVE_VMS, num_removes)
+            rem_action  = (DecisionMaking.REMOVE_VMS, num_removes)
 
             for i in range(num_actions):
 
@@ -241,12 +253,12 @@ class MyDaemon(Daemon):
 #                target = self.get_load()
                 target = int(self.utils.offset)
 #                self.my_logger.debug("Time = %d, executing remove action" % self.time)
-                self.execute_action(rem_vm)
+                self.execute_action(rem_action)
                 self.run_test(target, float(self.utils.read), update_load = False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, float(self.utils.read))
-                self.decision_maker.update(rem_vm, meas)
+                self.decision_maker.update(rem_action, meas)
 
 
         def exit(self):

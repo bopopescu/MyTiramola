@@ -47,6 +47,31 @@ class DecisionMaker(object):
         print("DecisionMaker initialized.")
 
 
+
+    def add_network_usage(self, measurements):
+
+        measurements[NETWORK_USAGE] = measurements[BYTES_IN] + measurements[BYTES_OUT]
+
+
+    def get_model(self):
+
+        return self.model
+
+
+    def get_reward(self, measurements, action):
+        
+        vms = measurements[NUMBER_OF_VMS]
+        throughput = measurements[TOTAL_THROUGHPUT]
+        reward = throughput - 800 * vms
+
+        return reward
+
+
+    def get_legal_actions(self):
+
+        return self.model.get_legal_actions()
+
+
     def install_logger(self):
         
         LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
@@ -56,6 +81,55 @@ class DecisionMaker(object):
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
+        
+        
+    def set_no_update(self):
+
+        self.model.set_no_update()
+
+    
+    def set_prioritized_sweeping(self, error=0.1, max_steps=200):
+
+        self.model.set_prioritized_sweeping(error, max_steps)
+
+
+    def set_single_update(self):
+        
+        self.model.set_single_update()
+
+
+    def set_stat_test(self, test):
+
+        self.model.set_stat_test(test)
+
+
+    def set_value_iteration(self, error=0.1):
+
+        self.model.set_value_iteration(error)
+
+
+    def suggest_action(self):
+
+        return self.model.suggest_action()
+
+
+    def set_splitting(self, split_crit, cons_trans = True):
+
+        if self.model_type != MDP_DT:
+            self.my_logger.error("Splitting criteria apply only to MDP_DT models!")
+            return
+
+        self.model.set_splitting(split_crit, cons_trans)
+
+
+    def set_state(self, measurements):
+
+        self.add_network_usage(measurements)
+        self.last_meas = measurements
+        print("\nself.last_meas after adding network usage:")
+        pprint(self.last_meas)
+        self.model.set_state(measurements)
+        self.my_logger.debug("State set")
 
 
     def train(self):
@@ -92,21 +166,6 @@ class DecisionMaker(object):
         self.my_logger.debug("Trained the model with %d experiences, skipped %d" % (num_exp, skipped_exp))
 
 
-    def set_state(self, measurements):
-
-        self.add_network_usage(measurements)
-        self.last_meas = measurements
-        print("\nself.last_meas after adding network usage:")
-        pprint(self.last_meas)
-        self.model.set_state(measurements)
-        self.my_logger.debug("State set")
-
-
-    def add_network_usage(self, measurements):
-
-        measurements[NETWORK_USAGE] = measurements[BYTES_IN] + measurements[BYTES_OUT]
-
-
     def update(self, action, meas, reward = None):
 
         experience = [self.last_meas, action, meas]
@@ -122,62 +181,3 @@ class DecisionMaker(object):
 
         self.last_meas = meas
         self.model.update(action, meas, reward)
-
-
-    def get_model(self):
-
-        return self.model
-
-
-    def set_splitting(self, split_crit, cons_trans = True):
-
-        if self.model_type != MDP_DT:
-            self.my_logger.error("Splitting criteria apply only to MDP_DT models!")
-            return
-
-        self.model.set_splitting(split_crit, cons_trans)
-
-
-    def get_reward(self, measurements, action):
-        
-        vms = measurements[NUMBER_OF_VMS]
-        throughput = measurements[TOTAL_THROUGHPUT]
-        reward = throughput - 800 * vms
-
-        return reward
-
-
-    def get_legal_actions(self):
-
-        return self.model.get_legal_actions()
-
-
-    def set_no_update(self):
-
-        self.model.set_no_update()
-
-    
-    def set_prioritized_sweeping(self, error=0.1, max_steps=200):
-
-        self.model.set_prioritized_sweeping(error, max_steps)
-
-
-    def set_single_update(self):
-        
-        self.model.set_single_update()
-
-
-    def set_stat_test(self, test):
-
-        self.model.set_stat_test(test)
-
-
-    def set_value_iteration(self, error=0.1):
-
-        self.model.set_value_iteration(error)
-
-
-    def suggest_action(self):
-
-        return self.model.suggest_action()
-
