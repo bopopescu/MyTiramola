@@ -45,7 +45,7 @@ class Metrics(object):
         start = timer()
         end = start + int(self.utils.ycsb_max_time)
         self.my_logger.debug("Will start collecting data in 30 seconds ...")
-        time.sleep(30)
+        time.sleep(20)
         self.my_logger.debug("Now collecting data ...\n")
         while True:
             now = timer()
@@ -58,7 +58,7 @@ class Metrics(object):
             else:
                 break
         
-        if len(timeseries) < 5:
+        if len(timeseries) < 2:
             self.my_logger.error("Only %d metrics collected from Ganglia" % len(timeseries))
             return None
 

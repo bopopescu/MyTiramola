@@ -25,13 +25,19 @@ class MyDaemon(Daemon):
     
         def run(self):
             
+            # initializing utils for getting properties and more.
             self.utils  = Utils.Utils()
+            # method variables:
+            self.hostname_templ     = self.utils.hostname_template
+            self.min_server_nodes   = int(self.utils.min_server_nodes)
+            self.min_server_nodes   = int(self.utils.max_server_nodes)
             
             self.init(int(self.utils.records))
             self.run_warm_up(int(self.utils.warm_up_tests), int(self.utils.warm_up_target)) # always run a warm up even with zero. warm_up_target == self.utils.offset?
             if self.utils.bench:
                 #self.run_benchmark(int(self.utils.warm_up_target))
                 self.exec_rem_actions(1, 1)
+                self.exec_add_actions(1, 1)
             
             self.epsilon = float(self.utils.epsilon)
             self.selecting_load_type(self.utils.load_type)
@@ -243,6 +249,29 @@ class MyDaemon(Daemon):
             Used (only) for testing.
             Doing the usual iteration:  (load - action - update) with no Decision taking place. 
         """
+        def exec_add_actions(self, num_actions, num_adds = 1):
+
+            add_action  = (DecisionMaking.ADD_VMS, num_adds)
+
+            for i in range(num_actions):
+
+                #self.time += 1
+#                target = self.get_load()
+                target = int(self.utils.offset)
+#                self.my_logger.debug("Time = %d, executing remove action" % self.time)
+                self.execute_action(add_action)
+                self.run_test(target, float(self.utils.read), update_load = False)
+                self.my_logger.debug("Trying again in 1 minute")
+                self.sleep(60)
+                meas = self.run_test(target, float(self.utils.read))
+                self.decision_maker.update(rem_action, meas)
+
+
+        """
+            (Probably) A dedicated method for removing VMs.
+            Used (only) for testing.
+            Doing the usual iteration:  (load - action - update) with no Decision taking place. 
+        """
         def exec_rem_actions(self, num_actions, num_removes = 1):
 
             rem_action  = (DecisionMaking.REMOVE_VMS, num_removes)
@@ -413,20 +442,29 @@ class MyDaemon(Daemon):
         def remove_nodes(self, num_nodes):
 
             cluster = self.nosqlCluster.cluster
+            print("\ncluster just before node removal: " + str(cluster))
             self.my_logger.debug("Removing " + str(num_nodes) + " nodes ...")
-            max_removed_nodes = len(cluster) - 4
+            max_removed_nodes = len(cluster) - self.min_server_nodes
+            print("max_removed_nodes = " + str(max_removed_nodes))
             if num_nodes > max_removed_nodes:
                 self.my_logger.debug("I can only remove %d nodes!" % max_removed_nodes)
                 num_nodes = max_removed_nodes
 
             for i in range(num_nodes):
+                print("i = " + str(i) + "\tin MyCoordinator.remove_nodes")
                 cluster_length = len(cluster)
+                print("cluster_length = " + str(cluster_length))
                 for hostname, host in cluster.items():
-                    number = hostname.replace(self.nosqlCluster.host_template, "")
-                    if number == str(cluster_length - 1):
-                        self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
-                        self.removed_hosts = [(hostname, host)] + self.removed_hosts
-                        break
+                    print("Checking (hostname, host):\t" + str(hostname) + "\t" + str(host))
+                    if hostname != "master":
+                        print("self.hostname_templ = " + str(self.hostname_templ))
+#                        number = hostname.replace(self.nosqlCluster.host_template, "")
+                        number = hostname.replace(self.hostname_templ, "")
+                        print("number = " + number)
+                        if number == str(cluster_length - 1):
+                            self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
+                            self.removed_hosts = [(hostname, host)] + self.removed_hosts
+                            break
 
             self.log_cluster()
             self.wake_up_nodes()
@@ -513,7 +551,7 @@ class MyDaemon(Daemon):
             
             if load_type == DecisionMaking.SINUSOIDAL:
                 self.set_sinusoidal()
-            if load_type == DecisionMaking.PEAKY:
+            elif load_type == DecisionMaking.PEAKY:
                 self.set_peaky()
             else:
                 self.my_logger.debug("The selected type of load is not defined")

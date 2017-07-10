@@ -388,9 +388,9 @@ class MDPDTModel:
     """
     def __init__(self, conf):
 
-#        self.logger = logging.getLogger(__name__)
-#        self.logger.setLevel(logging.DEBUG)
-#        self.logger.addHandler(get_logging_handler(LOG_FILENAME))
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(get_logging_handler(LOG_FILENAME))
 
         required_fields = [INITIAL_PARAMETERS, PARAMETERS, ACTIONS, DISCOUNT, INITIAL_QVALUES, SPLIT_ERROR, MIN_MEASUREMENTS]
 
@@ -429,7 +429,7 @@ class MDPDTModel:
         for p in self.parameters:
             self.splits[p] = 0
 
-#        self.logger.debug("Initialized MDPDT model with %d states" % len(self.states))
+        self.logger.debug("Initialized MDPDT model with %d states" % len(self.states))
 
 
     """
@@ -857,7 +857,7 @@ class MDPDTModel:
 
         self.split_criterion = split_criterion
         self.consider_trans  = consider_transitions
-#        self.logger.debug("Splitting criterion set to %s, consider transitions set to %s" %(split_criterion, consider_transitions))
+        self.logger.debug("Splitting criterion set to %s, consider transitions set to %s" %(split_criterion, consider_transitions))
 
 
     def stat_test(self, x1, x2):
@@ -1538,5 +1538,3 @@ class MDPDTModel:
                 print("Transitions:", qs.get_transitions())
                 print("Rewards:    ", qs.get_rewards())
             print("")
-
-

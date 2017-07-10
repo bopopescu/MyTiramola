@@ -268,6 +268,8 @@ class Utils(object):
             self.cluster_type           = cfg.get("config", "cluster_type")
             self.instance_type          = cfg.get("config", "instance_type")
             self.hostname_template      = cfg.get("config", "hostname_template")
+            self.min_server_nodes       = cfg.get("config", "min_server_nodes")
+            self.max_server_nodes       = cfg.get("config", "max_server_nodes")
             self.initial_cluster_size   = cfg.get("config", "initial_cluster_size")
             self.key_file               = cfg.get("config", "key_file")
             self.keypair_name           = cfg.get("config", "keypair_name")
