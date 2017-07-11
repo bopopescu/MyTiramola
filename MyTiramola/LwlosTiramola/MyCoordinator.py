@@ -31,6 +31,7 @@ class MyDaemon(Daemon):
             self.hostname_templ     = self.utils.hostname_template
             self.min_server_nodes   = int(self.utils.min_server_nodes)
             self.min_server_nodes   = int(self.utils.max_server_nodes)
+            self.reads              = float(self.utils.read)
             
             self.init(int(self.utils.records))
             self.run_warm_up(int(self.utils.warm_up_tests), int(self.utils.warm_up_target)) # always run a warm up even with zero. warm_up_target == self.utils.offset?
@@ -136,10 +137,10 @@ class MyDaemon(Daemon):
                     self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
 
                 self.execute_action(action)
-                self.run_test(target, self.reads, update_load=False)
+                self.run_test(target, float(self.utils.read), update_load=False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
-                meas = self.run_test(target, self.reads)
+                meas = self.run_test(target, float(self.utils.read))
                 self.decision_maker.update(action, meas)
 
 #########################END OF 4 BASIC METHODS! The rest following are in alphabetical order##################
@@ -264,7 +265,7 @@ class MyDaemon(Daemon):
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, float(self.utils.read))
-                self.decision_maker.update(rem_action, meas)
+                self.decision_maker.update(add_action, meas)
 
 
         """
@@ -300,7 +301,7 @@ class MyDaemon(Daemon):
             
             if self.utils.load_type == SINUSOIDAL:
                 return self.offset + self.amplitude * math.sin(2 * math.pi * self.time / self.period)
-            if self.utils.load_type == PEAKY:
+            elif self.utils.load_type == PEAKY:
                 print("peaky load is not implemented yet. Choose another load and start the experiment again.")
                 self.exit()
             else:
@@ -542,9 +543,9 @@ class MyDaemon(Daemon):
                 if not meas is None:
                     return meas
 
-                self.my_logger.debug("Test failed, trying again in 300 seconds ...")
+                self.my_logger.debug("Test failed, trying again in 50 seconds ...")
                 self.ycsb.killall_jobs()
-                self.sleep(300)
+                self.sleep(50)
 
 
         def selecting_load_type(self, load_type):

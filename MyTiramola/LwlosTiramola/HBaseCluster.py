@@ -540,8 +540,8 @@ class HBaseCluster(object):
         print("nodes1 = " + str(nodes))
         for i in range(1,len(self.cluster)):
             print("i = " + str(i))
-            if not (self.host_template + str(i)).endswith(hostname):
-                nodes.append(self.cluster[self.host_template + str(i)])
+#            if not (self.host_template + str(i)).endswith(hostname):
+#                nodes.append(self.cluster[self.host_template + str(i)])
             if not ("node" + str(i)).endswith(hostname):
                 nodes.append(self.cluster["node" + str(i)])
         self.my_logger.debug("Nodes after removal:\n" + pprint.pformat(nodes))

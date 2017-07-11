@@ -388,6 +388,7 @@ class MDPDTModel:
     """
     def __init__(self, conf):
 
+        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(get_logging_handler(LOG_FILENAME))
