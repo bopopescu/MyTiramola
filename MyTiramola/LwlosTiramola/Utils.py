@@ -18,6 +18,7 @@ class Utils(object):
     '''
     
     def __init__(self):
+        
         self.read_properties(os.getenv("HOME", "/etc") + "/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")
 
 
@@ -27,7 +28,7 @@ class Utils(object):
         i = 0
         for member in members:
             details[member] = atuple[i]
-            i = i + 1
+            i += 1
         instance = Instance(details)
         return instance
         

@@ -62,8 +62,8 @@ class HBaseCluster(object):
         cur.close()
         
         ## Install logger
-        LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
-        self.my_logger = logging.getLogger('HBaseCluster')
+        LOG_FILENAME = self.utils.install_dir + "/logs/Coordinator.log"
+        self.my_logger = logging.getLogger("HBaseCluster")
         self.my_logger.setLevel(logging.DEBUG)
         handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
@@ -84,7 +84,8 @@ class HBaseCluster(object):
         It takes all the instances previously defined in euca_cluster, filters them and
         adds the necessary ones in db's clusters table.
         fyi: Later, we call "wake_up_nodes()" on self.cluster triggering regionserver to start!
-        So, self.cluster must contain only master+nodes that form the nosql-cluster!
+        So, self.cluster must contain only master+nodes that form the NoSQL-Cluster!
+        Created this method because I couldn't define where self.cluster is created!
     """
     def create_cluster(self, nodes = None):
 
@@ -99,6 +100,8 @@ class HBaseCluster(object):
             if node.name == "master":
 #                self.cluster[host_template + "master"] = node
                 self.cluster["master"] = node
+            # TODO: keep whole name except last letter and check equalization with hostname_template.
+            # TODO: Veify that from nodes[] to self.cluster{} the key is the node.name!!!
             elif node.name[0:4] == "node":
 #                self.cluster[host_template + node.name[-1]] = node
                 self.cluster["node" + node.name[-1]] = node

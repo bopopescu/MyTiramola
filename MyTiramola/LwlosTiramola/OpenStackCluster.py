@@ -28,15 +28,14 @@ class OpenStackCluster(object):
     
     
     '''
-        Constructor
+        Constructor (more sqlite creator than OpenStackCluster constructor)
+        Creates the sqlite file if it doesn't exist and also the table instances.
     '''
     def __init__(self):
 
-        self.utils = Utils.Utils()
-        
-        # Make sure the sqlite file exists. if not, create it and the table we need
-        con = create_engine(self.utils.db_file)
-        cur = con.connect()
+        self.utils  = Utils.Utils()
+        con         = create_engine(self.utils.db_file)
+        cur         = con.connect()
         print("OpenStackCluster, going to try")
         try:
             instances = cur.execute('select * from instances').fetchall()
@@ -57,87 +56,43 @@ class OpenStackCluster(object):
         self.my_logger.addHandler(handler)
         
         self.my_logger.debug("OpenStackCluster initialized.")
-        
 
-    def describe_instances(self, state = None, pattern = None):
 
-        instances = []
-        
-        if state != "pollDB":
-            creds = get_nova_creds()
-            #nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))    # DEPRECATED, not working
-            nova = client.Client(2.0,
-                                 username = creds.get('username'),
-                                 password = self.utils.rc_pwd,
-                                 project_name = creds.get('project_id'),
-                                 auth_url = creds.get('auth_url'))
-            servers = nova.servers.list()
-            members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
+    def confirm_resizes(self, server_ids):
 
-            for server in servers:
-                
-                print("\nInfo from server:\t" + str(server))
-                details = {}
-                for member in members:
-                    print("Getting member = " + str(member))
-                    val = getattr(server, member, "")
-                    if hasattr(val, '__iter__') and not ((type(val) is str) or (type(val) is list)): 
-                        v = val.get('id')
-                        if v == None: v = val.get('private-net')[0]
-                        val = v
-                        details[member] = val
-                    else:
-                        details[member] = val
-                print("details to make instance = " + str(details) + "\n")
-                instance = Instance(details)
-                if state:
-                    if state == instance.status:
-                        instances.append(instance)
-                else:
-                    instances.append(instance) 
-                       
-            
-            # # if simple call
-            print("OpenStackCluster, state = " + str(state))
-            if not state:
-                print("OpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
-                self.utils.refresh_instance_db(instances)
-                        
-        else:
-            # # read from the local database
-            con = create_engine(self.utils.db_file)
-            cur = con.connect()
-            instancesfromDB = []
-            try:
-                instancesfromDB = cur.execute('select * from instances').fetchall()
-            except exc.DatabaseError:
-                con.rollback()
-                
-            cur.close()
-            
-            
-            
-            for instancefromDB in instancesfromDB:
-                instances.append(self.utils.return_instance_from_tuple(instancefromDB))
-        
-        # # if you are using patterns and state, show only matching state and id's
-        matched_instances = []
-        if pattern:
-            for instance in instances:
-                if instance.name.find(pattern) != -1:
-                    matched_instances.append(instance)
-            for instance in instances:
-                if instance.id.find(pattern) != -1:
-                    matched_instances.append(instance)
-                    
-            if len(matched_instances) > 0:
-                return matched_instances
-            else:
-                return None
-        else:
-            return instances
+        self.my_logger.debug("Resizing server ids: " + str(server_ids))
+        for s_id in server_ids:
+            while (True):
+                server = self.find_by_id(s_id)
+                if server.status == 'VERIFY_RESIZE':
+                    server.confirm_resize()
+                    break
+                self.my_logger.debug("Server %s in status %s, sleeping for 20 seconds ..." \
+                        % (server.networks['private-net'][0], server.status))
+                time.sleep(20)
 
-        
+            self.my_logger.debug("Server %s resize verified." % server.networks['private-net'][0])
+
+        self.my_logger.debug("Resizes verified for all servers")
+
+
+    def describe_flavors(self):
+
+        creds       = get_nova_creds()
+#        nova        = client.Client(2.0, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
+        flavors     = nova.flavors.list()
+        flavors_dict = {}
+        for f in flavors:
+            flavors_dict[f.name] = f
+
+        return flavors_dict
+
+
     def describe_images(self, pattern = None):
 
         # Euca-describe-images
@@ -165,23 +120,102 @@ class OpenStackCluster(object):
         else:
             # correction in the returned variable!
             return images
-    
+        
 
-    def describe_flavors(self):
+    def describe_instances(self, state = None, pattern = None):
 
-        creds       = get_nova_creds()
-#        nova        = client.Client(2.0, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
+        instances = []
+        # Sxedon panta state = None, opote trexei to if!!!
+        if state != "pollDB":
+            creds = get_nova_creds()
+            #nova = client.Client(2, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))    # DEPRECATED, not working
+            nova = client.Client(2.0,
+                                 username = creds.get('username'),
+                                 password = self.utils.rc_pwd,
+                                 project_name = creds.get('project_id'),
+                                 auth_url = creds.get('auth_url'))
+            servers = nova.servers.list()
+            members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
+
+            for server in servers:
+                print("\nInfo from server:\t" + str(server))
+                details = {}
+                for member in members:
+                    print("Getting member = " + str(member))
+                    val = getattr(server, member, "")
+                    if hasattr(val, '__iter__') and not ((type(val) is str) or (type(val) is list)): 
+                        v = val.get('id')
+                        if v == None: v = val.get('private-net')[0]
+                        val = v
+                        details[member] = val
+                    else:
+                        details[member] = val
+                print("details to make instance = " + str(details) + "\n")
+                instance = Instance(details)
+                if state:
+                    if state == instance.status:
+                        instances.append(instance)
+                else:
+                    instances.append(instance) 
+
+            # # if simple call
+            print("OpenStackCluster, state = " + str(state))
+            if not state:
+                print("OpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
+                self.utils.refresh_instance_db(instances)         
+        else:
+            # # read from the local database
+            con             = create_engine(self.utils.db_file)
+            cur             = con.connect()
+            instancesfromDB = []
+            try:
+                instancesfromDB = cur.execute('select * from instances').fetchall()
+            except exc.DatabaseError:
+                con.rollback()  
+            cur.close()
+                 
+            for instancefromDB in instancesfromDB:
+                print("instancefromDB: " + str(instancefromDB))
+                instances.append(self.utils.return_instance_from_tuple(instancefromDB))
+
+        # Sxedon panta pattern = None, opote trexei to else!!!
+        # # if you are using patterns and state, show only matching state and id's
+        matched_instances = []
+        if pattern:
+            for instance in instances:
+                if instance.name.find(pattern) != -1:
+                    matched_instances.append(instance)
+            for instance in instances:
+                if instance.id.find(pattern) != -1:
+                    matched_instances.append(instance)
+                    
+            if len(matched_instances) > 0:
+                return matched_instances
+            else:
+                return None
+        else:
+            return instances
+
+
+    def find_by_id(self, server_id):
+
+        creds = get_nova_creds()
+#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
         nova = client.Client(2.0,
                              username = creds.get('username'),
                              password = self.utils.rc_pwd,
                              project_name = creds.get('project_id'),
                              auth_url = creds.get('auth_url'))
-        flavors     = nova.flavors.list()
-        flavors_dict = {}
-        for f in flavors:
-            flavors_dict[f.name] = f
+        servers = nova.servers.list()
+        for server in servers:
+            if server.id == server_id:
+                return server
 
-        return flavors_dict
+
+    def resize_server(self, server_id, flavor):
+
+        server = self.find_by_id(server_id)
+        server.resize(flavor)
 
 
     def run_instances(self, image = None, flavor = None, mincount = 1, maxcount = 1, keypair_name = None): 
@@ -216,7 +250,6 @@ class OpenStackCluster(object):
 
         t = []
         for i in range(0, int(float(maxcount))):
-            
             t.append(threading.Thread(target=create))
             t[i].daemon = True
             t[i].start()
@@ -225,7 +258,6 @@ class OpenStackCluster(object):
             t[j].join()
 
         instances = []
-
         # # add the newly run instances to the database
         members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
         for instance in reservation:
@@ -249,6 +281,7 @@ class OpenStackCluster(object):
         
 
     def terminate_instances(self, instances):
+        
         creds = get_nova_creds()
 #        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'),creds.get('project_id'), creds.get('auth_url'))
         nova = client.Client(2.0,
@@ -256,7 +289,6 @@ class OpenStackCluster(object):
                              password = self.utils.rc_pwd,
                              project_name = creds.get('project_id'),
                              auth_url = creds.get('auth_url'))
-
         deleted_instances = []
         for i in instances:
             instance = nova.servers.get(i.id)
@@ -272,49 +304,10 @@ class OpenStackCluster(object):
 
         return deleted_instances
 
-
-    def confirm_resizes(self, server_ids):
-
-        self.my_logger.debug("Resizing server ids: " + str(server_ids))
-        for s_id in server_ids:
-            while (True):
-                server = self.find_by_id(s_id)
-                if server.status == 'VERIFY_RESIZE':
-                    server.confirm_resize()
-                    break
-                self.my_logger.debug("Server %s in status %s, sleeping for 20 seconds ..." \
-                        % (server.networks['private-net'][0], server.status))
-                time.sleep(20)
-
-            self.my_logger.debug("Server %s resize verified." % server.networks['private-net'][0])
-
-        self.my_logger.debug("Resizes verified for all servers")
-
-
-    def resize_server(self, server_id, flavor):
-
-        server = self.find_by_id(server_id)
-        server.resize(flavor)
-
-
-    def find_by_id(self, server_id):
-
-        creds = get_nova_creds()
-#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
-        nova = client.Client(2.0,
-                             username = creds.get('username'),
-                             password = self.utils.rc_pwd,
-                             project_name = creds.get('project_id'),
-                             auth_url = creds.get('auth_url'))
-        servers = nova.servers.list()
-        for server in servers:
-            if server.id == server_id:
-                return server
-
-
-#         
+#       
 # # Utilities
-#   
+#
+   
     def block_until_running (self, instances, target_status = 'ACTIVE'):
         ''' Blocks until all defined instances have reached running state and an ip has been assigned'''
         creds = get_nova_creds()

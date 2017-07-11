@@ -28,70 +28,64 @@ class MyDaemon(Daemon):
             # initializing utils for getting properties and more.
             self.utils  = Utils.Utils()
             # method variables:
-            self.hostname_templ     = self.utils.hostname_template
+            records                 = int(self.utils.records)
+            warm_up_tests           = int(self.utils.warm_up_tests)
+            warm_up_target          = int(self.utils.warm_up_target)
+            # instance variables
+            self.epsilon            = float(self.utils.epsilon)
+            self.load_type          = self.utils.load_type
+            
             self.min_server_nodes   = int(self.utils.min_server_nodes)
             self.min_server_nodes   = int(self.utils.max_server_nodes)
             self.reads              = float(self.utils.read)
             
-            self.init(int(self.utils.records))
-            self.run_warm_up(int(self.utils.warm_up_tests), int(self.utils.warm_up_target)) # always run a warm up even with zero. warm_up_target == self.utils.offset?
+            self.init(records)
+            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
             if self.utils.bench:
                 #self.run_benchmark(int(self.utils.warm_up_target))
                 self.exec_rem_actions(1, 1)
                 self.exec_add_actions(1, 1)
             
-            self.epsilon = float(self.utils.epsilon)
-            self.selecting_load_type(self.utils.load_type)
+            self.selecting_load_type(self.load_type)
             self.e_greedy(self.num_actions, self.epsilon)
 
             self.exit()
 
 
+        """
+            Pseudo - __init__() method. Initializes everything for running Tiramola.
+        """
         def init(self, records):
             
             # method variables
+            ycsb_clients            = int(self.utils.ycsb_clients)
+            decision_making_file    = self.utils.decision_making_file
+            self.last_load          = None
+            self.removed_hosts      = []
+            # define training_file
             if os.path.isfile(self.utils.training_file):
                 training_file = self.utils.training_file
             else:
                 training_file = None
             
-            
-            self.install_logger()        
+            self.install_logger()
+                  
             # Setting up cluster & parameters
             self.initializeNosqlCluster()
             self.my_logger.debug("Initialized the Cluster")
             self.log_cluster()
             self.update_hosts()
             self.init_flavors()
-#            if self.utils.cluster_type == "HBASE":
-#                self.nosqlCluster.start_hbase()     # Be sure that Hadoop already runs!
-#            else:
-#                self.nosqlCluster.start_cluster()
             # Preparing to get metrics (termi7 metrics!)
             self.metrics = Metrics()
             # Initializing YCSB
-            self.ycsb = YCSBController(int(self.utils.ycsb_clients))
-            
+            self.ycsb = YCSBController(ycsb_clients)
             # Setting up Decision Making
-            self.decision_maker = DecisionMaking.DecisionMaker(self.utils.decision_making_file, training_file)            
-            if self.decision_maker.model_type == MDP_DT:
-                ## Splitting Method
-                self.decision_maker.set_splitting(self.utils.split_crit, self.utils.cons_trans)
-                ## Statistical Test
-                self.decision_maker.set_stat_test(self.utils.stat_test)
-            else:
-                self.my_logger.error("MDP-DT is NOT selected. split_crit, cons_trans and stat_test are ignored!")
-            ## Update Algorithm
-            if self.decision_maker.model_type == MDP or self.decision_maker.model_type == MDP_DT:
-                self.select_Ualgorithm(float(self.utils.ualgorithm_error), int(self.utils.max_steps))
-            else:
-                self.my_logger.error("Neither MDP, nor MDP-DT is selected. udate_algorithm, ualgorithm_error and max_steps are ignored!")
+            self.decision_maker = DecisionMaking.DecisionMaker(decision_making_file, training_file)
+            self.setting_up_dec_maker()
 
             # More configurations...
-#            self.decision_maker.train() # If no training.data, training is ignored and continues
-            self.last_load = None
-            self.removed_hosts = []
-            
+#            self.decision_maker.train() # If no training.data, training is ignored and we get fucking error!            
             if eval(self.utils.reconfigure):
                 self.ycsb.set_records(records)
             else:
@@ -299,9 +293,9 @@ class MyDaemon(Daemon):
 
         def get_load(self):
             
-            if self.utils.load_type == SINUSOIDAL:
+            if self.load_type == SINUSOIDAL:
                 return self.offset + self.amplitude * math.sin(2 * math.pi * self.time / self.period)
-            elif self.utils.load_type == PEAKY:
+            elif self.load_type == PEAKY:
                 print("peaky load is not implemented yet. Choose another load and start the experiment again.")
                 self.exit()
             else:
@@ -310,39 +304,21 @@ class MyDaemon(Daemon):
 
 
         def initializeNosqlCluster(self):
-
-            # Assume running when eucarc sourced 
-            if self.utils.cloud_api_type == "EC2":
-                eucacluster = EucaCluster.EucaCluster()
-                self.my_logger.debug("Created EucalyptusCluster with EC2 API")
-            if self.utils.cloud_api_type == "EC2_OS":
-                eucacluster = OpenStackCluster.OpenStackCluster()
-                self.my_logger.debug("Created OpenStackCluster with EC2 API and public ipv6 dnsname")    
-            instances = eucacluster.describe_instances()
-            instances_names = []
-            for instance in instances:
-                instances_names.append(instance.name)    
-            self.my_logger.debug("All user instances:" + str(instances_names))
             
-            ## creates a new Hbase cluster
-            nosqlcluster = None
-            if self.utils.cluster_type == "HBASE":
-                nosqlcluster = HBaseCluster.HBaseCluster(self.utils.cluster_name)
-                nosqlcluster.create_cluster(instances)
-            elif self.utils.cluster_type == "HBASE92":
-                nosqlcluster = HBase92Cluster.HBase92Cluster(self.utils.cluster_name)
-            elif self.utils.cluster_type == "VOLDEMORT":
-                nosqlcluster = VoldemortCluster.VoldemortCluster(self.utils.cluster_name)
-            elif self.utils.cluster_type == "CASSANDRA":
-                nosqlcluster = CassandraCluster.CassandraCluster(self.utils.cluster_name)
-            elif self.utils.cluster_type == "RIAK":
-                nosqlcluster = RiakCluster.RiakCluster(self.utils.cluster_name)
-
-            self.eucacluster = eucacluster
-            self.nosqlCluster = nosqlcluster
-                
+            self.set_eucacluster()      # defining self.eucacluster
+            self.set_nosqlCluster()     # defining self.nosqlcluster
+            
+            # method variables:
+            reconfigure         = self.utils.reconfigure
+            print("self.utils.reconfigure = " + str(self.utils.reconfigure))
+            nosqlcluster        = self.nosqlcluster
+            hostname_template   = self.utils.hostname_template
+            print("self.utils.hostname_template = " + str(self.utils.hostname_template))
+            eucacluster         = self.eucacluster
+            
+            # Sxedon panta reconfigure = True, opote trexei to else!!!
             instances = []
-            if not eval(self.utils.reconfigure):
+            if not eval(reconfigure):
                 self.my_logger.debug("Removing previous instance of cluster from db")
                 self.my_logger.debug("cluster_name = " + str(self.utils.cluster_name))
                 self.utils.delete_cluster_from_db(self.utils.cluster_name)
@@ -350,7 +326,6 @@ class MyDaemon(Daemon):
                 images = eucacluster.describe_images(self.utils.bucket_name)
                 self.my_logger.debug("Found image in db: " + str(images) + ", id = " + str(images[0].id))
                 self.my_logger.debug("Launching %s new instances ..." % self.utils.initial_cluster_size)
-
                 instances = eucacluster.run_instances(images[0],
                                                       self.utils.instance_type,
                                                       self.utils.initial_cluster_size,
@@ -358,27 +333,33 @@ class MyDaemon(Daemon):
                                                       self.utils.keypair_name)
                 # self.my_logger.debug("Launched new instances:\n" + \
                 #         pprint.pformat(instances))
-                instances = eucacluster.block_until_running(instances)
+                instances = self.eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str([i.networks for i in instances]))
 
             else:
+                # TODO: append to instances[] from cluster{} based on cluster.item.name (key).
+                # Cluster{} should already be filtered during its creation.
+                # fyi. from eucacluster.instances[] to nosqlCluster.cluster{} to instances[] LOL!!!
                 print("instances1 = " + str(instances))
-                instances.append(nosqlcluster.cluster[nosqlcluster.host_template + "master"])
+#                instances.append(nosqlcluster.cluster[nosqlcluster.host_template + "master"])
+                instances.append(nosqlcluster.cluster["master"])
                 print("instances2 = " + str(instances))
                 for i in range(1, len(nosqlcluster.cluster)):
 #                    instances.append(nosqlcluster.cluster[nosqlcluster.host_template + str(i)])
-                    instances.append(nosqlcluster.cluster["node" + str(i)])
+#                    instances.append(nosqlcluster.cluster["node" + str(i)])
+                    instances.append(nosqlcluster.cluster[hostname_template + str(i)])
                 print("instances3 = " + str(instances))
                 self.my_logger.debug("Found old instances: " + str(instances))
                 self.my_logger.debug("WARNING: Will block forever if they are not running.")
                 eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str(instances))
 
-            if eval(self.utils.reconfigure):
+            # Sxedon panta reconfigure = True, opote trexei to if!!!
+            if eval(reconfigure):
 #                self.wake_up_nodes()
-                self.nosqlCluster.start_cluster()
+                nosqlCluster.start_cluster()
                 time.sleep(10)
-                self.nosqlCluster.trigger_balancer()
+                nosqlCluster.trigger_balancer()
             else:
                 nosqlcluster.configure_cluster(instances, self.utils.hostname_template, False)
                 nosqlcluster.start_cluster()
@@ -575,6 +556,74 @@ class MyDaemon(Daemon):
                 self.decision_maker.set_no_update()
 
 
+        """
+            Configures the decision_maker according to the defined properties.
+            1. Selection of decision method (DONE)
+            2. Set splitting method
+            3. Set statistical test
+            4. Set Update Algorithm
+            If either if them is pointless for the selected method, it is ignored.
+        """
+        def setting_up_dec_maker(self):
+                       
+            if self.decision_maker.model_type == MDP_DT:
+                ## Splitting Method
+                self.decision_maker.set_splitting(self.utils.split_crit, self.utils.cons_trans)
+                ## Statistical Test
+                self.decision_maker.set_stat_test(self.utils.stat_test)
+            else:
+                self.my_logger.error("MDP-DT is NOT selected. split_crit, cons_trans and stat_test are ignored!")
+            ## Update Algorithm
+            if self.decision_maker.model_type == MDP or self.decision_maker.model_type == MDP_DT:
+                self.select_Ualgorithm(float(self.utils.ualgorithm_error), int(self.utils.max_steps))
+            else:
+                self.my_logger.error("Neither MDP, nor MDP-DT is selected. udate_algorithm, ualgorithm_error and max_steps are ignored!")
+
+
+        def set_eucacluster(self):
+            
+            # method variables:
+            cloud_api_type  = self.utils.cloud_api_type
+            print("cloud_api_type = " + str(self.utils.cloud_api_type))
+            # Assume running where eucarc sourced 
+            if cloud_api_type == "EC2":
+                self.eucacluster = EucaCluster.EucaCluster()
+                self.my_logger.debug("Created EucalyptusCluster with EC2 API")
+            elif cloud_api_type == "EC2_OS":
+                self.eucacluster = OpenStackCluster.OpenStackCluster()
+                self.my_logger.debug("Created OpenStackCluster with EC2 API and public ipv6 dnsname")
+            else:
+                self.my_logger.debug(str(cloud_api_type) + "\tis unknown cloud_api_type. Define EC2 or EC2_OS.")
+                self.exit()
+        
+        
+        def set_nosqlCluster(self):
+            
+            # method variables:
+            cluster_type    = self.utils.cluster_type
+            print("cluster_type: " + str(self.utils.cluster_type))
+            instances       = self.eucacluster.describe_instances()
+            instances_names = []
+            for instance in instances:
+                instances_names.append(instance.name)    
+            self.my_logger.debug("All user instances:" + str(instances_names))
+            
+            ## creates a new NoSQL cluster
+            if cluster_type == "HBASE":
+                self.nosqlCluster = HBaseCluster.HBaseCluster(self.utils.cluster_name)
+                self.nosqlCluster.create_cluster(instances)
+            elif cluster_type == "HBASE92":
+                self.nosqlCluster = HBase92Cluster.HBase92Cluster(self.utils.cluster_name)
+            elif cluster_type == "VOLDEMORT":
+                self.nosqlCluster = VoldemortCluster.VoldemortCluster(self.utils.cluster_name)
+            elif cluster_type == "CASSANDRA":
+                self.nosqlCluster = CassandraCluster.CassandraCluster(self.utils.cluster_name)
+            elif cluster_type == "RIAK":
+                self.nosqlCluster = RiakCluster.RiakCluster(self.utils.cluster_name)
+            else:
+                self.my_logger.debug(str(cluster_type) + "\tis unknown cluster_type.\nDefine HBASE, or HBASE92, or VOLDEMORT, or CASSANDRA, or RIAK.")
+
+
         def set_peaky(self):
             
             # TODO
@@ -583,6 +632,7 @@ class MyDaemon(Daemon):
         
         def set_sinusoidal(self):
             
+            # method and instance variables
             ycsb_max_time       = int(self.utils.ycsb_max_time)
             egreedy_iter_time   = (2 * ycsb_max_time + 60) / 60
             total_run_time      = int(self.utils.total_run_time)
@@ -595,6 +645,7 @@ class MyDaemon(Daemon):
             self.offset         = int(self.utils.offset)
             self.amplitude      = int(self.utils.amplitude)
             
+            self.my_logger.debug("Starting experiment. It will last approximately " + str(total_run_time) + " minutes.")
             print("\n\tYCSB-Experiment Report:")
             if training_perc == 0 or self.epsilon == 0:
                 print("training_perc or epsilon is 0. No actual training will be performed!")
@@ -609,6 +660,9 @@ class MyDaemon(Daemon):
                   + str(self.offset - self.amplitude) + " minimum of oscillation")
 
 
+        """
+            Modified sleep method in order to report sleep time in logs.
+        """
         def sleep(self, duration):
 
             self.my_logger.debug("Sleeping for %d seconds ..." % duration)

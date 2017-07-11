@@ -15,9 +15,12 @@ class Instance:
     """
 
     def __repr__(self):
+        
         return 'Instance:%s' % self.name
 
+
     def __init__(self, details):
+        
         self.id = details['id']
         self.networks = details['networks']
         self.flavor = details['flavor']
