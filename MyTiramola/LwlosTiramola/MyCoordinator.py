@@ -36,6 +36,7 @@ class MyDaemon(Daemon):
             self.load_type          = self.utils.load_type
             self.reads              = float(self.utils.read)            # Used in more than 3 basic methods, so defined as instance variable.
             self.target             = int(self.utils.offset)            # Same here!
+            self.hostname_template  = self.utils.hostname_template      # Same here
             
             self.init(records)
             self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
@@ -309,8 +310,6 @@ class MyDaemon(Daemon):
             reconfigure         = self.utils.reconfigure
             print("self.utils.reconfigure = " + str(self.utils.reconfigure))
             nosqlCluster        = self.nosqlCluster
-            hostname_template   = self.utils.hostname_template
-            print("self.utils.hostname_template = " + str(self.utils.hostname_template))
             eucacluster         = self.eucacluster
 
             # Sxedon panta reconfigure = False, opote trexei to else!!!
@@ -341,7 +340,7 @@ class MyDaemon(Daemon):
 
             # Sxedon panta reconfigure = False, opote trexei to if!!! Klasiko paradeigma anapodwn ennoiwn tyo reconfigure
             if eval(reconfigure):
-                nosqlCluster.configure_cluster(instances, self.utils.hostname_template, False)
+                nosqlCluster.configure_cluster(instances, self.hostname_template, False)
                 nosqlCluster.start_cluster()
             else:
 #                nosqlCluster.start_cluster()    # starts Hadoop and HBase in nodes defined in nosqlCluster.cluster
@@ -431,9 +430,9 @@ class MyDaemon(Daemon):
                 for hostname, host in cluster.items():
                     print("Checking (hostname, host):\t" + str(hostname) + "\t" + str(host))
                     if hostname != "master":
-                        print("self.hostname_templ = " + str(self.hostname_templ))
+                        print("self.hostname_template = " + str(self.hostname_template))
 #                        number = hostname.replace(self.nosqlCluster.host_template, "")
-                        number = hostname.replace(self.hostname_templ, "")
+                        number = hostname.replace(self.hostname_template, "")
                         print("number = " + number)
                         if number == str(cluster_length - 1):
                             self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
