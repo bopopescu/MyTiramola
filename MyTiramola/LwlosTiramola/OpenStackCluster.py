@@ -162,7 +162,7 @@ class OpenStackCluster(object):
             print("OpenStackCluster, state = " + str(state))
             if not state:
                 print("OpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
-                self.utils.refresh_instance_db(instances)         
+                self.utils.refresh_instance_db(instances)           # Very important to run in order to load all user's instances in db in table instances       
         else:
             # # read from the local database
             con             = create_engine(self.utils.db_file)

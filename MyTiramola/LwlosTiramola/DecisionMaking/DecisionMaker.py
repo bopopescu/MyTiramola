@@ -134,6 +134,7 @@ class DecisionMaker(object):
 
     def train(self):
 
+        # gioargyr: Don't know if this check is valid. With bad training file, it stuck!
         if self.training_file is None or not os.path.isfile(self.training_file):
             self.my_logger.error("No training file, aborting training")
             return

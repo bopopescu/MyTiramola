@@ -12,6 +12,8 @@ import re
 from sqlalchemy import exc, create_engine
 import pexpect, os, shutil, fileinput, sys, logging
 
+import pprint
+
 
 '''
     This class holds all nodes of the db in the virtual cluster. It can start/stop individual 
@@ -30,6 +32,7 @@ class HBaseCluster(object):
         self.host_template  = ""
 #        self.host_template  = self.utils.hostname_template
         self.cluster_id     = initial_cluster_id
+        # self.cluster is a dictionary that (when created) will hold ALL user's instances that form the HBase cluster.
         self.cluster        = {}
         self.quorum         = ""
         
@@ -43,10 +46,12 @@ class HBaseCluster(object):
                 print("""Already discovered cluster id from previous database file. Will select the defined one to work with (if it exists).""")
                 # print ("Found records:\n", str(clusters))
                 clustersfromcid = cur.execute('select * from clusters where cluster_id=\"' + self.cluster_id + "\"",).fetchall()
-                print (str(clustersfromcid))
+                print ("clustersfromcid: ")
+                pprint(clustersfromcid)
                 if len(clustersfromcid) > 0 :
                     self.cluster = self.utils.get_cluster_from_db(self.cluster_id)
-                    print ("Cluster:" + str(self.cluster))
+                    print ("The hbase.db exists, so the created self.cluster is:")
+                    pprint(self.cluster)
                     for clusterkey in list(self.cluster.keys()):
                         if not (clusterkey.find("master") == -1):
                             self.host_template = clusterkey.replace("master","")
@@ -57,7 +62,7 @@ class HBaseCluster(object):
 #            else:
 #                self.utils.refresh_cluster_db(cluster)
         except exc.DatabaseError:
-            print("HBaseCluster, didn't manage it, going to create table clusters")
+            print("HBaseCluster, didn't manage it, going to create table clusters but not loading it")
             cur.execute('create table clusters(cluster_id text, hostname text, euca_id text)')
         cur.close()
         
@@ -74,39 +79,47 @@ class HBaseCluster(object):
         print("cluster = " + str(self.cluster))
         print("host_template = " + str(self.host_template))
         print("cluster_id = " + str(self.cluster_id))
-        print("quorum = " + str(self.quorum))
+        print("quorum = " + str(self.quorum) + "\n\n")
         
         self.my_logger.debug("HBaseCluster initialized.")
         
         
     """
+        @author: gioargyr, gioargyr@gmail.com
         This method creates the self.cluster without configurating the nodes.
         It takes all the instances previously defined in euca_cluster, filters them and
         adds the necessary ones in db's clusters table.
         fyi: Later, we call "wake_up_nodes()" on self.cluster triggering regionserver to start!
-        So, self.cluster must contain only master+nodes that form the NoSQL-Cluster!
-        Created this method because I couldn't define where self.cluster is created!
+            Or start_cluster to start Hadoop and HBase.
+        So, self.cluster must contain only masterVM+slavesVMs that form the NoSQL-Cluster!
+        I Created this method because I couldn't define where self.cluster is created when the db sqlite file didn't exist!
     """
     def create_cluster(self, nodes = None):
 
-        self.my_logger.debug("Creating cluster without configurations!")
-#        host_template = self.host_template
+        # method variables:
+        hostname_template   = self.utils.hostname_template
+        print("Filtering HBaseCluster-instances expecting masterVM's name to be:\t master")
+        print("Filtering HBaseCluster-instances expecting slaveVMs' names to have the name-pattern:\t" + str(self.utils.hostname_template) + "X.")
+        self.my_logger.debug("No sqlite file is detected, so we create HBaseCluster.cluster by filtering instances from eucacluster.")
         if nodes == None:
             self.my_logger.debug("I can't see any nodes mate!")
             return
         
         for node in nodes:
-            self.my_logger.debug("Configuring node: " + node.networks)
+            self.my_logger.debug("Parsing node: " + node.networks)
             if node.name == "master":
 #                self.cluster[host_template + "master"] = node
                 self.cluster["master"] = node
             # TODO: keep whole name except last letter and check equalization with hostname_template.
             # TODO: Veify that from nodes[] to self.cluster{} the key is the node.name!!!
-            elif node.name[0:4] == "node":
+#            elif node.name[:-1] == "node":
+            elif node.name.startswith(hostname_template):
 #                self.cluster[host_template + node.name[-1]] = node
-                self.cluster["node" + node.name[-1]] = node
+#                self.cluster["node" + node.name[-1]] = node
+                self.cluster[node.name] = node
         
-        print("self.cluster = " + str(self.cluster))  
+        print("self.cluster created by create_cluster:")
+        pprint(self.cluster)
         self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
 #        return self.cluster
    

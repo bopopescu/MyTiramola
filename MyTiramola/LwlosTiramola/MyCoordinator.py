@@ -34,10 +34,8 @@ class MyDaemon(Daemon):
             # instance variables
             self.epsilon            = float(self.utils.epsilon)
             self.load_type          = self.utils.load_type
-            
-            self.min_server_nodes   = int(self.utils.min_server_nodes)
-            self.min_server_nodes   = int(self.utils.max_server_nodes)
-            self.reads              = float(self.utils.read)
+            self.reads              = float(self.utils.read)            # Used in more than 3 basic methods, so defined as instance variable.
+            self.target             = int(self.utils.offset)            # Same here!
             
             self.init(records)
             self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
@@ -58,21 +56,20 @@ class MyDaemon(Daemon):
         def init(self, records):
             
             # method variables
-            ycsb_clients            = int(self.utils.ycsb_clients)
-            decision_making_file    = self.utils.decision_making_file
             self.last_load          = None
             self.removed_hosts      = []
+            ycsb_clients            = int(self.utils.ycsb_clients)
+            decision_making_file    = self.utils.decision_making_file
+            reconfigure             = self.utils.reconfigure
+            self.install_logger()
             # define training_file
             if os.path.isfile(self.utils.training_file):
                 training_file = self.utils.training_file
             else:
                 training_file = None
-            
-            self.install_logger()
                   
             # Setting up cluster & parameters
             self.initializeNosqlCluster()
-            self.my_logger.debug("Initialized the Cluster")
             self.log_cluster()
             self.update_hosts()
             self.init_flavors()
@@ -85,10 +82,11 @@ class MyDaemon(Daemon):
             self.setting_up_dec_maker()
 
             # More configurations...
-#            self.decision_maker.train() # If no training.data, training is ignored and we get fucking error!            
-            if eval(self.utils.reconfigure):
-                self.ycsb.set_records(records)
-            else:
+#            if training_file != None:
+#                self.decision_maker.train()
+            self.decision_maker.train()
+            # Usually reconfigure = False            
+            if eval(reconfigure):
                 self.nosqlCluster.init_ganglia()
                 self.my_logger.debug("Waiting for HBase to get ready ... ")
                 self.sleep(30)
@@ -97,19 +95,21 @@ class MyDaemon(Daemon):
                 self.sleep(120)
                 self.ycsb.load_data(records, verbose=True)
                 self.sleep(240)
+            else:
+                print("Setting only ycsb-records because reconfigure = " + str(reconfigure))                
+                self.ycsb.set_records(records)
 
 
         def run_warm_up(self, num_tests, target):
 
             for i in range(num_tests):
-                self.my_logger.debug("Running warm-up test %d/%d ..." % (i+1, num_tests))
-                self.run_test(target, float(self.utils.read), update_load = False)
+                self.my_logger.debug("Running warm-up test %d/%d ..." % (i + 1, num_tests))
+                self.run_test(target, self.reads, update_load = False)
                 self.sleep(60)
 
             self.my_logger.debug("Running initial state test")
-            target *= 1.2   # Set state with 20% more load than the target. Seems more interesting
-#            meas = self.run_test(self.get_load(), float(self.utils.read))    # Set state with 20% more load than the target. Seems more interesting
-            meas = self.run_test(round(target), float(self.utils.read))
+            target *= 1.2       # Set state with 20% more load than the target. Seems more interesting
+            meas = self.run_test(round(target), self.reads)
             self.decision_maker.set_state(meas)
 
 
@@ -131,10 +131,10 @@ class MyDaemon(Daemon):
                     self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
 
                 self.execute_action(action)
-                self.run_test(target, float(self.utils.read), update_load=False)
+                self.run_test(target, self.reads, update_load=False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
-                meas = self.run_test(target, float(self.utils.read))
+                meas = self.run_test(target, self.reads)
                 self.decision_maker.update(action, meas)
 
 #########################END OF 4 BASIC METHODS! The rest following are in alphabetical order##################
@@ -244,22 +244,20 @@ class MyDaemon(Daemon):
             Used (only) for testing.
             Doing the usual iteration:  (load - action - update) with no Decision taking place. 
         """
-        def exec_add_actions(self, num_actions, num_adds = 1):
-
+        def exec_add_actions(self, num_actions = 1, num_adds = 1):
+            
+            # method variables
             add_action  = (DecisionMaking.ADD_VMS, num_adds)
+            target      = round(self.target * 1.2)
 
             for i in range(num_actions):
-
-                #self.time += 1
-#                target = self.get_load()
-                target = int(self.utils.offset)
-#                self.my_logger.debug("Time = %d, executing remove action" % self.time)
                 self.execute_action(add_action)
-                self.run_test(target, float(self.utils.read), update_load = False)
+                self.run_test(target, self.reads, update_load = False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
-                meas = self.run_test(target, float(self.utils.read))
+                meas = self.run_test(target, self.reads)
                 self.decision_maker.update(add_action, meas)
+                target *= 1.2
 
 
         """
@@ -267,22 +265,21 @@ class MyDaemon(Daemon):
             Used (only) for testing.
             Doing the usual iteration:  (load - action - update) with no Decision taking place. 
         """
-        def exec_rem_actions(self, num_actions, num_removes = 1):
-
+        def exec_rem_actions(self, num_actions = 1, num_removes = 1):
+            
+            # method variables
             rem_action  = (DecisionMaking.REMOVE_VMS, num_removes)
+            target      = round(self.target * 0.8)
 
             for i in range(num_actions):
-
-                #self.time += 1
-#                target = self.get_load()
                 target = int(self.utils.offset)
-#                self.my_logger.debug("Time = %d, executing remove action" % self.time)
                 self.execute_action(rem_action)
-                self.run_test(target, float(self.utils.read), update_load = False)
+                self.run_test(target, self.reads, update_load = False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
-                meas = self.run_test(target, float(self.utils.read))
+                meas = self.run_test(target, self.reads)
                 self.decision_maker.update(rem_action, meas)
+                target *= 0.8
 
 
         def exit(self):
@@ -315,10 +312,10 @@ class MyDaemon(Daemon):
             hostname_template   = self.utils.hostname_template
             print("self.utils.hostname_template = " + str(self.utils.hostname_template))
             eucacluster         = self.eucacluster
-            
-            # Sxedon panta reconfigure = True, opote trexei to else!!!
+
+            # Sxedon panta reconfigure = False, opote trexei to else!!!
             instances = []
-            if not eval(reconfigure):
+            if eval(reconfigure):
                 self.my_logger.debug("Removing previous instance of cluster from db")
                 self.my_logger.debug("cluster_name = " + str(self.utils.cluster_name))
                 self.utils.delete_cluster_from_db(self.utils.cluster_name)
@@ -331,14 +328,9 @@ class MyDaemon(Daemon):
                                                       self.utils.initial_cluster_size,
                                                       self.utils.initial_cluster_size,
                                                       self.utils.keypair_name)
-                # self.my_logger.debug("Launched new instances:\n" + \
-                #         pprint.pformat(instances))
                 instances = self.eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str([i.networks for i in instances]))
-
             else:
-                # TODO: append to instances[] from cluster{} based on cluster.item.name (key).
-                # Cluster{} should already be filtered during its creation.
                 # fyi. from eucacluster.instances[] to nosqlCluster.cluster{} to instances[] LOL!!!
                 print("instances1 = " + str(instances))
 #                instances.append(nosqlcluster.cluster[nosqlcluster.host_template + "master"])
@@ -349,20 +341,29 @@ class MyDaemon(Daemon):
 #                    instances.append(nosqlcluster.cluster["node" + str(i)])
                     instances.append(nosqlcluster.cluster[hostname_template + str(i)])
                 print("instances3 = " + str(instances))
+                ##### SIMPLYFYING...
+                instances2 = []
+                for instance in nosqlcluster.cluster.values():
+                    instances2.append(instance)
+                print("instances2 = " + str(instances2))
+                #### Got all values of already-filtered-dictionary nosqlcluster.cluster and put them in instances list. Piece of cake!
                 self.my_logger.debug("Found old instances: " + str(instances))
                 self.my_logger.debug("WARNING: Will block forever if they are not running.")
                 eucacluster.block_until_running(instances)
+                eucacluster.block_until_running(instances2)
                 self.my_logger.debug("Running instances: " + str(instances))
 
-            # Sxedon panta reconfigure = True, opote trexei to if!!!
+            # Sxedon panta reconfigure = False, opote trexei to if!!! Klasiko paradeigma anapodwn ennoiwn tyo reconfigure
             if eval(reconfigure):
-#                self.wake_up_nodes()
-                nosqlCluster.start_cluster()
-                time.sleep(10)
-                nosqlCluster.trigger_balancer()
-            else:
                 nosqlcluster.configure_cluster(instances, self.utils.hostname_template, False)
                 nosqlcluster.start_cluster()
+            else:
+#                nosqlCluster.start_cluster()    # starts Hadoop and HBase in nodes defined in nosqlcluster.cluster
+#                self.wake_up_nodes()            # starts HBase  in nodes defined in nosqlcluster.cluster
+                print("Triggering only balancer because reconfigure = " + str(reconfigure))
+                nosqlCluster.trigger_balancer()
+                
+                self.my_logger.debug("Initialized the Cluster")
 
 
         def init_flavors(self):
@@ -371,6 +372,8 @@ class MyDaemon(Daemon):
             flavor_names        = self.utils.possible_flavors.split(',')
             self.flavors        = [f_dict[f] for f in flavor_names]
             self.flavor_index   = self.flavors.index(f_dict[self.utils.instance_type])
+            
+            self.my_logger.debug("init_flavors run.")
             
             
         def install_logger(self):
@@ -392,7 +395,7 @@ class MyDaemon(Daemon):
             cluster = self.nosqlCluster.cluster
             log_str = "Current cluster:"
             for hostname in cluster:
-                log_str += '\n  ' + hostname + ': ' + cluster[hostname].networks
+                log_str += '\t\t\t\n  ' + hostname + ':\t' + cluster[hostname].networks
             self.my_logger.debug(log_str)
 
 
@@ -422,11 +425,14 @@ class MyDaemon(Daemon):
 
 
         def remove_nodes(self, num_nodes):
+            
+            # method variables
+            min_server_nodes   = int(self.utils.min_server_nodes)
 
             cluster = self.nosqlCluster.cluster
             print("\ncluster just before node removal: " + str(cluster))
             self.my_logger.debug("Removing " + str(num_nodes) + " nodes ...")
-            max_removed_nodes = len(cluster) - self.min_server_nodes
+            max_removed_nodes = len(cluster) - min_server_nodes
             print("max_removed_nodes = " + str(max_removed_nodes))
             if num_nodes > max_removed_nodes:
                 self.my_logger.debug("I can only remove %d nodes!" % max_removed_nodes)
@@ -602,8 +608,10 @@ class MyDaemon(Daemon):
             # method variables:
             cluster_type    = self.utils.cluster_type
             print("cluster_type: " + str(self.utils.cluster_type))
-            instances       = self.eucacluster.describe_instances()
-            instances_names = []
+            # instances is a list with Instance(s) that holds all user's instances from its account in OpenStack
+            # running describe_instances (and utils.refresh_db_instances) there's no other sqlite-db-pare-dwse and we only play with list(s) and dict(s)
+            instances       = self.eucacluster.describe_instances()     # describe_instances also calls refresh_db_instances(very important) and loads all instances
+            instances_names = []        # instances_names are only created in order to be logged!
             for instance in instances:
                 instances_names.append(instance.name)    
             self.my_logger.debug("All user instances:" + str(instances_names))
@@ -611,7 +619,7 @@ class MyDaemon(Daemon):
             ## creates a new NoSQL cluster
             if cluster_type == "HBASE":
                 self.nosqlCluster = HBaseCluster.HBaseCluster(self.utils.cluster_name)
-                self.nosqlCluster.create_cluster(instances)
+                self.nosqlCluster.create_cluster(instances)     # basically it overrides the HBaseCluster.cluster, if hbase.db preexists. And runs utils.add_to_cluster_db (very important)
             elif cluster_type == "HBASE92":
                 self.nosqlCluster = HBase92Cluster.HBase92Cluster(self.utils.cluster_name)
             elif cluster_type == "VOLDEMORT":

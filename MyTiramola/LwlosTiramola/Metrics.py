@@ -33,7 +33,7 @@ class Metrics(object):
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         
-        self.my_logger.debug("Metrics, initialized!")
+        self.my_logger.debug("Metrics, initialized.")
 
 
     def collect_all_metrics(self, cluster):
