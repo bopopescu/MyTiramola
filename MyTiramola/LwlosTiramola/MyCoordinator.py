@@ -83,9 +83,7 @@ class MyDaemon(Daemon):
             self.setting_up_dec_maker()
 
             # More configurations...
-#            if training_file != None:
-#                self.decision_maker.train()
-            self.decision_maker.train()
+            self.decision_maker.train()     # If training file is not valid file, DecisionMaker makes it None and training is aborted.
             # Usually reconfigure = False            
             if eval(reconfigure):
                 self.nosqlCluster.init_ganglia()

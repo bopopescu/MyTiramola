@@ -186,7 +186,7 @@ class OpenStackCluster(object):
             members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
 
             for server in servers:
-                print("\nWill get info from server:\t" + str(server))
+                print("Will get info from server:\t" + str(server))
                 details = {}
                 for member in members:
 #                    print("Getting member = " + str(member))
@@ -209,7 +209,7 @@ class OpenStackCluster(object):
             # # if simple call
 #            print("OpenStackCluster, state = " + str(state))
             if not state:
-                print("OpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
+                print("\nOpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
                 self.utils.refresh_instance_db(instances)           # Very important to run in order to load all user's instances in db in table instances       
         else:
             # # read from the local database

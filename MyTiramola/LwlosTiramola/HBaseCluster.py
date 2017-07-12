@@ -39,7 +39,7 @@ class HBaseCluster(object):
         # Make sure the sqlite file exists. if not, create it and add the table we need
         con = create_engine(self.utils.db_file)
         cur = con.connect()
-        print("HBaseCluster, going to try")
+        print("\nHBaseCluster, going to try")
         try:
             clusters = cur.execute('select * from clusters').fetchall()
             if len(clusters) > 0:
@@ -559,7 +559,7 @@ class HBaseCluster(object):
 #                nodes.append(self.cluster[self.host_template + str(i)])
             if not ("node" + str(i)).endswith(hostname):
                 nodes.append(self.cluster["node" + str(i)])
-        self.my_logger.debug("Nodes after removal:\n" + pprint.pformat(nodes))
+        self.my_logger.debug("Nodes after removal:\n" + str(nodes))
         ## keep node
         node = self.cluster.pop(hostname)
         ## Add the removed node to the datanode excludes and refresh the namenodes
