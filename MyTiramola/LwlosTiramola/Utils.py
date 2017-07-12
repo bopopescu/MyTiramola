@@ -92,16 +92,16 @@ class Utils(object):
             print ("ERROR in truncate")
 
         for instance in instances:
-            print("\n\tINSERTing instance - " + str(instance))
-            print("Instance's variables:")
-            print("instance.id =\t\t" + str(instance.id))
-            print("instance.networks =\t" + str(instance.networks))
-            print("instance.flavor =\t" + str(instance.flavor))
-            print("instance.image =\t" + str(instance.image))
-            print("instance.status =\t" + str(instance.status))
-            print("instance.key_name =\t" + str(instance.key_name))
-            print("instance.name =\t\t" + str(instance.name))
-            print("instance.created =\t" + str(instance.created) + "\n")
+            print("INSERTing INTO instances table a row with attributes of:\t" + str(instance))
+#            print("Instance's variables:")
+#            print("instance.id =\t\t" + str(instance.id))
+#            print("instance.networks =\t" + str(instance.networks))
+#            print("instance.flavor =\t" + str(instance.flavor))
+#            print("instance.image =\t" + str(instance.image))
+#            print("instance.status =\t" + str(instance.status))
+#            print("instance.key_name =\t" + str(instance.key_name))
+#            print("instance.name =\t\t" + str(instance.name))
+#            print("instance.created =\t" + str(instance.created) + "\n")
             try:
                 cur.execute("insert into instances(id, networks, flavor, image, status, key_name, name, created) values (?,?,?,?,?,?,?,?)",
                             (instance.id,

@@ -71,7 +71,7 @@ class MyDaemon(Daemon):
             # Setting up cluster & parameters
             self.initializeNosqlCluster()
             self.log_cluster()
-            self.update_hosts()
+            self.update_hosts()     # to be checked what the fuck is doing and messes with all hosts files.
             self.init_flavors()
             # Preparing to get metrics (termi7 metrics!)
             self.metrics = Metrics()
@@ -308,7 +308,7 @@ class MyDaemon(Daemon):
             # method variables:
             reconfigure         = self.utils.reconfigure
             print("self.utils.reconfigure = " + str(self.utils.reconfigure))
-            nosqlcluster        = self.nosqlcluster
+            nosqlCluster        = self.nosqlCluster
             hostname_template   = self.utils.hostname_template
             print("self.utils.hostname_template = " + str(self.utils.hostname_template))
             eucacluster         = self.eucacluster
@@ -331,35 +331,21 @@ class MyDaemon(Daemon):
                 instances = self.eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str([i.networks for i in instances]))
             else:
-                # fyi. from eucacluster.instances[] to nosqlCluster.cluster{} to instances[] LOL!!!
-                print("instances1 = " + str(instances))
-#                instances.append(nosqlcluster.cluster[nosqlcluster.host_template + "master"])
-                instances.append(nosqlcluster.cluster["master"])
-                print("instances2 = " + str(instances))
-                for i in range(1, len(nosqlcluster.cluster)):
-#                    instances.append(nosqlcluster.cluster[nosqlcluster.host_template + str(i)])
-#                    instances.append(nosqlcluster.cluster["node" + str(i)])
-                    instances.append(nosqlcluster.cluster[hostname_template + str(i)])
-                print("instances3 = " + str(instances))
-                ##### SIMPLYFYING...
-                instances2 = []
-                for instance in nosqlcluster.cluster.values():
-                    instances2.append(instance)
-                print("instances2 = " + str(instances2))
-                #### Got all values of already-filtered-dictionary nosqlcluster.cluster and put them in instances list. Piece of cake!
-                self.my_logger.debug("Found old instances: " + str(instances))
-                self.my_logger.debug("WARNING: Will block forever if they are not running.")
+                # Getting all values of already-filtered-dictionary nosqlCluster.cluster and put them in instances list. Piece of cake!
+                for instance in nosqlCluster.cluster.values():
+                    instances.append(instance)
+                self.my_logger.debug("All instances from nosqlCluster.cluster: " + str(instances))
+                self.my_logger.debug("WARNING: Tiramola will block forever if they are not running.")
                 eucacluster.block_until_running(instances)
-                eucacluster.block_until_running(instances2)
                 self.my_logger.debug("Running instances: " + str(instances))
 
             # Sxedon panta reconfigure = False, opote trexei to if!!! Klasiko paradeigma anapodwn ennoiwn tyo reconfigure
             if eval(reconfigure):
-                nosqlcluster.configure_cluster(instances, self.utils.hostname_template, False)
-                nosqlcluster.start_cluster()
+                nosqlCluster.configure_cluster(instances, self.utils.hostname_template, False)
+                nosqlCluster.start_cluster()
             else:
-#                nosqlCluster.start_cluster()    # starts Hadoop and HBase in nodes defined in nosqlcluster.cluster
-#                self.wake_up_nodes()            # starts HBase  in nodes defined in nosqlcluster.cluster
+#                nosqlCluster.start_cluster()    # starts Hadoop and HBase in nodes defined in nosqlCluster.cluster
+#                self.wake_up_nodes()            # starts HBase  in nodes defined in nosqlCluster.cluster
                 print("Triggering only balancer because reconfigure = " + str(reconfigure))
                 nosqlCluster.trigger_balancer()
                 

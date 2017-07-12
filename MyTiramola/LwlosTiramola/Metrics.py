@@ -75,7 +75,7 @@ class Metrics(object):
 
 #        print("The cluster is: " + str(cluster))
         hostnames = self._get_monitored_hosts(cluster)
-        self.my_logger.debug("Monitored hosts are: " + str(hostnames))
+#        self.my_logger.debug("Monitored hosts are: " + str(hostnames))
         # fere mou ta value twn instance.name pou einai sto value otan to key einai to hostname.
         while True:
 #            print("Metrics.get_all_metrics from host: " + str(self.hbase_host) + " in port: " + str(self.hbase_port))
@@ -92,7 +92,7 @@ class Metrics(object):
             self._restart_ganglia(cluster)
             time.sleep(30)
         
-        self.my_logger.debug("Metrics collected and averaged.")
+#        self.my_logger.debug("Metrics collected and averaged.")
         return metrics
 
 
@@ -102,7 +102,7 @@ class Metrics(object):
     """
     def _cluster_averages(self, data, hostnames):
         
-        self.my_logger.debug("Getting metrics and calculating averages")
+#        self.my_logger.debug("Getting metrics and calculating averages")
         num_meas = len(hostnames)
 #        print("num_meas = " + str(num_meas))
         if num_meas == 0:
@@ -136,7 +136,7 @@ class Metrics(object):
     """
     def get_iaas_metrics(self, cluster):
 
-        self.my_logger.debug("Metrics.get_iaas_metrics running")
+#        self.my_logger.debug("Metrics.get_iaas_metrics running")
         ids = self._get_monitored_ids(cluster)
         while True:
             data = get_all_metrics((self.iaas_host, self.iaas_port))
@@ -149,7 +149,7 @@ class Metrics(object):
             self.my_logger.debug("Could not collect metrics from " + str(self.iaas_host) + ", will try again in 10 seconds.")
             time.sleep(10)
         
-        self.my_logger.debug("Metrics from IAAS collected.\n")
+#        self.my_logger.debug("Metrics from IAAS collected.\n")
         return metrics
 
 

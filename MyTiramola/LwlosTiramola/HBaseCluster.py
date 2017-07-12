@@ -12,7 +12,7 @@ import re
 from sqlalchemy import exc, create_engine
 import pexpect, os, shutil, fileinput, sys, logging
 
-import pprint
+from pprint import pprint
 
 
 '''
@@ -46,8 +46,7 @@ class HBaseCluster(object):
                 print("""Already discovered cluster id from previous database file. Will select the defined one to work with (if it exists).""")
                 # print ("Found records:\n", str(clusters))
                 clustersfromcid = cur.execute('select * from clusters where cluster_id=\"' + self.cluster_id + "\"",).fetchall()
-                print ("clustersfromcid: ")
-                pprint(clustersfromcid)
+                print ("clustersfromcid: " + str(clustersfromcid))
                 if len(clustersfromcid) > 0 :
                     self.cluster = self.utils.get_cluster_from_db(self.cluster_id)
                     print ("The hbase.db exists, so the created self.cluster is:")

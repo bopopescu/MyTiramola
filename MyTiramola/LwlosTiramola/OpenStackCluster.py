@@ -57,6 +57,54 @@ class OpenStackCluster(object):
         
         self.my_logger.debug("OpenStackCluster initialized.")
 
+   
+    def block_until_running (self, instances, target_status = 'ACTIVE'):
+        ''' Blocks until all defined instances have reached running state and an ip has been assigned'''
+        creds = get_nova_creds()
+#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
+        nova = client.Client(2.0,
+                             username = creds.get('username'),
+                             password = self.utils.rc_pwd,
+                             project_name = creds.get('project_id'),
+                             auth_url = creds.get('auth_url'))
+        # # Run describe instances until everyone is running
+        tmpinstances = instances.copy()
+        instances = []
+        members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
+        while len(tmpinstances) > 0 :
+            print("tmpinstances:\t" + str(tmpinstances))
+#             time.sleep(10)
+            sys.stdout.flush()
+            all_running_instances = nova.servers.list(search_opts = {'status':target_status})
+#            print("all_running_instances:\t" + str(all_running_instances))
+#            print("length_all = " + str(len(all_running_instances)))
+            for i in range(0, len(all_running_instances)):
+#                print("length_temp = " + str(len(tmpinstances)))
+                for j in range(0, len(tmpinstances)):
+                    ping = subprocess.getoutput("/bin/ping -q -c 1 " + str(all_running_instances[i].networks['private-net'][0]))
+                    nc = subprocess.getoutput("nc -z  -v " + str(all_running_instances[i].networks['private-net'][0]) + " 22")                    
+                    if (all_running_instances[i].id == tmpinstances[j].id) \
+                    and ping.count('1 received') > 0 and nc.count("succeeded") > 0:
+                        tmpinstances.pop(j)
+                        # # get instance details
+                        details = {}
+                        for member in members:
+                            val = getattr(all_running_instances[i], member, "")
+                            # product_codes is a list
+                            if hasattr(val, '__iter__') and not ((type(val) is  str) or (type(val) is list)) : 
+                                v = val.get('id')
+                                if v == None: v = val.get('private-net')[0]
+                                val = v
+                            # print (val)
+                            details[member] = val
+                        _instance = Instance(details)     
+                        instances.append(_instance)
+                        # instances.append(all_running_instances[i])
+                        break
+        self.describe_instances()       # Don't know why this is called. Maybe I will search it one day!
+        print("instances returned by block_until_running: " + str(instances) + "\n")
+        return instances
+
 
     def confirm_resizes(self, server_ids):
 
@@ -138,10 +186,10 @@ class OpenStackCluster(object):
             members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
 
             for server in servers:
-                print("\nInfo from server:\t" + str(server))
+                print("\nWill get info from server:\t" + str(server))
                 details = {}
                 for member in members:
-                    print("Getting member = " + str(member))
+#                    print("Getting member = " + str(member))
                     val = getattr(server, member, "")
                     if hasattr(val, '__iter__') and not ((type(val) is str) or (type(val) is list)): 
                         v = val.get('id')
@@ -150,7 +198,7 @@ class OpenStackCluster(object):
                         details[member] = val
                     else:
                         details[member] = val
-                print("details to make instance = " + str(details) + "\n")
+#                print("details to make instance = " + str(details) + "\n")
                 instance = Instance(details)
                 if state:
                     if state == instance.status:
@@ -159,7 +207,7 @@ class OpenStackCluster(object):
                     instances.append(instance) 
 
             # # if simple call
-            print("OpenStackCluster, state = " + str(state))
+#            print("OpenStackCluster, state = " + str(state))
             if not state:
                 print("OpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
                 self.utils.refresh_instance_db(instances)           # Very important to run in order to load all user's instances in db in table instances       
@@ -303,57 +351,6 @@ class OpenStackCluster(object):
             deleted_instances.append(instance)
 
         return deleted_instances
-
-#       
-# # Utilities
-#
-   
-    def block_until_running (self, instances, target_status = 'ACTIVE'):
-        ''' Blocks until all defined instances have reached running state and an ip has been assigned'''
-        creds = get_nova_creds()
-#        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
-        nova = client.Client(2.0,
-                             username = creds.get('username'),
-                             password = self.utils.rc_pwd,
-                             project_name = creds.get('project_id'),
-                             auth_url = creds.get('auth_url'))
-        # # Run describe instances until everyone is running
-        tmpinstances = instances.copy()
-        instances = []
-        members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
-        while len(tmpinstances) > 0 :
-            print("tmpinstances1:\t" + str(tmpinstances))
-#             time.sleep(10)
-            sys.stdout.flush()
-            all_running_instances = nova.servers.list(search_opts = {'status':target_status})
-            print("all_running_instances:\t" + str(all_running_instances))
-            print("length_all = " + str(len(all_running_instances)))
-            for i in range(0, len(all_running_instances)):
-                print("length_temp = " + str(len(tmpinstances)))
-                for j in range(0, len(tmpinstances)):
-                    ping = subprocess.getoutput("/bin/ping -q -c 1 " + str(all_running_instances[i].networks['private-net'][0]))
-                    nc = subprocess.getoutput("nc -z  -v " + str(all_running_instances[i].networks['private-net'][0]) + " 22")                    
-                    if (all_running_instances[i].id == tmpinstances[j].id) \
-                    and ping.count('1 received') > 0 and nc.count("succeeded") > 0:
-                        tmpinstances.pop(j)
-                        # # get instance details
-                        details = {}
-                        for member in members:
-                            val = getattr(all_running_instances[i], member, "")
-                            # product_codes is a list
-                            if hasattr(val, '__iter__') and not ((type(val) is  str) or (type(val) is list)) : 
-                                v = val.get('id')
-                                if v == None: v = val.get('private-net')[0]
-                                val = v
-                            # print (val)
-                            details[member] = val
-                        _instance = Instance(details)     
-                        instances.append(_instance)
-                        # instances.append(all_running_instances[i])
-                        break
-        self.describe_instances()
-        print("instances = " + str(instances))
-        return instances
         
             
 if __name__ == "__main__":
