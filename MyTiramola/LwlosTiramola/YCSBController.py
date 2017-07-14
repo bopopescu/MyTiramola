@@ -15,20 +15,17 @@ class YCSBController(object):
     """
         Constructor
     """
-    def __init__(self, num_clients = None):
+    def __init__(self, num_clients):
 
 
-        self.utils        = Utils.Utils()
-        self.ycsb         = self.utils.ycsb_binary
-        self.workload     = self.utils.workload_file
-        self.output       = self.utils.ycsb_output
-        self.max_time     = int(self.utils.ycsb_max_time)
-        self.record_count = None
-        self.ycsb_error   = self.utils.install_dir + '/logs/ycsb.err'
-        if num_clients is None:
-            self.clients = int(self.utils.ycsb_clients)
-        else:
-            self.clients = num_clients
+        self.utils          = Utils.Utils()
+        self.ycsb           = self.utils.ycsb_binary
+        self.workload       = self.utils.workload_file
+        self.output         = self.utils.ycsb_output
+        self.max_time       = int(self.utils.ycsb_max_time)
+        self.record_count   = None
+        self.ycsb_error     = self.utils.install_dir + "/logs/ycsb.err"
+        self.clients        = int(num_clients)
 
         ## Install logger
         LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
@@ -57,10 +54,10 @@ class YCSBController(object):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            print("Connecting to ycsb" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
+            print("\n\nConnecting to ycsb" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
             ssh.connect("ycsb%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
-            print("Running command: " + str(cmd))
+            print("Executing command: " + str(cmd))
             ssh.exec_command(cmd)
             ssh.close()
 
@@ -122,12 +119,9 @@ class YCSBController(object):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username = 'ubuntu')
-            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname))
+            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname) + "\n\n")
             ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
             ssh.close()
-
-
-####################################### PROCESSING RESULTS (Lwlos mode?) #####################################
 
 
     def _aggregate_results(self, results):
@@ -167,9 +161,7 @@ class YCSBController(object):
                     read_prop   = [self.reads]
 #                    with open("/tmp/ycsb.err", 'r') as er:
 #                        target = re.findall("-target " + int_re, er)
-#                        read_prop = re.findall("readproportion=" + float_re, er)
-
-                    
+#                        read_prop = re.findall("readproportion=" + float_re, er)                   
                     with open(self.output, 'r') as f:
                         data = f.read()
 #                        target = re.findall("-target " + int_re, data)                                      # BUG "-target" is in ycsb.err !!!
@@ -185,8 +177,8 @@ class YCSBController(object):
                             return None
  
                         res[DecisionMaking.TOTAL_THROUGHPUT] = float(throughput[0])
-                        res[DecisionMaking.INCOMING_LOAD]    = float(target[0])                         ## list out of range
-                        res[DecisionMaking.PC_READ_LOAD]     = float(read_prop[0])                      ## list out of range
+                        res[DecisionMaking.INCOMING_LOAD]    = float(target[0])                         ## list out of range when BUG occurs
+                        res[DecisionMaking.PC_READ_LOAD]     = float(read_prop[0])                      ## list out of range when BUG occurs
                         if read_ops:
                             res[DecisionMaking.READ_THROUGHPUT] = float(read_ops[0]) / self.max_time
                             res[DecisionMaking.READ_LATENCY]    = float(read_latency[0]) / 1000
@@ -202,7 +194,9 @@ class YCSBController(object):
                             res[DecisionMaking.UPDATE_LATENCY]    = float(read_latency[0]) / 1000
  
                         # self.my_logger.debug("YCSB results: " + str(res))
-                        self.my_logger.debug("Successfully collected YCSB results from client %d" % c)
+                        self.my_logger.debug("Successfully collected YCSB results from client %d" % c + "\n")
+                        print("\nSuccessfully collected YCSB results from client %d: " % c) # argotera vale na sou ektypwnei ta averaged dil to epistrefomeno
+                        pprint(res)
                         client_results.append(res)
                         break
 

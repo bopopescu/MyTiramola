@@ -14,8 +14,8 @@
   ],
   "actions" :
   {
-    "add_VMs"    : [1, 2],
-    "remove_VMs" : [1, 2],
+    "add_VMs"    : [1],
+    "remove_VMs" : [1],
     "no_op"      : [0]
   },
   "initial_qvalues"  : 0,

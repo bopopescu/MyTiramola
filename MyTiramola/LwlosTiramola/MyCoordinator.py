@@ -37,13 +37,14 @@ class MyDaemon(Daemon):
             self.reads              = float(self.utils.read)            # Used in more than 3 basic methods, so defined as instance variable.
             self.target             = int(self.utils.offset)            # Same here!
             self.hostname_template  = self.utils.hostname_template      # Same here
+            self.removed_hosts      = []
             
             self.init(records)
             self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
             if self.utils.bench:
                 #self.run_benchmark(int(self.utils.warm_up_target))
-                self.exec_rem_actions(1, 1)
-                self.exec_add_actions(1, 1)
+                self.exec_rem_actions(3, 1)
+                self.exec_add_actions(2, 1)
             
             self.selecting_load_type(self.load_type)
             self.e_greedy(self.num_actions, self.epsilon)
@@ -58,7 +59,6 @@ class MyDaemon(Daemon):
             
             # method variables
             self.last_load          = None
-            self.removed_hosts      = []
             ycsb_clients            = int(self.utils.ycsb_clients)
             decision_making_file    = self.utils.decision_making_file
             reconfigure             = self.utils.reconfigure
@@ -72,7 +72,7 @@ class MyDaemon(Daemon):
             # Setting up cluster & parameters
             self.initializeNosqlCluster()
             self.log_cluster()
-            self.update_hosts()     # to be checked what the fuck is doing and messes with all hosts files.
+            self.update_hosts()
             self.init_flavors()
             # Preparing to get metrics (termi7 metrics!)
             self.metrics = Metrics()
@@ -95,8 +95,9 @@ class MyDaemon(Daemon):
                 self.ycsb.load_data(records, verbose=True)
                 self.sleep(240)
             else:
-                print("Setting only ycsb-records because reconfigure = " + str(reconfigure))                
                 self.ycsb.set_records(records)
+            
+            self.my_logger.debug("END of Tiramola pseudo-__init__(). Next step... run_warm_up(?).\n")
 
 
         def run_warm_up(self, num_tests, target):
@@ -175,8 +176,10 @@ class MyDaemon(Daemon):
         def collect_measurements(self, update_load = True):
 
             # collect the metrics from ganglia and ycsb
-            ganglia_metrics = self.metrics.collect_all_metrics(self.nosqlCluster.cluster)
-            ycsb_metrics = self.ycsb.parse_results()
+            ganglia_metrics = self.metrics.collect_all_metrics(self.nosqlCluster.cluster)   # Averaged (averaged metrics) from inside and outside Ganglia!
+            # print here the GangliaS!!!
+            ycsb_metrics    = self.ycsb.parse_results()                                     # Averaged metrics from ycsb.out(s)
+            # print here the aggregated/averaged ycsbs!!!
             if ganglia_metrics is None or ycsb_metrics is None:
                 return None
 
@@ -206,7 +209,7 @@ class MyDaemon(Daemon):
                                                   meas[DecisionMaking.UPDATE_THROUGHPUT])
 
             # simple linear prediction for the load on the next step
-            print("self.last_load1 = " + str(self.last_load))
+            print("\n\nself.last_load1 = " + str(self.last_load))
             if self.last_load is None:
                 last_load = meas[DecisionMaking.INCOMING_LOAD]
             else:
@@ -219,9 +222,9 @@ class MyDaemon(Daemon):
             print("update_load1 = " + str(update_load))
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
-            print("self.last_load2 = " + str(self.last_load))
+            print("self.last_load2 = " + str(self.last_load) + "\n\n")
 
-            self.my_logger.debug("Collected measurements: \n" + pprint.pformat(meas))
+            self.my_logger.debug("Collected measurements fully averaged from inside-ganglia, outside-ganglia and ycsb: \n" + pprint.pformat(meas))
             return meas
 
 
@@ -252,11 +255,13 @@ class MyDaemon(Daemon):
             for i in range(num_actions):
                 self.execute_action(add_action)
                 self.run_test(target, self.reads, update_load = False)
+                self.my_logger.debug("The last logged measurements are not used!")
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
+                elf.my_logger.debug("The last logged measurements are the ones I use for DM-update")
                 self.decision_maker.update(add_action, meas)
-                target *= 1.2
+                target *= 1.1
 
 
         """
@@ -274,11 +279,13 @@ class MyDaemon(Daemon):
                 target = int(self.utils.offset)
                 self.execute_action(rem_action)
                 self.run_test(target, self.reads, update_load = False)
+                self.my_logger.debug("The last logged measurements are not used!")
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
+                self.my_logger.debug("The last logged measurements are the ones I use for DM-update")
                 self.decision_maker.update(rem_action, meas)
-                target *= 0.8
+                target *= 0.9
 
 
         def exit(self):
@@ -331,7 +338,7 @@ class MyDaemon(Daemon):
                 # Getting all values of already-filtered-dictionary nosqlCluster.cluster and put them in instances list. Piece of cake!
                 for instance in nosqlCluster.cluster.values():
                     instances.append(instance)
-                self.my_logger.debug("All instances from nosqlCluster.cluster: " + str(instances))
+                self.my_logger.debug("NoSQL-cluster is formed by: " + str(instances))
                 self.my_logger.debug("WARNING: Tiramola will block forever if they are not running.")
                 eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str(instances))
@@ -356,7 +363,7 @@ class MyDaemon(Daemon):
             self.flavors        = [f_dict[f] for f in flavor_names]
             self.flavor_index   = self.flavors.index(f_dict[self.utils.instance_type])
             
-            self.my_logger.debug("init_flavors run.")
+            self.my_logger.debug("init_flavors ran.")
             
             
         def install_logger(self):
@@ -376,9 +383,9 @@ class MyDaemon(Daemon):
         def log_cluster(self):
 
             cluster = self.nosqlCluster.cluster
-            log_str = "Current cluster:"
+            log_str = "log_cluster: Current cluster:"
             for hostname in cluster:
-                log_str += '\t\t\t\n  ' + hostname + ':\t' + cluster[hostname].networks
+                log_str += '\n  ' + hostname + ':\t' + cluster[hostname].networks
             self.my_logger.debug(log_str)
 
 
@@ -413,7 +420,7 @@ class MyDaemon(Daemon):
             min_server_nodes   = int(self.utils.min_server_nodes)
 
             cluster = self.nosqlCluster.cluster
-            print("\ncluster just before node removal: " + str(cluster))
+            print("\n\ncluster just before node removal: " + str(cluster))
             self.my_logger.debug("Removing " + str(num_nodes) + " nodes ...")
             max_removed_nodes = len(cluster) - min_server_nodes
             print("max_removed_nodes = " + str(max_removed_nodes))
@@ -434,7 +441,8 @@ class MyDaemon(Daemon):
                         print("number = " + number)
                         if number == str(cluster_length - 1):
                             self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
-                            self.removed_hosts = [(hostname, host)] + self.removed_hosts
+                            self.removed_hosts = [(hostname, host)] + self.removed_hosts                # practically we append the tuple!
+                            print("self.removed_hosts = " + str(self.removed_hosts))
                             break
 
             self.log_cluster()
@@ -511,6 +519,7 @@ class MyDaemon(Daemon):
                 self.ycsb.execute_load(target, reads)
                 meas = self.collect_measurements(update_load = update_load)
                 if not meas is None:
+                    print("\n\n\t\tEND OF run_test succesfully.\n\n\n")
                     return meas
 
                 self.my_logger.debug("Test failed, trying again in 50 seconds ...")
@@ -625,9 +634,9 @@ class MyDaemon(Daemon):
             
             # method and instance variables
             ycsb_max_time       = int(self.utils.ycsb_max_time)
-            egreedy_iter_time   = (2 * ycsb_max_time + 60) / 60
+            egreedy_iter_time   = (2 * ycsb_max_time + 240) / 60
             total_run_time      = int(self.utils.total_run_time)
-            self.num_actions    = round(total_run_time / egreedy_iter_time + 0.5) + 2
+            self.num_actions    = round(total_run_time / egreedy_iter_time + 0.5)
             training_perc       = float(self.utils.training_perc)
             self.train_actions  = round(training_perc * self.num_actions + 0.5)
             eval_actions        = self.num_actions - self.train_actions
@@ -666,8 +675,10 @@ class MyDaemon(Daemon):
         """
         def update_hosts(self):
 
-            # Remove all the host entries from /etc/hosts
-            call(["sed", "-i", "/%s/d" % self.nosqlCluster.host_template, "/etc/hosts"])
+            # Remove all the host entries from /etc/hosts pointing to VMs that form the NoSQL-cluster 
+#            call(["sed", "-i", "/%s/d" % self.nosqlCluster.host_template, "/etc/hosts"])
+            call(["sed", "-i", "/master/d", "/etc/hosts"])
+            call(["sed", "-i", "/%s/d" % self.hostname_template, "/etc/hosts"])
             cluster = self.nosqlCluster.cluster
             # Add all the current nodes of the cluster
             with open("/etc/hosts", "a") as hosts_file:     # changed the /etc/hosts file's permissions in order to run!
@@ -688,9 +699,7 @@ class MyDaemon(Daemon):
 
             self.my_logger.debug("Waking up all nodes ...")
             for hostname, host in self.nosqlCluster.cluster.items():
-                print("\nhostname: " + str(hostname))
-                print("host: " + str(host))
-                self.nosqlCluster.start_node(hostname, host, rebalance = False, debug = True)
+                self.nosqlCluster.start_node(hostname, host, rebalance = False)
 
             time.sleep(10)
             self.nosqlCluster.trigger_balancer()

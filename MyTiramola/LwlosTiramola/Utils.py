@@ -212,21 +212,21 @@ class Utils(object):
         return None
     
     def add_to_cluster_db(self, cluster = None, cluster_id = None):
+        
         # # Add cluster to DB (check for existing records with the same id and remove)
         con = create_engine(self.db_file)
         cur = con.connect()
-        print("add_to_cluster_db is trying to delete")
         try:
             cur.execute('delete from clusters where cluster_id = \"' + cluster_id + "\"")
         except exc.DatabaseError:
             print ("No previous entries")
             
         for (clusterkey, clustervalue) in list(cluster.items()):
-            print("\nadd_to_cluster_db, tries INSERTing (cluster_id, clusterkey, clustervalue.id):")
-            print("cluster_id =\t\t" + str(cluster_id))
-            print("clusterkey =\t\t" + str(clusterkey))
-            print("clustervalue =\t\t" + str(clustervalue))
-            print("clustervalue.id =\t" + str(clustervalue.id) + "\n")
+#            print("\nadd_to_cluster_db, tries INSERTing (cluster_id, clusterkey, clustervalue.id):")
+#            print("cluster_id =\t\t" + str(cluster_id))
+#            print("clusterkey =\t\t" + str(clusterkey))
+#            print("clustervalue =\t\t" + str(clustervalue))
+#            print("clustervalue.id =\t" + str(clustervalue.id) + "\n")
             try:
                 cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) values  (?,?,?)""",
                             (cluster_id, clusterkey, clustervalue.id)

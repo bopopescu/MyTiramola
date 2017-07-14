@@ -44,8 +44,6 @@ class DecisionMaker(object):
         self.install_logger()
         
         self.my_logger.debug("DecisionMaker initialized.")
-        print("DecisionMaker initialized.")
-
 
 
     def add_network_usage(self, measurements):
@@ -129,7 +127,7 @@ class DecisionMaker(object):
         print("\nself.last_meas after adding network usage:")
         pprint(self.last_meas)
         self.model.set_state(measurements)
-        self.my_logger.debug("State set")
+        self.my_logger.debug("State set\n\n")
 
 
     def train(self):

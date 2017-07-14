@@ -11,6 +11,11 @@ import random
 import DecisionMaking
 
 
+"""
+    The class Metrics deals with only metrics from Ganglia.
+    It has 3 basic methods: collect_all_metrics, get_cluster_metrics and get_iaas_metrics.
+    All the other methods are helpers for them.
+"""
 class Metrics(object):
 
     def __init__(self, iaas_host = "termi7", iaas_port = 8649, hbase_port = 8649):
@@ -44,15 +49,14 @@ class Metrics(object):
         timeseries = []
         start = timer()
         end = start + int(self.utils.ycsb_max_time)
-        self.my_logger.debug("Will start collecting data in 30 seconds ...")
+        self.my_logger.debug("\nWill start collecting data in 30 seconds ...")
         time.sleep(20)
-        self.my_logger.debug("Now collecting data ...\n")
+        self.my_logger.debug("Now collecting data ...")
         while True:
             now = timer()
             if now < end:
                 metrics = self.get_cluster_metrics(cluster)
                 metrics.update(self.get_iaas_metrics(cluster))
-                # self.my_logger.debug("Got metrics: " + str(metrics))
                 timeseries.append(metrics)
                 time.sleep(10)
             else:
@@ -62,29 +66,25 @@ class Metrics(object):
             self.my_logger.error("Only %d metrics collected from Ganglia" % len(timeseries))
             return None
 
-        self.my_logger.debug("Successfully collected data %s times" % len(timeseries) + "\n\n")
+        self.my_logger.debug("Successfully collected data %s times" % len(timeseries) + "\n")
         results = {n: sum([m[n] for m in timeseries]) / len(timeseries) for n in timeseries[0]}
-        #self.my_logger.debug("Results from Ganglia: " + str(results))
+        print("\n\nAll Ganglia(s)-metrics final view: ")
+        pprint(results)
         return results
 
 
     """
         Returns the metrics from the hbase-cluster for the given cluster
+        (also a helper for get_all_metrics)
     """
     def get_cluster_metrics(self, cluster):
 
-#        print("The cluster is: " + str(cluster))
-        hostnames = self._get_monitored_hosts(cluster)
-#        self.my_logger.debug("Monitored hosts are: " + str(hostnames))
-        # fere mou ta value twn instance.name pou einai sto value otan to key einai to hostname.
+        hostnames = self._get_monitored_hosts(cluster)                  # list hostnames will be the names only for NoSQL-slaves.
         while True:
-#            print("Metrics.get_all_metrics from host: " + str(self.hbase_host) + " in port: " + str(self.hbase_port))
-            data = get_all_metrics((self.hbase_host, self.hbase_port))
-            print("\n\nMetrics.get_cluster_metrics, raw:")
-            pprint(data)
-            metrics = self._cluster_averages(data, hostnames)
-            print("\n\nMetrics.get_cluster_metrics, averages:")
-            pprint(metrics)
+            data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data will be the raw metrics for every monitored node.
+            metrics = self._cluster_averages(data, hostnames)           # dict metrics is the averaged metrics only for NoSQL-slaves.
+#            print("\n\nAveraged metrics:")
+#            pprint(metrics)
             if not metrics is None:
                 break
 
@@ -92,70 +92,112 @@ class Metrics(object):
             self._restart_ganglia(cluster)
             time.sleep(30)
         
-#        self.my_logger.debug("Metrics collected and averaged.")
         return metrics
 
 
     """
         Returns a tuple with the averages of all metrics if all metrics are present for all the
-        given hosts, else returns None
+        given hosts, else returns None.
+        Also, it filters and averages the most important metrics. Not all provided by Ganglia.
+        (helper for get_cluster_metrics)
     """
     def _cluster_averages(self, data, hostnames):
         
-#        self.my_logger.debug("Getting metrics and calculating averages")
         num_meas = len(hostnames)
-#        print("num_meas = " + str(num_meas))
         if num_meas == 0:
             self.my_logger.error("No hostnames provided")
             return None
 
-        averages = {n: 0.0 for n in DecisionMaking.CLUSTER_METRICS}
-#        print("averages = " + str(averages))
+        averages = {n: 0.0 for n in DecisionMaking.CLUSTER_METRICS}                 # Load a dict where keys the DecisionMaking.CLUSTER_METRICS and values = 0.
         for hostname in hostnames:
-            print("Averaging for hostname: " + str(hostname))
             if not hostname in data:
                 self.my_logger.debug("Missing data for " + hostname)
                 return None
 
-            hostdata = data[hostname]
+            hostdata = data[hostname]                                               # Check data from each monitored host.
             for metric in DecisionMaking.CLUSTER_METRICS:
                 if metric not in hostdata:
                     self.my_logger.debug("Missing %s for %s" % (metric, hostname))
                     return None
                 try:
-                    averages[metric] += float(hostdata[metric])
+                    averages[metric] += float(hostdata[metric])                     # Add each metric in dict averages.
                 except:
                     self.my_logger.debug("Could not convert %s to float" % metric)
                     return None
 
-        return {n: v / num_meas for n, v in averages.items()}
+        return {n: v / num_meas for n, v in averages.items()}                       # Divide each metric with the number of monitored hosts.
+
+
+    """
+        Returns the hostnames of all the slaves of the NoSQL-cluster (everyone but the master!).
+        (helper for get_cluster_metrics)
+    """
+    def _get_monitored_hosts(self, cluster):
+
+        return [n for n in cluster if 'master' not in n]
+
+
+    """
+        Restarts the ganglia-monitoring service on all the nodes
+        (helper for get_cluster_metrics)
+    """
+    def _restart_ganglia(self, cluster):
+
+        hosts = list(cluster.items())
+        random.shuffle(hosts) # ...
+        for hostname, node in hosts:
+            self.my_logger.debug("Restarting ganglia daemons on hostname: " + str(hostname))
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            try:
+                self.my_logger.debug("Trying to connect on node: " + str(node))
+                ssh.connect(node.networks, username = "ubuntu", password = 'secretpw', key_filename = self.utils.key_file)
+            except paramiko.SSHException:
+                self.my_logger.error("Failed to invoke shell!")
+                continue
+
+            if hostname.endswith("master"):
+                ssh.exec_command("/etc/init.d/gmetad restart")
+
+            ssh.exec_command("/etc/init.d/ganglia-monitor restart")
+            self.my_logger.debug("Ganglia daemon restarted at hostname: " + str(hostname) + ", node: " + str(node) + "\n")
+            ssh.close()
 
 
     """
         Returns the metrics from the iaas host for the given vm ids
+        (also a helper for get_all_metrics)
     """
     def get_iaas_metrics(self, cluster):
 
-#        self.my_logger.debug("Metrics.get_iaas_metrics running")
         ids = self._get_monitored_ids(cluster)
         while True:
             data = get_all_metrics((self.iaas_host, self.iaas_port))
             metrics = self._iaas_averages(data, ids)
-            print("\n\nMetrics.get_iaas_metrics:")
-            pprint(metrics)
+#            print("\nMetrics.get_iaas_metrics:")
+#            pprint(metrics)
             if not metrics is None:
                 break
 
             self.my_logger.debug("Could not collect metrics from " + str(self.iaas_host) + ", will try again in 10 seconds.")
             time.sleep(10)
         
-#        self.my_logger.debug("Metrics from IAAS collected.\n")
         return metrics
+
+
+    """
+        Returns the ids of all the servers in the cluster
+        (helper for get_iaas_metrics)
+    """
+    def _get_monitored_ids(self, cluster):
+
+        return [s.id for n, s in cluster.items() if 'master' not in n]
 
 
     """
         Returns the averages of all metrics if all metrics are present for all the given ids
         Returns None otherwise
+        (helper for get_iaas_metrics)
     """
     def _iaas_averages(self, data, ids):
 
@@ -185,8 +227,10 @@ class Metrics(object):
         return {n: v / num_meas for n, v in cluster_meas.items()}
 
 
+#######################################################################################################
     """
         Prints the metrics for the two first servers in hbase-cluster
+        HARD-CODED METHOD
     """
     def _print_cluster_metrics(self):
 
@@ -194,10 +238,11 @@ class Metrics(object):
         data = get_all_metrics((self.hbase_host, self.hbase_port))
         metrics = self._cluster_averages(data, hostnames)
         pprint(metrics)
-
-
+        
+        
     """
         Prints the metrics for 2 vms. Make sure the ids are correct.
+        HARD-CODED METHOD
     """
     def _print_iaas_metrics(self):
 
@@ -205,48 +250,6 @@ class Metrics(object):
         data = get_all_metrics((self.iaas_host, self.iaas_port))
         metrics = self._iaas_averages(data, ids)
         pprint(metrics)
-
-
-    """
-        Returns the hostnames of all the servers in the cluster
-    """
-    def _get_monitored_hosts(self, cluster):
-
-        return [n for n in cluster if 'master' not in n]
-
-
-    """
-        Returns the ids of all the servers in the cluster
-    """
-    def _get_monitored_ids(self, cluster):
-
-        return [s.id for n, s in cluster.items() if 'master' not in n]
-
-
-    """
-        Restarts the ganglia-monitoring service on all the nodes
-    """
-    def _restart_ganglia(self, cluster):
-
-        hosts = list(cluster.items())
-        random.shuffle(hosts) # ...
-        for hostname, node in hosts:
-            self.my_logger.debug("Restarting ganglia daemons on hostname: " + str(hostname))
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            try:
-                self.my_logger.debug("Trying to connect on node: " + str(node))
-                ssh.connect(node.networks, username = "ubuntu", password = 'secretpw', key_filename = self.utils.key_file)
-            except paramiko.SSHException:
-                self.my_logger.error("Failed to invoke shell!")
-                continue
-
-            if hostname.endswith("master"):
-                ssh.exec_command("/etc/init.d/gmetad restart")
-
-            ssh.exec_command("/etc/init.d/ganglia-monitor restart")
-            self.my_logger.debug("Ganglia daemon restarted at hostname: " + str(hostname) + ", node: " + str(node) + "\n")
-            ssh.close()
 
 
 if __name__ == "__main__":

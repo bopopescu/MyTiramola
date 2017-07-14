@@ -27,29 +27,23 @@ class HBaseCluster(object):
     '''
     def __init__(self, initial_cluster_id = "default"):
         
-        ## Necessary variables
+        # Method and Instance variables
         self.utils          = Utils.Utils()
         self.host_template  = ""
-#        self.host_template  = self.utils.hostname_template
         self.cluster_id     = initial_cluster_id
-        # self.cluster is a dictionary that (when created) will hold ALL user's instances that form the HBase cluster.
-        self.cluster        = {}
+        self.cluster        = {}                # self.cluster: A dict that (when created) will hold ALL user's instances that form the HBase cluster.
         self.quorum         = ""
         
         # Make sure the sqlite file exists. if not, create it and add the table we need
         con = create_engine(self.utils.db_file)
         cur = con.connect()
-        print("\nHBaseCluster, going to try")
         try:
             clusters = cur.execute('select * from clusters').fetchall()
             if len(clusters) > 0:
-                print("""Already discovered cluster id from previous database file. Will select the defined one to work with (if it exists).""")
-                # print ("Found records:\n", str(clusters))
                 clustersfromcid = cur.execute('select * from clusters where cluster_id=\"' + self.cluster_id + "\"",).fetchall()
-                print ("clustersfromcid: " + str(clustersfromcid))
                 if len(clustersfromcid) > 0 :
                     self.cluster = self.utils.get_cluster_from_db(self.cluster_id)
-                    print ("The hbase.db exists, so the created self.cluster is:")
+                    print ("HBase-cluster(HBaseCluster.cluster) is formed by:")
                     pprint(self.cluster)
                     for clusterkey in list(self.cluster.keys()):
                         if not (clusterkey.find("master") == -1):
@@ -57,12 +51,12 @@ class HBaseCluster(object):
                     # Add self to db (eliminates existing records of same id)
                     self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
                 else:
-                    print("No known cluster with this id - run configure before you proceed")
-#            else:
-#                self.utils.refresh_cluster_db(cluster)
+                    print("Zerow rows in table clusters in sqlite db. Maybe I should put the create_cluster here:)")
+                    # edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         except exc.DatabaseError:
             print("HBaseCluster, didn't manage it, going to create table clusters but not loading it")
             cur.execute('create table clusters(cluster_id text, hostname text, euca_id text)')
+            # KAI edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         cur.close()
         
         ## Install logger
@@ -74,12 +68,7 @@ class HBaseCluster(object):
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         
-        print("HBase selfs:")
-        print("cluster = " + str(self.cluster))
-        print("host_template = " + str(self.host_template))
-        print("cluster_id = " + str(self.cluster_id))
-        print("quorum = " + str(self.quorum) + "\n\n")
-        
+#        self.my_logger.debug("HBase-cluster is formed by: " + str(self.cluster)) # When constructor is refactored!
         self.my_logger.debug("HBaseCluster initialized.")
         
         
@@ -97,30 +86,17 @@ class HBaseCluster(object):
 
         # method variables:
         hostname_template   = self.utils.hostname_template
-        print("Filtering HBaseCluster-instances expecting masterVM's name to be:\t master")
-        print("Filtering HBaseCluster-instances expecting slaveVMs' names to have the name-pattern:\t" + str(self.utils.hostname_template) + "X.")
         self.my_logger.debug("No sqlite file is detected, so we create HBaseCluster.cluster by filtering instances from eucacluster.")
         if nodes == None:
             self.my_logger.debug("I can't see any nodes mate!")
             return
         
         for node in nodes:
-            self.my_logger.debug("Parsing node: " + node.networks)
-            if node.name == "master":
-#                self.cluster[host_template + "master"] = node
-                self.cluster["master"] = node
-            # TODO: keep whole name except last letter and check equalization with hostname_template.
-            # TODO: Veify that from nodes[] to self.cluster{} the key is the node.name!!!
-#            elif node.name[:-1] == "node":
-            elif node.name.startswith(hostname_template):
-#                self.cluster[host_template + node.name[-1]] = node
-#                self.cluster["node" + node.name[-1]] = node
+            if node.name == "master" or node.name.startswith(hostname_template):
                 self.cluster[node.name] = node
         
-        print("self.cluster created by create_cluster:")
-        pprint(self.cluster)
+        self.my_logger.debug("HBase-cluster is formed by: " + str(self.cluster))
         self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
-#        return self.cluster
    
 
     def configure_cluster(self, nodes = None, host_template = "", reconfigure = True, update_db = True):
@@ -455,22 +431,22 @@ class HBaseCluster(object):
         return nodes
 
 
-    def start_node(self, hostname, host, rebalance = True, debug = True):
+    def start_node(self, hostname, host, rebalance = True):
 
-        self.cluster[hostname] = host
-
+        if hostname == "master":
+            self.my_logger.debug("Master is not made for Regionserver vre malakes!")
+            return
+        
+        self.cluster[hostname] = host       # Is very usefull when the {"hostname" : Instance:host} is NOT in self.cluster because it was previously removed/pop'ed
         # start the regionserver
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(host.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        if debug:
-            self.my_logger.debug("Starting the regionserver on " + hostname + " ...")
+        self.my_logger.debug("Starting the regionserver on " + hostname + " ...")
         stdin,stdout,stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/hbase-daemon.sh start regionserver')
         output = stdout.readlines()
         ssh.close()
-        if debug:
-            self.my_logger.debug("Regionserver started: " + str(output).strip())
-
+        self.my_logger.debug("Regionserver started: " + str(output).strip())
         if rebalance:
             time.sleep(60)
             self.trigger_balancer()
@@ -547,6 +523,9 @@ class HBaseCluster(object):
         ## Remove node by hostname -- DOES NOT REMOVE THE MASTER
         self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
         print("Removing node...")
+        # nodes is list of dict HBaseCluster.cluster which is practically never used.
+        # The only important thing here is node = self.cluster.pop(hostname), where the node/hostname argument is pop'ed out of the self.cluster!!!
+        # No need to check again if the user will remove master! This is already checked!!! Maybe in this case a second check is worthy!
         nodes = []
         print("self.host_template = " + str(self.host_template))
         master_node = self.cluster[self.host_template + "master"]
@@ -559,9 +538,23 @@ class HBaseCluster(object):
 #                nodes.append(self.cluster[self.host_template + str(i)])
             if not ("node" + str(i)).endswith(hostname):
                 nodes.append(self.cluster["node" + str(i)])
-        self.my_logger.debug("Nodes after removal:\n" + str(nodes))
-        ## keep node
-        node = self.cluster.pop(hostname)
+                
+        # SIMPYFYING
+        # More simpyfying: KANE PRWTA ELEGXO, META POP KAI META VALE TO YPOLOIPO CLUSTER SE LIST!!! SO EASY!
+        if hostname == "master":
+            self.my_logger.debug("Unacceptable node-removable. Removing master node is self-destructive!")
+            return
+        vms = []
+        for vm in self.cluster.values():
+            if node.name != hostname:
+                vms.append(vm)
+        print("My simplyfying all your shit gives Nodes after removal: " + str(vms))
+        ### END-OF simplyfying!
+        
+        self.my_logger.debug("Nodes after removal:" + str(nodes))
+        ## stop_dfs = False, so we practically do nothing with the node.
+        # BUT, pop builtin-func removes the to-be-removed node from HBaseCluster.cluster which is the MOST important!
+        node = self.cluster.pop(hostname)   
         ## Add the removed node to the datanode excludes and refresh the namenodes
         self.stop_hbase(hostname, node)
         if stop_dfs:
