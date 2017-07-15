@@ -81,10 +81,10 @@ class Utils(object):
 
     def refresh_instance_db(self, instances):
         # # Update instance DB with provided instances (removes all previous entries!)
-        print("Utils, running refresh_instance_db")
+        print("\nUtils.refresh_instance_db")
         con = create_engine(self.db_file)
         cur = con.connect()
-        print("Utils, gonna try execute delete")
+        print("...delete everything from table instances.")
         try:
             cur.execute('delete from instances')
         except exc.DatabaseError:
@@ -93,15 +93,6 @@ class Utils(object):
 
         for instance in instances:
             print("INSERTing INTO instances table a row with attributes of:\t" + str(instance))
-#            print("Instance's variables:")
-#            print("instance.id =\t\t" + str(instance.id))
-#            print("instance.networks =\t" + str(instance.networks))
-#            print("instance.flavor =\t" + str(instance.flavor))
-#            print("instance.image =\t" + str(instance.image))
-#            print("instance.status =\t" + str(instance.status))
-#            print("instance.key_name =\t" + str(instance.key_name))
-#            print("instance.name =\t\t" + str(instance.name))
-#            print("instance.created =\t" + str(instance.created) + "\n")
             try:
                 cur.execute("insert into instances(id, networks, flavor, image, status, key_name, name, created) values (?,?,?,?,?,?,?,?)",
                             (instance.id,
@@ -222,11 +213,8 @@ class Utils(object):
             print ("No previous entries")
             
         for (clusterkey, clustervalue) in list(cluster.items()):
-#            print("\nadd_to_cluster_db, tries INSERTing (cluster_id, clusterkey, clustervalue.id):")
-#            print("cluster_id =\t\t" + str(cluster_id))
-#            print("clusterkey =\t\t" + str(clusterkey))
-#            print("clustervalue =\t\t" + str(clustervalue))
-#            print("clustervalue.id =\t" + str(clustervalue.id) + "\n")
+            print("add_to_cluster_db INSERTing INTO table clusters: cluster_id = "
+                  + str(cluster_id) + "\tclusterkey = " + str(clusterkey) + "\tclustervalue.id" + str(clustervalue.id))
             try:
                 cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) values  (?,?,?)""",
                             (cluster_id, clusterkey, clustervalue.id)

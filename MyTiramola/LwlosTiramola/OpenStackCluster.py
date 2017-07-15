@@ -42,7 +42,7 @@ class OpenStackCluster(object):
             print("""Already discovered instances from previous database file. Use describe_instances without arguments to update.""")
             print("Found records: ", instances)
         except exc.DatabaseError:
-            print("OpenStackCluster, didn't manage it, going to create table")
+            print("OpenStackCluster, didn't manage it, going to create table instances.")
             cur.execute('create table instances(id text, networks text, flavor text, image text, status text, key_name text, name text, created text)')
         cur.close()
 
@@ -57,9 +57,12 @@ class OpenStackCluster(object):
         
         self.my_logger.debug("OpenStackCluster initialized.")
 
-   
+
+    ''' 
+        Blocks until all defined instances have reached running state and an ip has been assigned
+    '''  
     def block_until_running (self, instances, target_status = 'ACTIVE'):
-        ''' Blocks until all defined instances have reached running state and an ip has been assigned'''
+        print("\n\n")
         creds = get_nova_creds()
 #        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
         nova = client.Client(2.0,
@@ -72,8 +75,6 @@ class OpenStackCluster(object):
         instances = []
         members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
         while len(tmpinstances) > 0 :
-            print("tmpinstances:\t" + str(tmpinstances))
-#             time.sleep(10)
             sys.stdout.flush()
             all_running_instances = nova.servers.list(search_opts = {'status':target_status})
 #            print("all_running_instances:\t" + str(all_running_instances))
@@ -102,7 +103,7 @@ class OpenStackCluster(object):
                         # instances.append(all_running_instances[i])
                         break
         self.describe_instances()       # Don't know why this is called. Maybe I will search it one day!
-        print("instances returned by block_until_running: " + str(instances) + "\n")
+        print("\ninstances returned by block_until_running: " + str(instances) + "\n")
         return instances
 
 
@@ -186,7 +187,7 @@ class OpenStackCluster(object):
             members = ("id", "networks", "flavor", "image", "status", "key_name", "name", "created")
 
             for server in servers:
-                print("Will get info from server:\t" + str(server))
+                print("OpenStackCluster.describe_instances will get info from server:\t" + str(server))
                 details = {}
                 for member in members:
 #                    print("Getting member = " + str(member))
@@ -204,14 +205,13 @@ class OpenStackCluster(object):
                     if state == instance.status:
                         instances.append(instance)
                 else:
-                    instances.append(instance) 
-
+                    instances.append(instance)
             # # if simple call
 #            print("OpenStackCluster, state = " + str(state))
             if not state:
-                print("\nOpenStackCluster, gonna run self.utils.refresh_instance_db(instances)")
-                self.utils.refresh_instance_db(instances)           # Very important to run in order to load all user's instances in db in table instances       
-        else:
+                self.utils.refresh_instance_db(instances)           # Very important to run in order to load all user's instances in db in table instances
+        # else, almost never runs!!    
+        else:   
             # # read from the local database
             con             = create_engine(self.utils.db_file)
             cur             = con.connect()
@@ -223,11 +223,10 @@ class OpenStackCluster(object):
             cur.close()
                  
             for instancefromDB in instancesfromDB:
-                print("instancefromDB: " + str(instancefromDB))
                 instances.append(self.utils.return_instance_from_tuple(instancefromDB))
 
         # Sxedon panta pattern = None, opote trexei to else!!!
-        # # if you are using patterns and state, show only matching state and id's
+        # # if you are using patterns and state, show only matching state and id's    (???)
         matched_instances = []
         if pattern:
             for instance in instances:

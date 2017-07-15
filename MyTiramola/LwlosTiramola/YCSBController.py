@@ -55,7 +55,7 @@ class YCSBController(object):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            print("\n\nConnecting to ycsb-client-" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
+            print("\nConnecting to ycsb-client-" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
             ssh.connect(self.ycsb_templ_name + "%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
             print("Executing command: " + str(cmd))
@@ -104,7 +104,7 @@ class YCSBController(object):
         self.my_logger.debug("Copying hosts files to ycsb clients ...")
         for c in range(1, self.clients + 1):
             hostname = self.ycsb_templ_name + str(c)
-            print("\nConnecting to: " + str(hostname) + " and transfering files.")
+            print("Connecting to: " + str(hostname) + " and transfering files.")
             transport = paramiko.Transport((hostname, 22))
             transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
             transport.open_channel("session", hostname, "localhost")
@@ -120,7 +120,7 @@ class YCSBController(object):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username = 'ubuntu')
-            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname) + "\n\n")
+            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname) + "\n")
             ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
             ssh.close()
 

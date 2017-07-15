@@ -11,7 +11,8 @@ from Deamon import Daemon
 import Utils
 import sys, os, time, logging, pprint
 import math, random
-from subprocess import call
+# from subprocess import call
+import subprocess
 import EucaCluster, MonitorVms, OpenStackCluster
 import HBase92Cluster, HBaseCluster, VoldemortCluster, CassandraCluster, RiakCluster
 from MyTCPServer import MyTCPServer, MyTCPServerHandler
@@ -180,9 +181,11 @@ class MyDaemon(Daemon):
 
             # collect the metrics from ganglia and ycsb
             ganglia_metrics = self.metrics.collect_all_metrics(self.nosqlCluster.cluster)   # Averaged (averaged metrics) from inside and outside Ganglia!
-            # print here the GangliaS!!!
+            print("\nAll Ganglia(s)-metrics final view: ")
+            pprint(results)
             ycsb_metrics    = self.ycsb.parse_results()                                     # Averaged metrics from ycsb.out(s)
-            # print here the aggregated/averaged ycsbs!!!
+#            print("\nAggregated ycsb-results from all clients: ")    # Activate it when ycsb-clients are more than 1.
+#            pprint(results)
             if ganglia_metrics is None or ycsb_metrics is None:
                 return None
 
@@ -212,7 +215,8 @@ class MyDaemon(Daemon):
                                                   meas[DecisionMaking.UPDATE_THROUGHPUT])
 
             # simple linear prediction for the load on the next step
-            print("\n\nself.last_load1 = " + str(self.last_load))
+            print("\n\tTO-BE CHECKED...")
+            print("self.last_load1 = " + str(self.last_load))
             if self.last_load is None:
                 last_load = meas[DecisionMaking.INCOMING_LOAD]
             else:
@@ -225,7 +229,7 @@ class MyDaemon(Daemon):
             print("update_load1 = " + str(update_load))
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
-            print("self.last_load2 = " + str(self.last_load) + "\n\n")
+            print("self.last_load2 = " + str(self.last_load) + "\n")
 
             self.my_logger.debug("Collected measurements fully averaged from inside-ganglia, outside-ganglia and ycsb: \n" + pprint.pformat(meas))
             return meas
@@ -253,7 +257,7 @@ class MyDaemon(Daemon):
             
             # method variables
             add_action  = (DecisionMaking.ADD_VMS, num_adds)
-            target      = round(self.target * 1.2)
+            target      = round(self.target * 0.8)
 
             for i in range(num_actions):
                 self.execute_action(add_action)
@@ -262,9 +266,9 @@ class MyDaemon(Daemon):
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
-                elf.my_logger.debug("The last logged measurements are the ones I use for DM-update")
+                self.my_logger.debug("The last logged measurements are the ones I use for DM-update")
                 self.decision_maker.update(add_action, meas)
-                target *= 1.1
+                target *= 1.2
 
 
         """
@@ -279,7 +283,6 @@ class MyDaemon(Daemon):
             target      = round(self.target * 0.8)
 
             for i in range(num_actions):
-                target = int(self.utils.offset)
                 self.execute_action(rem_action)
                 self.run_test(target, self.reads, update_load = False)
                 self.my_logger.debug("The last logged measurements are not used!")
@@ -316,7 +319,6 @@ class MyDaemon(Daemon):
             
             # method variables:
             reconfigure         = self.utils.reconfigure
-            print("self.utils.reconfigure = " + str(self.utils.reconfigure))
             nosqlCluster        = self.nosqlCluster
             eucacluster         = self.eucacluster
 
@@ -353,7 +355,6 @@ class MyDaemon(Daemon):
             else:
 #                nosqlCluster.start_cluster()    # starts Hadoop and HBase in nodes defined in nosqlCluster.cluster
 #                self.wake_up_nodes()            # starts HBase  in nodes defined in nosqlCluster.cluster
-                print("Triggering only balancer because reconfigure = " + str(reconfigure))
                 nosqlCluster.trigger_balancer()
                 
                 self.my_logger.debug("Initialized the Cluster")
@@ -444,7 +445,7 @@ class MyDaemon(Daemon):
                         print("number = " + number)
                         if number == str(cluster_length - 1):
                             self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
-                            self.removed_hosts = [(hostname, host)] + self.removed_hosts                # practically we append the tuple!
+                            self.removed_hosts = [(hostname, host)] + self.removed_hosts                # practically we append the tuple to the list self.removed_hosts!
                             print("self.removed_hosts = " + str(self.removed_hosts))
                             break
 
@@ -522,7 +523,7 @@ class MyDaemon(Daemon):
                 self.ycsb.execute_load(target, reads)
                 meas = self.collect_measurements(update_load = update_load)
                 if not meas is None:
-                    print("\n\n\t\tEND OF run_test succesfully.\n\n\n")
+                    print("\n\t\tEND OF run_test succesfully.\n\n")
                     return meas
 
                 self.my_logger.debug("Test failed, trying again in 50 seconds ...")
@@ -602,7 +603,7 @@ class MyDaemon(Daemon):
             
             # method variables:
             cluster_type    = self.utils.cluster_type
-            print("cluster_type: " + str(self.utils.cluster_type))
+            print("\n\ncluster_type: " + str(self.utils.cluster_type) + "\n")
             # instances is a list with Instance(s) that holds all user's instances from its account in OpenStack
             # running describe_instances (and utils.refresh_db_instances) there's no other sqlite-db-pare-dwse and we only play with list(s) and dict(s)
             instances       = self.eucacluster.describe_instances()     # describe_instances also calls refresh_db_instances(very important) and loads all instances
@@ -680,8 +681,8 @@ class MyDaemon(Daemon):
 
             # Remove all the host entries from /etc/hosts pointing to VMs that form the NoSQL-cluster 
 #            call(["sed", "-i", "/%s/d" % self.nosqlCluster.host_template, "/etc/hosts"])
-            call(["sed", "-i", "/master/d", "/etc/hosts"])
-            call(["sed", "-i", "/%s/d" % self.hostname_template, "/etc/hosts"])
+            subprocess.call(["sudo", "sed", "-i", "/master/d", "/etc/hosts"])
+            subprocess.call(["sudo", "sed", "-i", "/%s/d" % self.hostname_template, "/etc/hosts"])
             cluster = self.nosqlCluster.cluster
             # Add all the current nodes of the cluster
             with open("/etc/hosts", "a") as hosts_file:     # changed the /etc/hosts file's permissions in order to run!

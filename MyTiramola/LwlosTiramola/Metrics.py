@@ -68,8 +68,6 @@ class Metrics(object):
 
         self.my_logger.debug("Successfully collected data %s times" % len(timeseries) + "\n")
         results = {n: sum([m[n] for m in timeseries]) / len(timeseries) for n in timeseries[0]}
-        print("\n\nAll Ganglia(s)-metrics final view: ")
-        pprint(results)
         return results
 
 

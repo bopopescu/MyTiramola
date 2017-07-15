@@ -54,7 +54,7 @@ class HBaseCluster(object):
                     print("Zerow rows in table clusters in sqlite db. Maybe I should put the create_cluster here:)")
                     # edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         except exc.DatabaseError:
-            print("HBaseCluster, didn't manage it, going to create table clusters but not loading it")
+            print("\nHBaseCluster, didn't manage it, going to create table clusters but not loading it.\n")
             cur.execute('create table clusters(cluster_id text, hostname text, euca_id text)')
             # KAI edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         cur.close()
@@ -546,7 +546,7 @@ class HBaseCluster(object):
             return
         vms = []
         for vm in self.cluster.values():
-            if node.name != hostname:
+            if vm.name != hostname:
                 vms.append(vm)
         print("My simplyfying all your shit gives Nodes after removal: " + str(vms))
         ### END-OF simplyfying!
