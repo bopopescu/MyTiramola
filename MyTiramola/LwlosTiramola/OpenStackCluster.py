@@ -103,7 +103,7 @@ class OpenStackCluster(object):
                         # instances.append(all_running_instances[i])
                         break
 #        self.describe_instances()       # Don't know why this is called. Maybe I will search it one day!
-        print("\ninstances returned by block_until_running: " + str(instances) + "\n")
+        print("instances returned by block_until_running: " + str(instances) + "\n")
         return instances
 
 

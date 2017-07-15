@@ -184,7 +184,7 @@ class MyDaemon(Daemon):
             # collect the metrics from ganglia and ycsb
             ganglia_metrics = self.metrics.collect_all_metrics(self.nosqlCluster.cluster)   # Averaged (averaged metrics) from inside and outside Ganglia!
             print("\nAll Ganglia(s)-metrics final view: ")
-            print("ganglia_metrics is type of: " + str(type(ganglia_metrics)))
+#            print("ganglia_metrics is type of: " + str(type(ganglia_metrics)))
             pprint(ganglia_metrics)
 #            pprint.pformat(ganglia_metrics)
             ycsb_metrics    = self.ycsb.parse_results()                                     # Averaged metrics from ycsb.out(s)
@@ -233,9 +233,11 @@ class MyDaemon(Daemon):
             print("update_load1 = " + str(update_load))
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
-            print("self.last_load2 = " + str(self.last_load))
+            print("self.last_load2 = " + str(self.last_load) + "\n")
 
-            self.my_logger.debug("Collected measurements fully averaged from inside-ganglia, outside-ganglia and ycsb: \n" + pprint(meas))
+#            self.my_logger.debug("Collected measurements fully averaged from inside-ganglia, outside-ganglia and ycsb: \n" + pprint(meas))
+            print("These are the fully averaged measurements from inside-ganglia, outside-ganglia and ycsb to be used for all DM procedures:")
+            pprint(meas)
             return meas
 
 

@@ -124,7 +124,7 @@ class DecisionMaker(object):
 
         self.add_network_usage(measurements)
         self.last_meas = measurements
-        print("\nSetting State: self.last_meas after adding network usage:")
+        print("\nSetting State with final_metrics (self.last_meas after adding network usage):")
         pprint(self.last_meas)
         self.model.set_state(measurements)
         print("\n\tState is set!\n\n")
@@ -174,9 +174,12 @@ class DecisionMaker(object):
                 f.flush()
                 self.my_logger.debug("Recorded experience")
 
-        self.add_network_usage(meas)
+        self.add_network_usage(meas)        
         if reward is None:
             reward = self.get_reward(meas, action)
 
         self.last_meas = meas
+        print("\nUpdating State with final_metrics (self.last_meas after adding network usage):")
+        pprint(self.last_meas)        
         self.model.update(action, meas, reward)
+        print("\n\tState is updated!\n\n")

@@ -527,16 +527,17 @@ class HBaseCluster(object):
             return
         
         self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
-        node = self.cluster.pop(hostname)   # Getting the removed node and also removing it from dict self.cluster
+        node = self.cluster.pop(hostname)   # Removing the selected node from dict self.clusterGetting and also grabbing it! 
          
         nodes = []                          # nodes is list of dict HBaseCluster.cluster which is practically never used.
-        for node in self.cluster.values():
-            nodes.append(node)
+        for instance in self.cluster.values():
+            nodes.append(instance)
         
         # prints to be removed after checked
-        print("Checking if variable-usage and naming is as I remember it. Finally:")
+        print("\nChecking if variable-usage and naming is as I remember it. Finally:")
         print("node = " + str(node))
-        print("nodes = " + str(nodes))
+        print("instance = " + str(instance))
+        print("nodes = " + str(nodes) + "\n")
         self.my_logger.debug("Nodes after removal:" + str(nodes))
         
         # Usually stop_dfs = False, so just go to the return command in the end of the method.
