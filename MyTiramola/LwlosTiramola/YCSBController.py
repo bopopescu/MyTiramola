@@ -18,14 +18,15 @@ class YCSBController(object):
     def __init__(self, num_clients):
 
 
-        self.utils          = Utils.Utils()
-        self.ycsb           = self.utils.ycsb_binary
-        self.workload       = self.utils.workload_file
-        self.output         = self.utils.ycsb_output
-        self.max_time       = int(self.utils.ycsb_max_time)
-        self.record_count   = None
-        self.ycsb_error     = self.utils.install_dir + "/logs/ycsb.err"
-        self.clients        = int(num_clients)
+        self.utils              = Utils.Utils()
+        self.ycsb_templ_name    = self.utils.ycsb_hostname_template
+        self.ycsb               = self.utils.ycsb_binary
+        self.workload           = self.utils.workload_file
+        self.output             = self.utils.ycsb_output
+        self.max_time           = int(self.utils.ycsb_max_time)
+        self.record_count       = None
+        self.ycsb_error         = self.utils.install_dir + "/logs/ycsb.err"
+        self.clients            = int(num_clients)
 
         ## Install logger
         LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
@@ -54,8 +55,8 @@ class YCSBController(object):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            print("\n\nConnecting to ycsb" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
-            ssh.connect("ycsb%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+            print("\n\nConnecting to ycsb-client-" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
+            ssh.connect(self.ycsb_templ_name + "%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
             print("Executing command: " + str(cmd))
             ssh.exec_command(cmd)
@@ -67,7 +68,7 @@ class YCSBController(object):
 
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
         for c in range(1, self.clients + 1):
-            hostname = "ycsb" + str(c)
+            hostname = self.ycsb_templ_name + str(c)
             print("\nConnecting to: " + str(hostname) + " and killing all java...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -102,7 +103,7 @@ class YCSBController(object):
 
         self.my_logger.debug("Copying hosts files to ycsb clients ...")
         for c in range(1, self.clients + 1):
-            hostname = "ycsb" + str(c)
+            hostname = self.ycsb_templ_name + str(c)
             print("\nConnecting to: " + str(hostname) + " and transfering files.")
             transport = paramiko.Transport((hostname, 22))
             transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
@@ -145,7 +146,7 @@ class YCSBController(object):
         for c in range(1, self.clients + 1):
             for i in range(10):
 
-                hostname = "ycsb" + str(c)
+                hostname = self.ycsb_templ_name + str(c)
                 transport = paramiko.Transport((hostname, 22))
                 transport.connect(username = "ubuntu", pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
                 transport.open_channel("session", hostname, "localhost")

@@ -23,6 +23,9 @@ from DecisionMaking.Constants import *
 
 class MyDaemon(Daemon):
     
+        """
+            Implementation of Daemon's run method.
+        """
         def run(self):
             
             # initializing utils for getting properties and more.
@@ -43,8 +46,8 @@ class MyDaemon(Daemon):
             self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
             if self.utils.bench:
                 #self.run_benchmark(int(self.utils.warm_up_target))
-                self.exec_rem_actions(3, 1)
-                self.exec_add_actions(2, 1)
+                self.exec_rem_actions(2, 1)
+                self.exec_add_actions(1, 1)
             
             self.selecting_load_type(self.load_type)
             self.e_greedy(self.num_actions, self.epsilon)
