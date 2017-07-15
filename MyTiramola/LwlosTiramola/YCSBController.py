@@ -48,7 +48,7 @@ class YCSBController(object):
         self.target = target / self.clients
         self.reads  = reads
 
-        self.my_logger.debug("Ordering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
+        self.my_logger.debug("\nOrdering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
         delay_per_client = 0.7
         delay = self.clients * delay_per_client + 2
         for c in range(1, self.clients + 1):

@@ -9,7 +9,7 @@ Created on Sep 30, 2010
 
 from Deamon import Daemon
 import Utils
-import sys, os, time, logging, pprint
+import sys, os, time, logging#, pprint
 import math, random
 # from subprocess import call
 import subprocess
@@ -20,6 +20,8 @@ import DecisionMaking
 from YCSBController import YCSBController
 from Metrics import Metrics
 from DecisionMaking.Constants import *
+
+from pprint import pprint
 
 
 class MyDaemon(Daemon):
@@ -182,10 +184,12 @@ class MyDaemon(Daemon):
             # collect the metrics from ganglia and ycsb
             ganglia_metrics = self.metrics.collect_all_metrics(self.nosqlCluster.cluster)   # Averaged (averaged metrics) from inside and outside Ganglia!
             print("\nAll Ganglia(s)-metrics final view: ")
-            pprint(results)
+            print("ganglia_metrics is type of: " + str(type(ganglia_metrics)))
+            pprint(ganglia_metrics)
+#            pprint.pformat(ganglia_metrics)
             ycsb_metrics    = self.ycsb.parse_results()                                     # Averaged metrics from ycsb.out(s)
 #            print("\nAggregated ycsb-results from all clients: ")    # Activate it when ycsb-clients are more than 1.
-#            pprint(results)
+#            pprint(ycsb_metrics)
             if ganglia_metrics is None or ycsb_metrics is None:
                 return None
 
@@ -229,9 +233,9 @@ class MyDaemon(Daemon):
             print("update_load1 = " + str(update_load))
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
-            print("self.last_load2 = " + str(self.last_load) + "\n")
+            print("self.last_load2 = " + str(self.last_load))
 
-            self.my_logger.debug("Collected measurements fully averaged from inside-ganglia, outside-ganglia and ycsb: \n" + pprint.pformat(meas))
+            self.my_logger.debug("Collected measurements fully averaged from inside-ganglia, outside-ganglia and ycsb: \n" + pprint(meas))
             return meas
 
 
@@ -516,9 +520,10 @@ class MyDaemon(Daemon):
                 self.run_test(target, self.reads, update_load=False)
 
 
-        def run_test(self, target, reads, update_load=True):
+        def run_test(self, target, reads, update_load = True):
 
             while True:
+                print("\n\n\tSTARTING run_test!")
                 self.wake_up_ganglia()
                 self.ycsb.execute_load(target, reads)
                 meas = self.collect_measurements(update_load = update_load)
@@ -586,7 +591,7 @@ class MyDaemon(Daemon):
             
             # method variables:
             cloud_api_type  = self.utils.cloud_api_type
-            print("cloud_api_type = " + str(self.utils.cloud_api_type))
+            print("cloud_api_type:\t" + str(self.utils.cloud_api_type))
             # Assume running where eucarc sourced 
             if cloud_api_type == "EC2":
                 self.eucacluster = EucaCluster.EucaCluster()
@@ -603,11 +608,11 @@ class MyDaemon(Daemon):
             
             # method variables:
             cluster_type    = self.utils.cluster_type
-            print("\n\ncluster_type: " + str(self.utils.cluster_type) + "\n")
-            # instances is a list with Instance(s) that holds all user's instances from its account in OpenStack
-            # running describe_instances (and utils.refresh_db_instances) there's no other sqlite-db-pare-dwse and we only play with list(s) and dict(s)
-            instances       = self.eucacluster.describe_instances()     # describe_instances also calls refresh_db_instances(very important) and loads all instances
-            instances_names = []        # instances_names are only created in order to be logged!
+            print("\n\ncluster_type:\t" + str(self.utils.cluster_type) + "\n")
+            # instances is a list with Instance(s) that holds all user's instances from user's account in OpenStack
+            # running describe_instances (and utils.refresh_db_instances) [there's no other sqlite-db-pare-dwse and we only play with list(s) and dict(s)] -> false
+            instances       = self.eucacluster.describe_instances()     # describe_instances also calls refresh_instance_db(very important) and loads all instances
+            instances_names = []        # instances_names are only created in order to be logged ...funny!
             for instance in instances:
                 instances_names.append(instance.name)    
             self.my_logger.debug("All user instances:" + str(instances_names))

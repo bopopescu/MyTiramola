@@ -36,13 +36,13 @@ class OpenStackCluster(object):
         self.utils  = Utils.Utils()
         con         = create_engine(self.utils.db_file)
         cur         = con.connect()
-        print("OpenStackCluster, going to try")
+        print("OpenStackCluster, going to try use sqlite db.")
         try:
             instances = cur.execute('select * from instances').fetchall()
             print("""Already discovered instances from previous database file. Use describe_instances without arguments to update.""")
             print("Found records: ", instances)
         except exc.DatabaseError:
-            print("OpenStackCluster, didn't manage it, going to create table instances.")
+            print("OpenStackCluster, didn't manage it, going to create table instances in the sqlite db: " + str(self.utils.db_file))
             cur.execute('create table instances(id text, networks text, flavor text, image text, status text, key_name text, name text, created text)')
         cur.close()
 
@@ -102,7 +102,7 @@ class OpenStackCluster(object):
                         instances.append(_instance)
                         # instances.append(all_running_instances[i])
                         break
-        self.describe_instances()       # Don't know why this is called. Maybe I will search it one day!
+#        self.describe_instances()       # Don't know why this is called. Maybe I will search it one day!
         print("\ninstances returned by block_until_running: " + str(instances) + "\n")
         return instances
 

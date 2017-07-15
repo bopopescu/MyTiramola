@@ -81,10 +81,10 @@ class Utils(object):
 
     def refresh_instance_db(self, instances):
         # # Update instance DB with provided instances (removes all previous entries!)
-        print("\nUtils.refresh_instance_db")
+        print("\nUtils.refresh_instance_db...")
         con = create_engine(self.db_file)
         cur = con.connect()
-        print("...delete everything from table instances.")
+        print("\t...try to DELETE everything from TABLE instances.")
         try:
             cur.execute('delete from instances')
         except exc.DatabaseError:
@@ -92,7 +92,7 @@ class Utils(object):
             print ("ERROR in truncate")
 
         for instance in instances:
-            print("INSERTing INTO instances table a row with attributes of:\t" + str(instance))
+            print("\t...INSERTing INTO instances table a row with attributes of:\t" + str(instance))
             try:
                 cur.execute("insert into instances(id, networks, flavor, image, status, key_name, name, created) values (?,?,?,?,?,?,?,?)",
                             (instance.id,
@@ -115,16 +115,23 @@ class Utils(object):
         
     def add_to_instance_db(self, instances):
         # # Update instance DB with provided instances (keeps previous entries!)
+        print("\nUtils.add_to_instance_db...")
         con = create_engine(self.db_file)
         cur = con.connect()
-            
-        for instance in instances:
+        
+        print("\t...try to INSERT INTO TABLE instances.")    
+        for instance in instances: 
+            print("\t...INSERTing INTO instances table a row with attributes of:\t" + str(instance))           
             try:
-                cur.execute(""" insert into instances(id, networks, flavor, image,
-                                                   status, key_name, name, created) 
-                                                    values  (?,?,?,?,?,?,?,?)""",
-                            (instance.id, instance.networks, instance.flavor, instance.image,
-                                                            instance.status, instance.key_name, instance.name, instance.created)
+                cur.execute("insert into instances(id, networks, flavor, image, status, key_name, name, created) values  (?,?,?,?,?,?,?,?)",
+                            (instance.id,
+                             instance.networks,
+                             instance.flavor,
+                             instance.image,
+                             instance.status,
+                             instance.key_name,
+                             instance.name,
+                             instance.created)
                             )
                 
             except exc.DatabaseError as e:
@@ -202,19 +209,21 @@ class Utils(object):
                 return cluster
         return None
     
-    def add_to_cluster_db(self, cluster = None, cluster_id = None):
-        
+    def add_to_cluster_db(self, cluster = None, cluster_id = None):    
         # # Add cluster to DB (check for existing records with the same id and remove)
+        print("\nUtils.add_to_cluster_db...")
         con = create_engine(self.db_file)
         cur = con.connect()
+        print("\t...try to DELETE everything from TABLE clusters.")
         try:
             cur.execute('delete from clusters where cluster_id = \"' + cluster_id + "\"")
         except exc.DatabaseError:
             print ("No previous entries")
             
         for (clusterkey, clustervalue) in list(cluster.items()):
-            print("add_to_cluster_db INSERTing INTO table clusters: cluster_id = "
-                  + str(cluster_id) + "\tclusterkey = " + str(clusterkey) + "\tclustervalue.id" + str(clustervalue.id))
+            print("\t...INSERTing INTO TABLE clusters: cluster_id = " + str(cluster_id)
+                                                    + "\tclusterkey = " + str(clusterkey)
+                                                    + "\tclustervalue.id" + str(clustervalue.id))
             try:
                 cur.execute(""" insert into clusters(cluster_id, hostname, euca_id ) values  (?,?,?)""",
                             (cluster_id, clusterkey, clustervalue.id)

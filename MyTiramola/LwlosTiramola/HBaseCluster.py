@@ -37,6 +37,7 @@ class HBaseCluster(object):
         # Make sure the sqlite file exists. if not, create it and add the table we need
         con = create_engine(self.utils.db_file)
         cur = con.connect()
+        print("\nHBaseCluster, going to try use sqlite db and TABLE clusters.")
         try:
             clusters = cur.execute('select * from clusters').fetchall()
             if len(clusters) > 0:
@@ -54,7 +55,7 @@ class HBaseCluster(object):
                     print("Zerow rows in table clusters in sqlite db. Maybe I should put the create_cluster here:)")
                     # edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         except exc.DatabaseError:
-            print("\nHBaseCluster, didn't manage it, going to create table clusters but not loading it.\n")
+            print("HBaseCluster, didn't manage it, going to CREATE TABLE clusters but not loading it.\n")
             cur.execute('create table clusters(cluster_id text, hostname text, euca_id text)')
             # KAI edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         cur.close()
@@ -86,7 +87,7 @@ class HBaseCluster(object):
 
         # method variables:
         hostname_template   = self.utils.hostname_template
-        self.my_logger.debug("No sqlite file is detected, so we create HBaseCluster.cluster by filtering instances from eucacluster.")
+        print("No sqlite file is detected, so we create HBaseCluster.cluster by filtering instances from eucacluster.")
         if nodes == None:
             self.my_logger.debug("I can't see any nodes mate!")
             return
@@ -521,40 +522,24 @@ class HBaseCluster(object):
     def remove_node (self, hostname, stop_dfs = True, update_db = True):
 
         ## Remove node by hostname -- DOES NOT REMOVE THE MASTER
-        self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
-        print("Removing node...")
-        # nodes is list of dict HBaseCluster.cluster which is practically never used.
-        # The only important thing here is node = self.cluster.pop(hostname), where the node/hostname argument is pop'ed out of the self.cluster!!!
-        # No need to check again if the user will remove master! This is already checked!!! Maybe in this case a second check is worthy!
-        nodes = []
-        print("self.host_template = " + str(self.host_template))
-        master_node = self.cluster[self.host_template + "master"]
-        print("master_node: " + str(master_node))
-        nodes.append(master_node)
-        print("nodes1 = " + str(nodes))
-        for i in range(1,len(self.cluster)):
-            print("i = " + str(i))
-#            if not (self.host_template + str(i)).endswith(hostname):
-#                nodes.append(self.cluster[self.host_template + str(i)])
-            if not ("node" + str(i)).endswith(hostname):
-                nodes.append(self.cluster["node" + str(i)])
-                
-        # SIMPYFYING
-        # More simpyfying: KANE PRWTA ELEGXO, META POP KAI META VALE TO YPOLOIPO CLUSTER SE LIST!!! SO EASY!
         if hostname == "master":
             self.my_logger.debug("Unacceptable node-removable. Removing master node is self-destructive!")
             return
-        vms = []
-        for vm in self.cluster.values():
-            if vm.name != hostname:
-                vms.append(vm)
-        print("My simplyfying all your shit gives Nodes after removal: " + str(vms))
-        ### END-OF simplyfying!
         
+        self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
+        node = self.cluster.pop(hostname)   # Getting the removed node and also removing it from dict self.cluster
+         
+        nodes = []                          # nodes is list of dict HBaseCluster.cluster which is practically never used.
+        for node in self.cluster.values():
+            nodes.append(node)
+        
+        # prints to be removed after checked
+        print("Checking if variable-usage and naming is as I remember it. Finally:")
+        print("node = " + str(node))
+        print("nodes = " + str(nodes))
         self.my_logger.debug("Nodes after removal:" + str(nodes))
-        ## stop_dfs = False, so we practically do nothing with the node.
-        # BUT, pop builtin-func removes the to-be-removed node from HBaseCluster.cluster which is the MOST important!
-        node = self.cluster.pop(hostname)   
+        
+        # Usually stop_dfs = False, so just go to the return command in the end of the method.
         ## Add the removed node to the datanode excludes and refresh the namenodes
         self.stop_hbase(hostname, node)
         if stop_dfs:
@@ -591,7 +576,6 @@ class HBaseCluster(object):
         ## Start the new configuration!
         #k self.start_cluster()
         
-        ## Now you should be ok, so return the new node
         return node
 
 
