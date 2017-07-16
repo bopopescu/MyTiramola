@@ -37,7 +37,7 @@ class HBaseCluster(object):
         # Make sure the sqlite file exists. if not, create it and add the table we need
         con = create_engine(self.utils.db_file)
         cur = con.connect()
-        print("\nHBaseCluster, going to try use sqlite db and TABLE clusters.")
+        print("\nHBaseClusters going to try using from sqlite db the TABLE clusters.")
         try:
             clusters = cur.execute('select * from clusters').fetchall()
             if len(clusters) > 0:
@@ -55,7 +55,7 @@ class HBaseCluster(object):
                     print("Zerow rows in table clusters in sqlite db. Maybe I should put the create_cluster here:)")
                     # edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         except exc.DatabaseError:
-            print("HBaseCluster, didn't manage it, going to CREATE TABLE clusters but not loading it.\n")
+            print("HBaseCluster, didn't manage it, going to CREATE TABLE clusters but not loading it.")
             cur.execute('create table clusters(cluster_id text, hostname text, euca_id text)')
             # KAI edw na valeis thn create_cluster se periptwsh poy dwseis to list instances ws argument ston constructor!!!
         cur.close()
@@ -71,6 +71,27 @@ class HBaseCluster(object):
         
 #        self.my_logger.debug("HBase-cluster is formed by: " + str(self.cluster)) # When constructor is refactored!
         self.my_logger.debug("HBaseCluster initialized.")
+
+
+    def add_nodes (self, new_nodes = None):
+        ## Reconfigure the cluster with the last node as the provided one
+        nodes = []
+        nodes.append(self.cluster[self.host_template+"master"])
+        for i in range(1,len(self.cluster)):
+            nodes.append(self.cluster[self.host_template+str(i)])
+        nodes.extend(new_nodes)
+        # self.my_logger.debug("New nodes:"+str(nodes))
+
+        self.configure_cluster(nodes, self.host_template, True)
+        
+        ## Start the new configuration!
+        self.start_cluster()
+        
+        ## Try to rebalance the cluster (usually rebalances the new node)
+#        self.rebalance_cluster()
+        
+        ## Now you should be ok, so return the new node
+        return nodes
         
         
     """
@@ -87,7 +108,7 @@ class HBaseCluster(object):
 
         # method variables:
         hostname_template   = self.utils.hostname_template
-        print("No sqlite file is detected, so we create HBaseCluster.cluster by filtering instances from eucacluster.")
+        print("\nNo sqlite file is detected, so we create HBaseCluster.cluster by filtering instances from eucacluster.")
         if nodes == None:
             self.my_logger.debug("I can't see any nodes mate!")
             return
@@ -98,8 +119,406 @@ class HBaseCluster(object):
         
         self.my_logger.debug("HBase-cluster is formed by: " + str(self.cluster))
         self.utils.add_to_cluster_db(self.cluster, self.cluster_id)
-   
 
+
+    def clear_exclude_list (self):
+
+        master_node = self.cluster[self.host_template+"master"]
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+        for hostname in self.cluster:
+            ip = self.cluster[hostname].networks
+            stdin, stdout, stderr = ssh.exec_command("sed -i '/"+ip+"/d' /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes")
+            stdout.readlines()
+            stdin, stdout, stderr = ssh.exec_command('ls /opt/hadoop-2.5.2/')
+            stdout.readlines()
+            stdin, stdout, stderr = ssh.exec_command("sed -i '/"+ip+"/d' /opt/hadoop-2.5.2/etc/hadoop/nodemanager-excludes")
+            stdout.readlines()
+        ssh.close()
+
+
+    # Deprecated!
+    def copy_hbase (self, node):
+
+        rsa_key = paramiko.RSAKey.from_private_key_file(self.utils.key_file)
+        transport = paramiko.Transport((node.networks, 22))
+        transport.connect(username = 'ubuntu', pkey = rsa_key)
+        transport.open_channel("session", node.networks, "localhost")
+        sftp = paramiko.SFTPClient.from_transport(transport)
+        sftp.put("/opt/hbase-1.2.3-bin.tar.gz", "/opt/hbase-1.2.3-bin.tar.gz")
+        transport.close()
+        sftp.close()
+        self.my_logger.debug("Copied the tarball")
+
+        time.sleep(60)
+
+        ssh = paramiko.SSHClient()
+        self.my_logger.debug("Created ssh object")
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.my_logger.debug("Set missing key policy")
+        ssh.connect(node.networks, username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
+        self.my_logger.debug("Connected")
+        stdin, stdout, stderr = ssh.exec_command("tar xzvf /opt/hbase-1.2.3-bin.tar.gz -C /opt/")
+        self.my_logger.debug("executed the command")
+        stdout.readlines()
+        self.my_logger.debug("read the stdout")
+        errors = stderr.readlines()
+        self.my_logger.debug("read the stderr")
+        if len(errors) > 0:
+            self.my_logger.debug("Error unpacking HBASE: " + str(stderr.readlines()))
+        else:
+            self.my_logger.debug("Unpacking complete!")
+        ssh.close()
+
+        self.my_logger.debug("I think I'm done")
+        time.sleep(60)
+
+
+    def enable_root_login (self, nodes):
+
+        for node in nodes:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(node.networks, username='ubuntu')
+            stdin, stdout, stderr = ssh.exec_command('sudo sed -ri "s/^.*ssh-rsa/ssh-rsa/" /root/.ssh/authorized_keys')
+            stdout.readlines()
+            ssh.close()
+
+
+    def init_db_table (self):
+
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.cluster[self.host_template+"master"].networks, 
+                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
+        while True:
+            self.my_logger.debug("Initializing the db table ...")
+            stdin, stdout, stderr = ssh.exec_command('/bin/bash /opt/init_db_table.sh')
+            output = '  '.join(stdout.readlines())
+            if not 'ERROR' in output or 'Table already exists' in output:
+                self.my_logger.debug("Initialization successful!")
+                break
+
+            self.my_logger.debug("\n  " + output)
+            self.my_logger.debug("Restarting cluster ...")
+            self.start_cluster()
+            self.my_logger.debug("Waiting for HBase to get ready ... ")
+            time.sleep(30)
+
+        ssh.close()
+
+
+    def init_ganglia(self):
+
+        # copy the configuration files
+        self.my_logger.debug("Starting Ganglia ...")
+        rsa_key = paramiko.RSAKey.from_private_key_file(self.utils.key_file)
+        ganglia_dir = self.utils.install_dir + "/templates/ganglia/"
+        for name, node in self.cluster.items():
+            transport = paramiko.Transport((node.networks, 22))
+            transport.connect(username = 'ubuntu', pkey = rsa_key)
+            transport.open_channel("session", node.networks, "localhost")
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            if name.endswith("master"):
+                sftp.put(ganglia_dir+"master/ganglia.conf", "/etc/apache2/sites-enabled/ganglia.conf")
+                sftp.put(ganglia_dir+"master/gmetad.conf", "/etc/ganglia/gmetad.conf")
+                sftp.put(ganglia_dir+"master/gmond.conf", "/etc/ganglia/gmond.conf")
+            else:
+                sftp.put(ganglia_dir+"servers/gmond.conf", "/etc/ganglia/gmond.conf")
+            transport.close()
+            sftp.close()
+
+        # start the services
+        #self.my_logger.debug("Starting Ganglia on "+self.host_template+"master")
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.cluster[self.host_template+"master"].networks, 
+                username='ubuntu', password='secretpw', 
+                key_filename=self.utils.key_file)
+        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor stop')
+        stdout.readlines()
+        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/gmetad stop')
+        stdout.readlines()
+        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/gmetad start')
+        stdout.readlines()
+        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor start')
+        stdout.readlines()
+        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/apache2 restart')
+        stdout.readlines()
+        ssh.close()
+
+        for name, node in self.cluster.items():
+            if name.endswith("master"):
+                continue
+
+            #self.my_logger.debug("Starting Ganglia on " + str(name))
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(node.networks, username='ubuntu', password='secretpw', 
+                    key_filename=self.utils.key_file)
+            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor stop')
+            stdout.readlines()
+            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/gmetad stop')
+            stdout.readlines()
+            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/apache2 stop')
+            stdout.readlines()
+            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor start')
+            stdout.readlines()
+            ssh.close()
+
+
+    def rebalance_cluster (self, threshold = 0.1):
+
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        
+        ## Run compaction on all tables
+        child = pexpect.spawn('ssh root@'+self.cluster[self.host_template+"master"].networks)
+        child.expect ('password:')
+        child.sendline ('secretpw')
+        child.expect (':~#')
+        child.sendline ('/opt/hbase-0.20.6/bin/hbase shell')
+        child.expect ('0>')
+        child.sendline ('list')
+        got = child.readline()
+        tables = []
+        while got.find("row(s) in") == -1:
+            if len(got) > 0:
+                tables.append(got)
+            got = child.readline()
+        child.close()
+        for table in tables:
+            os.system("curl \"http://"+self.cluster[self.host_template+"master"].networks+":60010/table.jsp?action=compact&name="+table+"&key=\"")
+
+
+    def remove_node (self, hostname, stop_dfs = True, update_db = True):
+
+        ## Remove node by hostname -- DOES NOT REMOVE THE MASTER
+        if hostname == "master":
+            self.my_logger.debug("Unacceptable node-removable. Removing master node is self-destructive!")
+            return
+        
+        self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
+        print("\nRemoving: " + hostname + ', ' + self.cluster[hostname].networks)
+        node = self.cluster.pop(hostname)   # Removing the selected node from dict self.clusterGetting and also grabbing it! 
+         
+        nodes = []                          # nodes is list of dict HBaseCluster.cluster which is practically never used.
+        for instance in self.cluster.values():
+            nodes.append(instance)
+
+        self.my_logger.debug("Nodes after removal:" + str(nodes))
+        
+        # Usually stop_dfs = False, so just go to the return command in the end of the method.
+        ## Add the removed node to the datanode excludes and refresh the namenodes
+        self.stop_hbase(hostname, node)
+        if stop_dfs:
+            self.my_logger.debug("Adding " + hostname + " to datanode-excludes ...")
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+            stdin, stdout, stderr = ssh.exec_command('echo ' + node.networks + ' >> /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes')
+            stdout.readlines()
+            time.sleep(5)
+            stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
+            stdout.readlines()
+            # ssh.exec_command('/opt/hadoop-2.5.2/bin/yarn rmadmin -refreshNodes')
+            ssh.close()
+
+            self.my_logger.debug("Waiting until decommissioning is done ...")
+            self.wait_for_decommissioning()
+
+        ## Kill all java processes on the removed node
+        #try:
+        #    ssh = paramiko.SSHClient()
+        #    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        #    ssh.connect(node.networks, username='ubuntu', password='secretpw', 
+        #            key_filename=self.utils.key_file)
+        #    stdin, stdout, stderr = ssh.exec_command('pkill java')
+        #    ssh.close()
+        #except paramiko.SSHException:
+        #    self.my_logger.debug("Failed to invoke shell!")
+        
+        ## Reconfigure cluster
+        #k self.configure_cluster(nodes, self.host_template, True, update_db=update_db)
+        #k sys.stdout.flush()
+        
+        ## Start the new configuration!
+        #k self.start_cluster()
+        
+        return node
+
+
+    def sleep(self, duration):
+
+        self.my_logger.debug("Sleeping for %d seconds ..." % duration)
+
+        while duration > 20:
+            time.sleep(20)
+            duration -= 20
+            self.my_logger.debug("Sleeping for %d seconds ..." % duration)
+
+        time.sleep(duration)
+
+
+    def start_cluster (self):
+
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+        self.my_logger.debug("Starting the dfs ...")
+        stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/start-dfs.sh')
+        self.my_logger.debug("Started the dfs:\n  " + '  '.join(stdout.readlines()))
+        stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
+        self.my_logger.debug("Refreshed dfsadmin: " + str(stdout.readlines()))
+        self.my_logger.debug("Starting HBase ...")
+        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/start-hbase.sh')
+        self.my_logger.debug("Started hbase:\n  " + '  '.join(stdout.readlines()))
+        ssh.close()
+
+
+    def start_hbase (self):
+
+        master = self.host_template + "master"
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.cluster[master].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/start-hbase.sh')
+        self.my_logger.debug("Started HBase:\n  " + '  '.join(stdout.readlines()))
+        ssh.close()
+
+
+    def start_node(self, hostname, host, rebalance = True):
+
+        if hostname == "master":
+            self.my_logger.debug("Master is not made for Regionserver vre malakes!")
+            return
+        
+        print("\nAdding: " + hostname + ', ' + self.cluster[hostname].networks)
+        self.cluster[hostname] = host       # Is very usefull when the {"hostname" : Instance:host} is NOT in self.cluster because it was previously removed/pop'ed
+        # start the regionserver
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(host.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+        self.my_logger.debug("Starting the regionserver on " + hostname + " ...")
+        stdin,stdout,stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/hbase-daemon.sh start regionserver')
+        output = stdout.readlines()
+        ssh.close()
+        self.my_logger.debug("Regionserver started: " + str(output).strip())
+        if rebalance:
+            time.sleep(60)
+            self.trigger_balancer()
+
+
+    def stop_cluster (self):
+
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+        # Manipulation to stop H2RDF servers
+        stdin, stdout, stderr = ssh.exec_command('/opt/stopH2RDF.sh')
+        self.my_logger.debug(str(stdout.readlines()))
+        
+        # stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/stop-yarn.sh')
+        # stdin, stdout, stderr = ssh.exec_command('/opt/hbase-0.92.0/bin/stop-hbase.sh')
+        # self.my_logger.debug(str(stdout.readlines()))
+        stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/stop-dfs.sh')
+        self.my_logger.debug("Stopped the dfs: " + str(stdout.readlines()))
+        #h stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-0.20.2/bin/stop-mapred.sh')
+        #h self.my_logger.debug(str( stdout.readlines()))
+
+        ssh.close()
+
+
+    def stop_hbase(self, hostname, node):
+
+        self.my_logger.debug("Stopping HBase on " + hostname + " ...")
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+        self.my_logger.debug("Stopping the balancer ...")
+        stdin, stdout, stderr = ssh.exec_command('echo balance_switch false | /opt/hbase-1.2.3/bin/hbase shell')
+        stdout.readlines()
+        #self.my_logger.debug("Balancer stopped:\n  " + '  '.join(stdout.readlines()))
+        self.my_logger.debug("Stopping HBase ...")
+        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/graceful_stop.sh ' + hostname)
+        stdout.readlines()
+        #self.my_logger.debug("HBase Stopped:\n  " + '  '.join(stdout.readlines()))
+        self.my_logger.debug("Starting the balancer ...")
+        stdin, stdout, stderr = ssh.exec_command('echo balance_switch true | /opt/hbase-1.2.3/bin/hbase shell')
+        stdout.readlines()
+        #self.my_logger.debug("Balancer started:\n  " + '  '.join(stdout.readlines()))
+        ssh.close()
+        time.sleep(5)
+
+
+    def trigger_balancer(self):
+
+        master_node = self.cluster[self.host_template + "master"]
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+        self.my_logger.debug("Triggerring the balancer ...")
+        stdin, stdout, stderr = ssh.exec_command('echo balancer | /opt/hbase-1.2.3/bin/hbase shell')
+        stdout.readlines()
+        #self.my_logger.debug("Balancer triggered:\n  " + '  '.join(stdout.readlines()))
+        ssh.close()
+
+
+    def wait_for_decommissioning(self):
+
+        time.sleep(30)
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
+
+        for i in range(40):
+            stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -report')
+            output = '  '.join(stdout.readlines())
+            dec_nodes = re.findall('Decommissioning datanodes \(([0-9]+)\):', output)
+            # self.my_logger.debug("Dfsadmin report:\n  " + output)
+            if len(dec_nodes) > 0:
+                self.my_logger.debug("%s nodes still being decommissioned ..." % dec_nodes[0])
+            else:
+                self.my_logger.debug("Decommissioning complete!")
+                break
+
+            time.sleep(30)
+
+        ssh.close()
+        self.sleep(60)
+            
+
+    def wait_until_dead(self):
+
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.cluster[self.host_template+"master"].networks, 
+                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
+
+        while True:
+            stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -report')
+            output = '  '.join(stdout.readlines())
+            live_nodes = re.findall('Live datanodes \(([0-9]+)\)', output)
+            # self.my_logger.debug("Dfsadmin report:\n  " + output)
+            if len(live_nodes) > 0:
+                num_live_nodes = int(live_nodes[0])
+                self.my_logger.debug("%d live datanodes" % num_live_nodes)
+                if num_live_nodes == len(self.cluster) - 1:
+                    self.my_logger.debug("We're good to go")
+                    break
+                else:
+                    self.my_logger.debug("We have to wait ...")
+                    stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
+                    stdout.readlines()
+            else:
+                self.my_logger.debug("Could not read the number of live datanodes, will try again in 30 seconds")
+            time.sleep(30)
+
+        ssh.close()
+
+               
+############################# BEAST - METHOD #############################
     def configure_cluster(self, nodes = None, host_template = "", reconfigure = True, update_db = True):
         
         self.my_logger.debug("Configuring cluster ...")
@@ -351,426 +770,5 @@ class HBaseCluster(object):
         
         ## Now you should be ok, so return the nodes with hostnames
         return self.cluster
-
-
-    def init_db_table (self):
-
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
-        while True:
-            self.my_logger.debug("Initializing the db table ...")
-            stdin, stdout, stderr = ssh.exec_command('/bin/bash /opt/init_db_table.sh')
-            output = '  '.join(stdout.readlines())
-            if not 'ERROR' in output or 'Table already exists' in output:
-                self.my_logger.debug("Initialization successful!")
-                break
-
-            self.my_logger.debug("\n  " + output)
-            self.my_logger.debug("Restarting cluster ...")
-            self.start_cluster()
-            self.my_logger.debug("Waiting for HBase to get ready ... ")
-            time.sleep(30)
-
-        ssh.close()
-
-
-    def start_cluster (self):
-
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        self.my_logger.debug("Starting the dfs ...")
-        stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/start-dfs.sh')
-        self.my_logger.debug("Started the dfs:\n  " + '  '.join(stdout.readlines()))
-        stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
-        self.my_logger.debug("Refreshed dfsadmin: " + str(stdout.readlines()))
-        self.my_logger.debug("Starting HBase ...")
-        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/start-hbase.sh')
-        self.my_logger.debug("Started hbase:\n  " + '  '.join(stdout.readlines()))
-        ssh.close()
-
-
-    def stop_cluster (self):
-
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        # Manipulation to stop H2RDF servers
-        stdin, stdout, stderr = ssh.exec_command('/opt/stopH2RDF.sh')
-        self.my_logger.debug(str(stdout.readlines()))
-        
-        # stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/stop-yarn.sh')
-        # stdin, stdout, stderr = ssh.exec_command('/opt/hbase-0.92.0/bin/stop-hbase.sh')
-        # self.my_logger.debug(str(stdout.readlines()))
-        stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/sbin/stop-dfs.sh')
-        self.my_logger.debug("Stopped the dfs: " + str(stdout.readlines()))
-        #h stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-0.20.2/bin/stop-mapred.sh')
-        #h self.my_logger.debug(str( stdout.readlines()))
-
-        ssh.close()
-        
-    def add_nodes (self, new_nodes = None):
-        ## Reconfigure the cluster with the last node as the provided one
-        nodes = []
-        nodes.append(self.cluster[self.host_template+"master"])
-        for i in range(1,len(self.cluster)):
-            nodes.append(self.cluster[self.host_template+str(i)])
-        nodes.extend(new_nodes)
-        # self.my_logger.debug("New nodes:"+str(nodes))
-
-        self.configure_cluster(nodes, self.host_template, True)
-        
-        ## Start the new configuration!
-        self.start_cluster()
-        
-        ## Try to rebalance the cluster (usually rebalances the new node)
-#        self.rebalance_cluster()
-        
-        ## Now you should be ok, so return the new node
-        return nodes
-
-
-    def start_node(self, hostname, host, rebalance = True):
-
-        if hostname == "master":
-            self.my_logger.debug("Master is not made for Regionserver vre malakes!")
-            return
-        
-        self.cluster[hostname] = host       # Is very usefull when the {"hostname" : Instance:host} is NOT in self.cluster because it was previously removed/pop'ed
-        # start the regionserver
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(host.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        self.my_logger.debug("Starting the regionserver on " + hostname + " ...")
-        stdin,stdout,stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/hbase-daemon.sh start regionserver')
-        output = stdout.readlines()
-        ssh.close()
-        self.my_logger.debug("Regionserver started: " + str(output).strip())
-        if rebalance:
-            time.sleep(60)
-            self.trigger_balancer()
-
-
-    def trigger_balancer(self):
-
-        master_node = self.cluster[self.host_template + "master"]
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        self.my_logger.debug("Triggerring the balancer ...")
-        stdin, stdout, stderr = ssh.exec_command('echo balancer | /opt/hbase-1.2.3/bin/hbase shell')
-        stdout.readlines()
-        #self.my_logger.debug("Balancer triggered:\n  " + '  '.join(stdout.readlines()))
-        ssh.close()
-
-
-    def wait_for_decommissioning(self):
-
-        time.sleep(30)
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template + "master"].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-
-        for i in range(40):
-            stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -report')
-            output = '  '.join(stdout.readlines())
-            dec_nodes = re.findall('Decommissioning datanodes \(([0-9]+)\):', output)
-            # self.my_logger.debug("Dfsadmin report:\n  " + output)
-            if len(dec_nodes) > 0:
-                self.my_logger.debug("%s nodes still being decommissioned ..." % dec_nodes[0])
-            else:
-                self.my_logger.debug("Decommissioning complete!")
-                break
-
-            time.sleep(30)
-
-        ssh.close()
-        self.sleep(60)
-            
-
-    def wait_until_dead(self):
-
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                    username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
-
-        while True:
-            stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -report')
-            output = '  '.join(stdout.readlines())
-            live_nodes = re.findall('Live datanodes \(([0-9]+)\)', output)
-            # self.my_logger.debug("Dfsadmin report:\n  " + output)
-            if len(live_nodes) > 0:
-                num_live_nodes = int(live_nodes[0])
-                self.my_logger.debug("%d live datanodes" % num_live_nodes)
-                if num_live_nodes == len(self.cluster) - 1:
-                    self.my_logger.debug("We're good to go")
-                    break
-                else:
-                    self.my_logger.debug("We have to wait ...")
-                    stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
-                    stdout.readlines()
-            else:
-                self.my_logger.debug("Could not read the number of live datanodes, will try again in 30 seconds")
-            time.sleep(30)
-
-        ssh.close()
-
-        
-    def remove_node (self, hostname, stop_dfs = True, update_db = True):
-
-        ## Remove node by hostname -- DOES NOT REMOVE THE MASTER
-        if hostname == "master":
-            self.my_logger.debug("Unacceptable node-removable. Removing master node is self-destructive!")
-            return
-        
-        self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
-        node = self.cluster.pop(hostname)   # Removing the selected node from dict self.clusterGetting and also grabbing it! 
-         
-        nodes = []                          # nodes is list of dict HBaseCluster.cluster which is practically never used.
-        for instance in self.cluster.values():
-            nodes.append(instance)
-        
-        # prints to be removed after checked
-        print("\nChecking if variable-usage and naming is as I remember it. Finally:")
-        print("node = " + str(node))
-        print("instance = " + str(instance))
-        print("nodes = " + str(nodes) + "\n")
-        self.my_logger.debug("Nodes after removal:" + str(nodes))
-        
-        # Usually stop_dfs = False, so just go to the return command in the end of the method.
-        ## Add the removed node to the datanode excludes and refresh the namenodes
-        self.stop_hbase(hostname, node)
-        if stop_dfs:
-            self.my_logger.debug("Adding " + hostname + " to datanode-excludes ...")
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-            stdin, stdout, stderr = ssh.exec_command('echo ' + node.networks + ' >> /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes')
-            stdout.readlines()
-            time.sleep(5)
-            stdin, stdout, stderr = ssh.exec_command('/opt/hadoop-2.5.2/bin/hdfs dfsadmin -refreshNodes')
-            stdout.readlines()
-            # ssh.exec_command('/opt/hadoop-2.5.2/bin/yarn rmadmin -refreshNodes')
-            ssh.close()
-
-            self.my_logger.debug("Waiting until decommissioning is done ...")
-            self.wait_for_decommissioning()
-
-        ## Kill all java processes on the removed node
-        #try:
-        #    ssh = paramiko.SSHClient()
-        #    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        #    ssh.connect(node.networks, username='ubuntu', password='secretpw', 
-        #            key_filename=self.utils.key_file)
-        #    stdin, stdout, stderr = ssh.exec_command('pkill java')
-        #    ssh.close()
-        #except paramiko.SSHException:
-        #    self.my_logger.debug("Failed to invoke shell!")
-        
-        ## Reconfigure cluster
-        #k self.configure_cluster(nodes, self.host_template, True, update_db=update_db)
-        #k sys.stdout.flush()
-        
-        ## Start the new configuration!
-        #k self.start_cluster()
-        
-        return node
-
-
-    def stop_hbase(self, hostname, node):
-
-        self.my_logger.debug("Stopping HBase on " + hostname + " ...")
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        self.my_logger.debug("Stopping the balancer ...")
-        stdin, stdout, stderr = ssh.exec_command('echo balance_switch false | /opt/hbase-1.2.3/bin/hbase shell')
-        stdout.readlines()
-        #self.my_logger.debug("Balancer stopped:\n  " + '  '.join(stdout.readlines()))
-        self.my_logger.debug("Stopping HBase ...")
-        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/graceful_stop.sh ' + hostname)
-        stdout.readlines()
-        #self.my_logger.debug("HBase Stopped:\n  " + '  '.join(stdout.readlines()))
-        self.my_logger.debug("Starting the balancer ...")
-        stdin, stdout, stderr = ssh.exec_command('echo balance_switch true | /opt/hbase-1.2.3/bin/hbase shell')
-        stdout.readlines()
-        #self.my_logger.debug("Balancer started:\n  " + '  '.join(stdout.readlines()))
-        ssh.close()
-        time.sleep(5)
-
-
-    def rebalance_cluster (self, threshold = 0.1):
-
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        
-        ## Run compaction on all tables
-        child = pexpect.spawn('ssh root@'+self.cluster[self.host_template+"master"].networks)
-        child.expect ('password:')
-        child.sendline ('secretpw')
-        child.expect (':~#')
-        child.sendline ('/opt/hbase-0.20.6/bin/hbase shell')
-        child.expect ('0>')
-        child.sendline ('list')
-        got = child.readline()
-        tables = []
-        while got.find("row(s) in") == -1:
-            if len(got) > 0:
-                tables.append(got)
-            got = child.readline()
-        child.close()
-        for table in tables:
-            os.system("curl \"http://"+self.cluster[self.host_template+"master"].networks+":60010/table.jsp?action=compact&name="+table+"&key=\"")
-
-       
-    def enable_root_login (self, nodes):
-
-        for node in nodes:
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(node.networks, username='ubuntu')
-            stdin, stdout, stderr = ssh.exec_command('sudo sed -ri "s/^.*ssh-rsa/ssh-rsa/" /root/.ssh/authorized_keys')
-            stdout.readlines()
-            ssh.close()
-
-
-    def start_hbase (self):
-
-        master = self.host_template + "master"
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[master].networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/start-hbase.sh')
-        self.my_logger.debug("Started HBase:\n  " + '  '.join(stdout.readlines()))
-        ssh.close()
-
-
-    def clear_exclude_list (self):
-
-        master_node = self.cluster[self.host_template+"master"]
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
-        for hostname in self.cluster:
-            ip = self.cluster[hostname].networks
-            stdin, stdout, stderr = ssh.exec_command("sed -i '/"+ip+"/d' /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes")
-            stdout.readlines()
-            stdin, stdout, stderr = ssh.exec_command('ls /opt/hadoop-2.5.2/')
-            stdout.readlines()
-            stdin, stdout, stderr = ssh.exec_command("sed -i '/"+ip+"/d' /opt/hadoop-2.5.2/etc/hadoop/nodemanager-excludes")
-            stdout.readlines()
-        ssh.close()
-
-    
-    def init_ganglia(self):
-
-        # copy the configuration files
-        self.my_logger.debug("Starting Ganglia ...")
-        rsa_key = paramiko.RSAKey.from_private_key_file(self.utils.key_file)
-        ganglia_dir = self.utils.install_dir + "/templates/ganglia/"
-        for name, node in self.cluster.items():
-            transport = paramiko.Transport((node.networks, 22))
-            transport.connect(username = 'ubuntu', pkey = rsa_key)
-            transport.open_channel("session", node.networks, "localhost")
-            sftp = paramiko.SFTPClient.from_transport(transport)
-            if name.endswith("master"):
-                sftp.put(ganglia_dir+"master/ganglia.conf", "/etc/apache2/sites-enabled/ganglia.conf")
-                sftp.put(ganglia_dir+"master/gmetad.conf", "/etc/ganglia/gmetad.conf")
-                sftp.put(ganglia_dir+"master/gmond.conf", "/etc/ganglia/gmond.conf")
-            else:
-                sftp.put(ganglia_dir+"servers/gmond.conf", "/etc/ganglia/gmond.conf")
-            transport.close()
-            sftp.close()
-
-        # start the services
-        #self.my_logger.debug("Starting Ganglia on "+self.host_template+"master")
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.cluster[self.host_template+"master"].networks, 
-                username='ubuntu', password='secretpw', 
-                key_filename=self.utils.key_file)
-        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor stop')
-        stdout.readlines()
-        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/gmetad stop')
-        stdout.readlines()
-        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/gmetad start')
-        stdout.readlines()
-        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor start')
-        stdout.readlines()
-        stdin, stdout, stderr = ssh.exec_command('/etc/init.d/apache2 restart')
-        stdout.readlines()
-        ssh.close()
-
-        for name, node in self.cluster.items():
-            if name.endswith("master"):
-                continue
-
-            #self.my_logger.debug("Starting Ganglia on " + str(name))
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(node.networks, username='ubuntu', password='secretpw', 
-                    key_filename=self.utils.key_file)
-            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor stop')
-            stdout.readlines()
-            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/gmetad stop')
-            stdout.readlines()
-            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/apache2 stop')
-            stdout.readlines()
-            stdin, stdout, stderr = ssh.exec_command('/etc/init.d/ganglia-monitor start')
-            stdout.readlines()
-            ssh.close()
-
-
-    def sleep(self, duration):
-
-        self.my_logger.debug("Sleeping for %d seconds ..." % duration)
-
-        while duration > 20:
-            time.sleep(20)
-            duration -= 20
-            self.my_logger.debug("Sleeping for %d seconds ..." % duration)
-
-        time.sleep(duration)
-
-
-
-    # Deprecated!
-    def copy_hbase (self, node):
-
-        rsa_key = paramiko.RSAKey.from_private_key_file(self.utils.key_file)
-        transport = paramiko.Transport((node.networks, 22))
-        transport.connect(username = 'ubuntu', pkey = rsa_key)
-        transport.open_channel("session", node.networks, "localhost")
-        sftp = paramiko.SFTPClient.from_transport(transport)
-        sftp.put("/opt/hbase-1.2.3-bin.tar.gz", "/opt/hbase-1.2.3-bin.tar.gz")
-        transport.close()
-        sftp.close()
-        self.my_logger.debug("Copied the tarball")
-
-        time.sleep(60)
-
-        ssh = paramiko.SSHClient()
-        self.my_logger.debug("Created ssh object")
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.my_logger.debug("Set missing key policy")
-        ssh.connect(node.networks, username='ubuntu', password='secretpw', key_filename=self.utils.key_file)
-        self.my_logger.debug("Connected")
-        stdin, stdout, stderr = ssh.exec_command("tar xzvf /opt/hbase-1.2.3-bin.tar.gz -C /opt/")
-        self.my_logger.debug("executed the command")
-        stdout.readlines()
-        self.my_logger.debug("read the stdout")
-        errors = stderr.readlines()
-        self.my_logger.debug("read the stderr")
-        if len(errors) > 0:
-            self.my_logger.debug("Error unpacking HBASE: " + str(stderr.readlines()))
-        else:
-            self.my_logger.debug("Unpacking complete!")
-        ssh.close()
-
-        self.my_logger.debug("I think I'm done")
-        time.sleep(60)
 
 

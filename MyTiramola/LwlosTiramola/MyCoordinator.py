@@ -45,6 +45,7 @@ class MyDaemon(Daemon):
             self.hostname_template  = self.utils.hostname_template      # Same here
             self.removed_hosts      = []
             
+            self.selecting_load_type(self.load_type)
             self.init(records)
             self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
             if self.utils.bench:
@@ -52,7 +53,6 @@ class MyDaemon(Daemon):
                 self.exec_rem_actions(2, 1)
                 self.exec_add_actions(1, 1)
             
-            self.selecting_load_type(self.load_type)
             self.e_greedy(self.num_actions, self.epsilon)
 
             self.exit()
@@ -111,11 +111,13 @@ class MyDaemon(Daemon):
             for i in range(num_tests):
                 self.my_logger.debug("Running warm-up test %d/%d ..." % (i + 1, num_tests))
                 self.run_test(target, self.reads, update_load = False)
+                print("\nThe last printed metrics are not used.")
                 self.sleep(60)
 
             self.my_logger.debug("Running initial state test")
             target *= 1.2       # Set state with 20% more load than the target. Seems more interesting
             meas = self.run_test(round(target), self.reads)
+            print("\nThe last printed metrics will be used for setting state.")
             self.decision_maker.set_state(meas)
 
 
@@ -128,22 +130,50 @@ class MyDaemon(Daemon):
                 
                 if i >= self.train_actions:     # Defining epsilon according to the selected training time from properties
                     epsilon = 0
-
+                
+                type_of_action = "Unknown"
+                randoms = 0
+                suggesteds = 0
                 if random.uniform(0, 1) <= epsilon:
                     action = random.choice(self.decision_maker.get_legal_actions())
                     self.my_logger.debug("Time = %d, selected random action: %s" % (self.time, str(action)))
+                    type_of_action = "Random"
+                    randoms += 1
                 else:
                     action = self.decision_maker.suggest_action()
                     self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
+                    type_of_action = "Suggested"
+                    suggesteds += 1
 
                 self.execute_action(action)
                 self.run_test(target, self.reads, update_load=False)
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
-                self.decision_maker.update(action, meas)
+                print("\nMetrics from the last run_test will be used for updating state.")
+                print("\nTime = " + str(self.time) + str(type_of_action) + "\t\tAction = " + str(action) + "\ttarget = " + str(target) + "\nFinal Metrics:")
+                self.decision_maker.update(action, meas)    # TOBE checked here for printing info!
+            
+            print("Random Actions = " + str(randoms) + "\tSuggested Actions = " + str(suggesteds))
 
-#########################END OF 4 BASIC METHODS! The rest following are in alphabetical order##################
+
+        def run_test(self, target, reads, update_load = True):
+
+            while True:
+                print("\n\n***\t\tSTARTING run_test!\t\t\t***")
+                self.wake_up_ganglia()
+                self.ycsb.execute_load(target, reads)
+                meas = self.collect_measurements(update_load = update_load)
+                if not meas is None:
+                    print("\n***\t\tEND OF run_test succesfully.\t***")
+                    return meas
+
+                self.my_logger.debug("Test failed, trying again in 30 seconds ...")
+                print("\n\t\tFAILED run_test.")
+                self.ycsb.killall_jobs()
+                self.sleep(30)
+
+#########################END OF 5 BASIC METHODS! The rest following are in alphabetical order##################
 
         def add_nodes_physical(self, num_nodes):
 
@@ -165,14 +195,21 @@ class MyDaemon(Daemon):
 
         def add_nodes(self, num_nodes):
 
+            cluster = self.nosqlCluster.cluster
+            print("\nCluster before node addition:")
+            pprint(cluster)
             self.my_logger.debug("Adding " + str(num_nodes) + " nodes ...")
             if num_nodes > len(self.removed_hosts):
                 self.my_logger.debug("Only %d available, adding %d nodes instead ..." % (len(self.removed_hosts), len(self.removed_hosts)))
 
             new_nodes = self.removed_hosts[:num_nodes]
             self.removed_hosts = self.removed_hosts[num_nodes:]
-            for hostname, host in new_nodes:
+            for hostname, host in new_nodes:    
                 self.nosqlCluster.start_node(hostname, host)
+                print("Cluster after node addition:")
+                pprint(cluster)
+                print("self.removed_hosts left: " + str(self.removed_hosts))
+            
             self.log_cluster()
             ## Wait for the nodes to get ready
             self.wake_up_nodes()
@@ -183,10 +220,8 @@ class MyDaemon(Daemon):
 
             # collect the metrics from ganglia and ycsb
             ganglia_metrics = self.metrics.collect_all_metrics(self.nosqlCluster.cluster)   # Averaged (averaged metrics) from inside and outside Ganglia!
-            print("\nAll Ganglia(s)-metrics final view: ")
-#            print("ganglia_metrics is type of: " + str(type(ganglia_metrics)))
-            pprint(ganglia_metrics)
-#            pprint.pformat(ganglia_metrics)
+            print("\nGot Ganglia(s)-metrics.")
+#            pprint(ganglia_metrics)
             ycsb_metrics    = self.ycsb.parse_results()                                     # Averaged metrics from ycsb.out(s)
 #            print("\nAggregated ycsb-results from all clients: ")    # Activate it when ycsb-clients are more than 1.
 #            pprint(ycsb_metrics)
@@ -202,15 +237,11 @@ class MyDaemon(Daemon):
             meas[DecisionMaking.NUMBER_OF_CPUS]   = curr_flavor.get('vcpus')
             meas[DecisionMaking.STORAGE_CAPACITY] = curr_flavor.get('disk')
             # extra metrics deriving from the existing ones
-            meas[DecisionMaking.IO_REQS]       = meas[DecisionMaking.IO_READ_REQS] + \
-                                                 meas[DecisionMaking.IO_WRITE_REQS]
-            meas[DecisionMaking.PC_FREE_RAM]   = meas[DecisionMaking.MEM_FREE] / \
-                                                 meas[DecisionMaking.MEM_TOTAL]
-            meas[DecisionMaking.PC_CACHED_RAM] = meas[DecisionMaking.MEM_CACHED] / \
-                                                 meas[DecisionMaking.MEM_TOTAL]
+            meas[DecisionMaking.IO_REQS]       = meas[DecisionMaking.IO_READ_REQS] + meas[DecisionMaking.IO_WRITE_REQS]
+            meas[DecisionMaking.PC_FREE_RAM]   = meas[DecisionMaking.MEM_FREE] / meas[DecisionMaking.MEM_TOTAL]
+            meas[DecisionMaking.PC_CACHED_RAM] = meas[DecisionMaking.MEM_CACHED] / meas[DecisionMaking.MEM_TOTAL]
             meas[DecisionMaking.PC_CPU_USAGE]  = 100.0 - meas[DecisionMaking.CPU_IDLE]
-            meas[DecisionMaking.PC_READ_THR]   = meas[DecisionMaking.READ_THROUGHPUT] / \
-                                                 meas[DecisionMaking.TOTAL_THROUGHPUT]
+            meas[DecisionMaking.PC_READ_THR]   = meas[DecisionMaking.READ_THROUGHPUT] / meas[DecisionMaking.TOTAL_THROUGHPUT]
             meas[DecisionMaking.TOTAL_LATENCY] = (meas[DecisionMaking.READ_LATENCY] * \
                                                   meas[DecisionMaking.READ_THROUGHPUT] + \
                                                   meas[DecisionMaking.UPDATE_LATENCY] * \
@@ -218,32 +249,34 @@ class MyDaemon(Daemon):
                                                  (meas[DecisionMaking.READ_THROUGHPUT] + \
                                                   meas[DecisionMaking.UPDATE_THROUGHPUT])
 
-            # simple linear prediction for the load on the next step
+            # simple linear prediction for the load on the next step    # Nai, alla giatiiiii???
             print("\n\tTO-BE CHECKED...")
-            print("self.last_load1 = " + str(self.last_load))
             if self.last_load is None:
                 last_load = meas[DecisionMaking.INCOMING_LOAD]
             else:
                 last_load = self.last_load
             print("last_load1 = " + str(last_load))
 
+            # Gia kapoio logo psilodoulevei, alla pou xrhsimopoieitai. Ti ginetai an kati paei strava!
             meas[DecisionMaking.NEXT_LOAD] = 2 * meas[DecisionMaking.INCOMING_LOAD] - last_load
-            print("meas[DecisionMaking.NEXT_LOAD]1 = " + str(meas[DecisionMaking.NEXT_LOAD]))
+            print("NEXT_LOAD = " + str(meas[DecisionMaking.NEXT_LOAD]))
             
-            print("update_load1 = " + str(update_load))
+            print("update_load = " + str(update_load))
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
-            print("self.last_load2 = " + str(self.last_load) + "\n")
+            print("last_load2 = " + str(self.last_load) + "\n")
 
-#            self.my_logger.debug("Collected measurements fully averaged from inside-ganglia, outside-ganglia and ycsb: \n" + pprint(meas))
-            print("These are the fully averaged measurements from inside-ganglia, outside-ganglia and ycsb to be used for all DM procedures:")
-            pprint(meas)
+            print("Got fully averaged measurements from inside-ganglia, outside-ganglia and ycsb to be used for all DM procedures.")
+#            pprint(meas)
+
             return meas
 
 
         def execute_action(self, action):
 
             self.my_logger.debug("Executing action: " + str(action))
+            print("\n\n***************************************************************")
+            print("EXECUTING ACTION: " + str(action))
             action_type, action_value = action
 
             if action_type == DecisionMaking.ADD_VMS:
@@ -351,6 +384,7 @@ class MyDaemon(Daemon):
                     instances.append(instance)
                 self.my_logger.debug("NoSQL-cluster is formed by: " + str(instances))
                 self.my_logger.debug("WARNING: Tiramola will block forever if they are not running.")
+                print("\nCertifying that NoSQL-cluster is running.")
                 eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str(instances))
 
@@ -430,27 +464,23 @@ class MyDaemon(Daemon):
             min_server_nodes   = int(self.utils.min_server_nodes)
 
             cluster = self.nosqlCluster.cluster
-            print("\n\ncluster just before node removal: " + str(cluster))
+            print("\nCluster before node removal:")
+            pprint(cluster)
             self.my_logger.debug("Removing " + str(num_nodes) + " nodes ...")
             max_removed_nodes = len(cluster) - min_server_nodes
-            print("max_removed_nodes = " + str(max_removed_nodes))
             if num_nodes > max_removed_nodes:
                 self.my_logger.debug("I can only remove %d nodes!" % max_removed_nodes)
                 num_nodes = max_removed_nodes
 
             for i in range(num_nodes):
-                print("i = " + str(i) + "\tin MyCoordinator.remove_nodes")
                 cluster_length = len(cluster)
-                print("cluster_length = " + str(cluster_length))
                 for hostname, host in cluster.items():
-                    print("Checking (hostname, host):\t" + str(hostname) + "\t" + str(host))
                     if hostname != "master":
-                        print("self.hostname_template = " + str(self.hostname_template))
-#                        number = hostname.replace(self.nosqlCluster.host_template, "")
                         number = hostname.replace(self.hostname_template, "")
-                        print("number = " + number)
                         if number == str(cluster_length - 1):
                             self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
+                            print("Cluster after node removal:")
+                            pprint(cluster)
                             self.removed_hosts = [(hostname, host)] + self.removed_hosts                # practically we append the tuple to the list self.removed_hosts!
                             print("self.removed_hosts = " + str(self.removed_hosts))
                             break
@@ -522,22 +552,6 @@ class MyDaemon(Daemon):
                 self.run_test(target, self.reads, update_load=False)
 
 
-        def run_test(self, target, reads, update_load = True):
-
-            while True:
-                print("\n\n\tSTARTING run_test!")
-                self.wake_up_ganglia()
-                self.ycsb.execute_load(target, reads)
-                meas = self.collect_measurements(update_load = update_load)
-                if not meas is None:
-                    print("\n\t\tEND OF run_test succesfully.\n\n")
-                    return meas
-
-                self.my_logger.debug("Test failed, trying again in 50 seconds ...")
-                self.ycsb.killall_jobs()
-                self.sleep(50)
-
-
         def selecting_load_type(self, load_type):
             
             if load_type == DecisionMaking.SINUSOIDAL:
@@ -593,7 +607,7 @@ class MyDaemon(Daemon):
             
             # method variables:
             cloud_api_type  = self.utils.cloud_api_type
-            print("cloud_api_type:\t" + str(self.utils.cloud_api_type))
+            print("\n\ncloud_api_type:\t" + str(self.utils.cloud_api_type))
             # Assume running where eucarc sourced 
             if cloud_api_type == "EC2":
                 self.eucacluster = EucaCluster.EucaCluster()
@@ -656,13 +670,12 @@ class MyDaemon(Daemon):
             self.offset         = int(self.utils.offset)
             self.amplitude      = int(self.utils.amplitude)
             
-            self.my_logger.debug("Starting experiment. It will last approximately " + str(total_run_time) + " minutes.")
-            print("\n\tYCSB-Experiment Report:")
+            print("YCSB-Experiment Report:")
             if training_perc == 0 or self.epsilon == 0:
                 print("training_perc or epsilon is 0. No actual training will be performed!")
-            print(str(ycsb_max_time / 60) + "\tmins. Running time of the run_test() method(YCSB cycle).")
+            print(str(ycsb_max_time / 60) + "\t\tmins. Running time of the run_test() method(YCSB cycle).")
             print(str(egreedy_iter_time) + "\tmins. Running time of each e_greedy() iteration.")
-            print(str(total_run_time) + "\tmins. Total running time of the whole experiment.")
+            print(str(total_run_time) + "\t\tmins. Total running time of the whole experiment.")
             print(str(self.num_actions) + " total actions\t"\
                   + str(self.train_actions) + " actions for training (e = " + str(self.epsilon) + ")\t"\
                   + str(eval_actions) + " actions for evaluation")

@@ -36,7 +36,7 @@ class OpenStackCluster(object):
         self.utils  = Utils.Utils()
         con         = create_engine(self.utils.db_file)
         cur         = con.connect()
-        print("OpenStackCluster, going to try use sqlite db.")
+        print("OpenStackCluster is going to try using from sqlite db the TABLE instances.")
         try:
             instances = cur.execute('select * from instances').fetchall()
             print("""Already discovered instances from previous database file. Use describe_instances without arguments to update.""")
@@ -62,7 +62,7 @@ class OpenStackCluster(object):
         Blocks until all defined instances have reached running state and an ip has been assigned
     '''  
     def block_until_running (self, instances, target_status = 'ACTIVE'):
-        print("\n\n")
+
         creds = get_nova_creds()
 #        nova = client.Client(2.0, creds.get('username'), creds.get('api_key'), creds.get('project_id'), creds.get('auth_url'))
         nova = client.Client(2.0,
@@ -103,7 +103,7 @@ class OpenStackCluster(object):
                         # instances.append(all_running_instances[i])
                         break
 #        self.describe_instances()       # Don't know why this is called. Maybe I will search it one day!
-        print("instances returned by block_until_running: " + str(instances) + "\n")
+        print("Running-Instances: (by block_until_running): " + str(instances))
         return instances
 
 

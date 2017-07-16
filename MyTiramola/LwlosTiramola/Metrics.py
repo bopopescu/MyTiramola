@@ -41,11 +41,12 @@ class Metrics(object):
         self.my_logger.debug("Metrics, initialized.")
 
 
+    """
+        Returns the average, according to number of times collected, metrics
+        from both the iaas and cluster ganglia daemons for a duration equal to the YCSB running time.
+    """
     def collect_all_metrics(self, cluster):
-        """
-            Returns the average metrics from both the iaas and cluster ganglia daemons for a duration
-            equal to the YCSB running time
-        """
+
         timeseries = []
         start = timer()
         end = start + int(self.utils.ycsb_max_time)
@@ -55,8 +56,8 @@ class Metrics(object):
         while True:
             now = timer()
             if now < end:
-                metrics = self.get_cluster_metrics(cluster)
-                metrics.update(self.get_iaas_metrics(cluster))
+                metrics = self.get_cluster_metrics(cluster)             # Get important and averaged-according-to-the-number-of-NoSQL-slave-nodes.
+                metrics.update(self.get_iaas_metrics(cluster))          # Concatenating them with the IAAS-metrics.
                 timeseries.append(metrics)
                 time.sleep(10)
             else:
@@ -68,19 +69,21 @@ class Metrics(object):
 
         self.my_logger.debug("Successfully collected data %s times" % len(timeseries) + "\n")
         results = {n: sum([m[n] for m in timeseries]) / len(timeseries) for n in timeseries[0]}
-        return results
+        
+        return results                                                  # dict results has the averaged-by-to-the-number-of-collection-times metrics (cluster+IAAS Ganglia)
 
 
     """
-        Returns the metrics from the hbase-cluster for the given cluster
+        Returns the metrics from the hbase-cluster for the given cluster only for slave-NoSQL-nodes.
+        From all the Ganglia-provided metrics, we keep only the important and average them according to the number of NoSQL-slave-nodes.
         (also a helper for get_all_metrics)
     """
     def get_cluster_metrics(self, cluster):
 
         hostnames = self._get_monitored_hosts(cluster)                  # list hostnames will be the names only for NoSQL-slaves.
         while True:
-            data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data will be the raw metrics for every monitored node.
-            metrics = self._cluster_averages(data, hostnames)           # dict metrics is the averaged metrics only for NoSQL-slaves.
+            data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data has all the raw metrics for every monitored node.
+            metrics = self._cluster_averages(data, hostnames)           # dict metrics has the filtered(only important ones) and averaged metrics.
 #            print("\n\nAveraged metrics:")
 #            pprint(metrics)
             if not metrics is None:
@@ -90,13 +93,13 @@ class Metrics(object):
             self._restart_ganglia(cluster)
             time.sleep(30)
         
-        return metrics
+        return metrics                                                  # dict metrics has the filtered and averaged-by-the-number-of-NoSQL-slave-nodes metrics (cluster-Ganglia)
 
 
     """
         Returns a tuple with the averages of all metrics if all metrics are present for all the
         given hosts, else returns None.
-        Also, it filters and averages the most important metrics. Not all provided by Ganglia.
+        Also, it filters (and averages the) most important metrics. Not all provided by Ganglia.
         (helper for get_cluster_metrics)
     """
     def _cluster_averages(self, data, hostnames):
@@ -106,7 +109,7 @@ class Metrics(object):
             self.my_logger.error("No hostnames provided")
             return None
 
-        averages = {n: 0.0 for n in DecisionMaking.CLUSTER_METRICS}                 # Load a dict where keys the DecisionMaking.CLUSTER_METRICS and values = 0.
+        averages = {n: 0.0 for n in DecisionMaking.CLUSTER_METRICS}                 # Load a dict where the keys are the DecisionMaking.CLUSTER_METRICS and values = 0.
         for hostname in hostnames:
             if not hostname in data:
                 self.my_logger.debug("Missing data for " + hostname)

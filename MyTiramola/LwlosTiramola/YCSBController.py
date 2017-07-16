@@ -48,14 +48,14 @@ class YCSBController(object):
         self.target = target / self.clients
         self.reads  = reads
 
-        self.my_logger.debug("\nOrdering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
+        self.my_logger.debug("Ordering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
         delay_per_client = 0.7
         delay = self.clients * delay_per_client + 2
         for c in range(1, self.clients + 1):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            print("\nConnecting to ycsb-client-" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
+            print("Connecting to ycsb-client-" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
             ssh.connect(self.ycsb_templ_name + "%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
             print("Executing command: " + str(cmd))
@@ -69,7 +69,7 @@ class YCSBController(object):
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
         for c in range(1, self.clients + 1):
             hostname = self.ycsb_templ_name + str(c)
-            print("\nConnecting to: " + str(hostname) + " and killing all java...")
+            print("\n\nConnecting to: " + str(hostname) + " and killing all java...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username = 'ubuntu')
@@ -120,7 +120,7 @@ class YCSBController(object):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username = 'ubuntu')
-            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname) + "\n")
+            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname))
             ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
             ssh.close()
 
@@ -196,8 +196,8 @@ class YCSBController(object):
  
                         # self.my_logger.debug("YCSB results: " + str(res))
                         self.my_logger.debug("Successfully collected YCSB results from client %d" % c + "\n")
-                        print("\nSuccessfully collected YCSB results from client %d: " % c) # argotera vale na sou ektypwnei ta averaged dil to epistrefomeno
-                        pprint(res)
+                        print("Successfully collected YCSB results from client %d." % c) # argotera vale na sou ektypwnei ta averaged dil to epistrefomeno
+#                        pprint(res)
                         client_results.append(res)
                         break
 

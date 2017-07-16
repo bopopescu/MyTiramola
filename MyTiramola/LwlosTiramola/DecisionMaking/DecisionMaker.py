@@ -179,7 +179,9 @@ class DecisionMaker(object):
             reward = self.get_reward(meas, action)
 
         self.last_meas = meas
-        print("\nUpdating State with final_metrics (self.last_meas after adding network usage):")
+        print("\nUpdating State with final_metrics (self.last_meas with network usage added):")
         pprint(self.last_meas)        
         self.model.update(action, meas, reward)
-        print("\n\tState is updated!\n\n")
+        print("Reward =\t" + str(reward))
+        print("\n\tState is updated!")
+        print("***************************************************************\n\n")
