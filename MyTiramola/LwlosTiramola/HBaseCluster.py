@@ -394,7 +394,6 @@ class HBaseCluster(object):
             self.my_logger.debug("Master is not made for Regionserver vre malakes!")
             return
         
-        print("\nAdding: " + hostname + ', ' + self.cluster[hostname].networks)
         self.cluster[hostname] = host       # Is very usefull when the {"hostname" : Instance:host} is NOT in self.cluster because it was previously removed/pop'ed
         # start the regionserver
         ssh = paramiko.SSHClient()

@@ -111,13 +111,13 @@ class MyDaemon(Daemon):
             for i in range(num_tests):
                 self.my_logger.debug("Running warm-up test %d/%d ..." % (i + 1, num_tests))
                 self.run_test(target, self.reads, update_load = False)
-                print("\nThe last printed metrics are not used.")
+                print("fyi: Metrics from the last run_test will NOT-BE used.")
                 self.sleep(60)
 
             self.my_logger.debug("Running initial state test")
             target *= 1.2       # Set state with 20% more load than the target. Seems more interesting
             meas = self.run_test(round(target), self.reads)
-            print("\nThe last printed metrics will be used for setting state.")
+            print("fyi: Metrics from the last run_test will BE used for setting state.")
             self.decision_maker.set_state(meas)
 
 
@@ -147,12 +147,13 @@ class MyDaemon(Daemon):
 
                 self.execute_action(action)
                 self.run_test(target, self.reads, update_load=False)
+                print("fyi: Metrics from the last run_test will NOT-BE used.")
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
-                print("\nMetrics from the last run_test will be used for updating state.")
-                print("\nTime = " + str(self.time) + str(type_of_action) + "\t\tAction = " + str(action) + "\ttarget = " + str(target) + "\nFinal Metrics:")
-                self.decision_maker.update(action, meas)    # TOBE checked here for printing info!
+                print("fyi: Metrics from the last run_test will be used for updating state.")
+                print("\nTime = " + str(self.time) + "\t" + str(type_of_action) + "\t\tAction = " + str(action) + "\ttarget = " + str(target) + "\nFinal Metrics:")
+                self.decision_maker.update(action, meas)
             
             print("Random Actions = " + str(randoms) + "\tSuggested Actions = " + str(suggesteds))
 
@@ -204,7 +205,8 @@ class MyDaemon(Daemon):
 
             new_nodes = self.removed_hosts[:num_nodes]
             self.removed_hosts = self.removed_hosts[num_nodes:]
-            for hostname, host in new_nodes:    
+            for hostname, host in new_nodes:
+                print("\nAdding: " + hostname)    
                 self.nosqlCluster.start_node(hostname, host)
                 print("Cluster after node addition:")
                 pprint(cluster)
@@ -250,7 +252,6 @@ class MyDaemon(Daemon):
                                                   meas[DecisionMaking.UPDATE_THROUGHPUT])
 
             # simple linear prediction for the load on the next step    # Nai, alla giatiiiii???
-            print("\n\tTO-BE CHECKED...")
             if self.last_load is None:
                 last_load = meas[DecisionMaking.INCOMING_LOAD]
             else:
@@ -264,7 +265,7 @@ class MyDaemon(Daemon):
             print("update_load = " + str(update_load))
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
-            print("last_load2 = " + str(self.last_load) + "\n")
+            print("last_load2 = " + str(self.last_load))
 
             print("Got fully averaged measurements from inside-ganglia, outside-ganglia and ycsb to be used for all DM procedures.")
 #            pprint(meas)
