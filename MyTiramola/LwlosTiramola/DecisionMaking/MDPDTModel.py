@@ -431,6 +431,62 @@ class MDPDTModel:
             self.splits[p] = 0
 
         self.logger.debug("Initialized MDPDT model with %d states" % len(self.states))
+#        for leaf in self.states:
+#            leaf.print_leaf_node()  # to-do print_leaf_node
+            
+
+
+    """
+        Sets the current state based on the given measurements
+    """
+    def set_state(self, measurements):
+
+        self.current_meas  = measurements
+        print("self.root: " + str(self.root))
+        self.current_state = self.root.get_state(measurements)
+
+
+    """
+        Updates the model after taking the given action and ending up in the
+        state corresponding to the given measurements.
+    """
+    def update(self, action, measurements, reward, debug=False):
+
+        if self.current_meas is None:
+            raise StateNotSetError(self.logger)
+
+        # TODO move this where the splitting is decided
+        self.current_state = self.root.get_state(self.current_meas)
+        print("\nself.current_state: " + str(self.current_state))
+        
+        # determine the new state
+        new_state = self.root.get_state(measurements)
+        new_num   = new_state.get_state_num()
+
+        # store the transition information
+        trans_data = (self.current_meas, measurements, action, reward)
+        self.current_state.store_transition(trans_data, new_num)
+
+        # update the qstate
+        qstate = self.current_state.get_qstate(action)
+        qstate.update(new_state, reward)
+
+        # update the model values according to the chosen algorithm
+        if self.update_algorithm == SINGLE_UPDATE:
+            self._q_update(qstate)
+            self.current_state.update_value()
+        elif self.update_algorithm == VALUE_ITERATION:
+            self.value_iteration()
+        elif self.update_algorithm == PRIORITIZED_SWEEPING:
+            self.prioritized_sweeping()
+
+        # consider splitting the initial_state
+        if self.allow_splitting:
+            self.split(debug = debug)
+
+        # update the current state and store the last measurements
+        self.current_state = new_state
+        self.current_meas  = measurements
 
 
     """
@@ -509,13 +565,7 @@ class MDPDTModel:
         self.root = new_node
 
 
-    """
-        Sets the current state based on the given measurements
-    """
-    def set_state(self, measurements):
 
-        self.current_meas  = measurements
-        self.current_state = self.root.get_state(measurements)
 
 
     """
@@ -624,46 +674,7 @@ class MDPDTModel:
         self.test = stat_test
 
 
-    """
-        Updates the model after taking the given action and ending up in the
-        state corresponding to the given measurements.
-    """
-    def update(self, action, measurements, reward, debug=False):
 
-        if self.current_meas is None:
-            raise StateNotSetError(self.logger)
-
-        # TODO move this where the splitting is decided
-        self.current_state = self.root.get_state(self.current_meas)
-        
-        # determine the new state
-        new_state = self.root.get_state(measurements)
-        new_num   = new_state.get_state_num()
-
-        # store the transition information
-        trans_data = (self.current_meas, measurements, action, reward)
-        self.current_state.store_transition(trans_data, new_num)
-
-        # update the qstate
-        qstate = self.current_state.get_qstate(action)
-        qstate.update(new_state, reward)
-
-        # update the model values according to the chosen algorithm
-        if self.update_algorithm == SINGLE_UPDATE:
-            self._q_update(qstate)
-            self.current_state.update_value()
-        elif self.update_algorithm == VALUE_ITERATION:
-            self.value_iteration()
-        elif self.update_algorithm == PRIORITIZED_SWEEPING:
-            self.prioritized_sweeping()
-
-        # consider splitting the initial_state
-        if self.allow_splitting:
-            self.split(debug = debug)
-
-        # update the current state and store the last measurements
-        self.current_state = new_state
-        self.current_meas  = measurements
 
 
     """

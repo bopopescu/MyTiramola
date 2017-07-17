@@ -108,7 +108,8 @@ class MyDaemon(Daemon):
         def e_greedy(self, num_actions, epsilon = 1.0):
             
             for i in range(num_actions):
-                target          = self.get_load()
+                j               = i + 1
+                target          = round(self.get_load())
                 nodes_before    = len(self.nosqlCluster.cluster)
                 
                 if i >= self.train_actions:     # Defining epsilon according to the selected training time from properties
@@ -138,10 +139,10 @@ class MyDaemon(Daemon):
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
                 print("fyi: Metrics from the last run_test will be used for updating state.")
-                print("\nAction-Num: " + str(i) +
+                print("\nAction-Num: " + str(j) +
                       "\t" + str(type_of_action) +
                       "\tAction: " + str(action) +
-                      "\tnodes: " + str(nodes_before) + " -> " + str(nodes_after) +
+                      "\t\tnodes: " + str(nodes_before) + " -> " + str(nodes_after) +
                       "\ttarget = " + str(target) +
                       "\ttime = " + str(self.time) +
                       "\nFinal Metrics:")
@@ -185,7 +186,7 @@ class MyDaemon(Daemon):
                     print("\nAll HBase-slaves should be running, but can't serve. Restarting all Hbase...")
                     subprocess.call(["./stop-hbase.sh"])
                     subprocess.call(["./start-hbase.sh"])
-                    print("\nRestarting HBase is done. Now sleeping for 30 seconds...")
+                    print("\nRestarting HBase is done. Now sleeping for 60 seconds...")
                 self.sleep(60)
 
 #########################END OF 5 BASIC METHODS! The rest following are in alphabetical order##################
@@ -324,11 +325,11 @@ class MyDaemon(Daemon):
             for i in range(num_actions):
                 self.execute_action(add_action)
                 self.run_test(target, self.reads, update_load = False)
-                self.my_logger.debug("The last logged measurements are not used!")
+                print("fyi: Metrics from the last run_test will NOT-BE used.")
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
-                self.my_logger.debug("The last logged measurements are the ones I use for DM-update")
+                print("fyi: Metrics from the last run_test will be used for updating state.\n")
                 self.decision_maker.update(add_action, meas)
                 target *= 1.2
 
@@ -347,11 +348,11 @@ class MyDaemon(Daemon):
             for i in range(num_actions):
                 self.execute_action(rem_action)
                 self.run_test(target, self.reads, update_load = False)
-                self.my_logger.debug("The last logged measurements are not used!")
+                print("fyi: Metrics from the last run_test will NOT-BE used.")
                 self.my_logger.debug("Trying again in 1 minute")
                 self.sleep(60)
                 meas = self.run_test(target, self.reads)
-                self.my_logger.debug("The last logged measurements are the ones I use for DM-update")
+                print("fyi: Metrics from the last run_test will be used for updating state.\n")
                 self.decision_maker.update(rem_action, meas)
                 target *= 0.9
 
@@ -494,7 +495,7 @@ class MyDaemon(Daemon):
             if num_nodes > max_removed_nodes:
                 self.my_logger.debug("I can only remove %d nodes!" % max_removed_nodes)
                 num_nodes = max_removed_nodes
-                print("\nI cannot remove " + num_nodes + " node(s) from the NoSQL-cluster.")
+                print("\nI cannot remove " + str(num_nodes) + " node(s) from the NoSQL-cluster.")
                 if max_removed_nodes == 0:
                     print("REAL EXECUTING ACTION: ('no_op', 0)")
                 else:
