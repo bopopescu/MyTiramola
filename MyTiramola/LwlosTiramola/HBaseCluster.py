@@ -299,19 +299,17 @@ class HBaseCluster(object):
             self.my_logger.debug("Unacceptable node-removable. Removing master node is self-destructive!")
             return
         
-        self.my_logger.debug("Removing: " + hostname + ', ' + self.cluster[hostname].networks)
-        print("\nRemoving: " + hostname + ', ' + self.cluster[hostname].networks)
-        node = self.cluster.pop(hostname)   # Removing the selected node from dict self.clusterGetting and also grabbing it! 
-         
-        nodes = []                          # nodes is list of dict HBaseCluster.cluster which is practically never used.
-        for instance in self.cluster.values():
-            nodes.append(instance)
-
-        self.my_logger.debug("Nodes after removal:" + str(nodes))
+        self.my_logger.debug("Removing: " + hostname + ", " + self.cluster[hostname].networks)
+        print("\nRemoving: " + hostname + ", " + self.cluster[hostname].networks)
+        node = self.cluster.pop(hostname)                                   # pop-ing the node out of the self.cluster        
+        self.stop_hbase(hostname, node)                                     # stopping the node from being an HBase-regionserver
+        self.my_logger.debug("Nodes after removal:" + str(self.cluster))
         
         # Usually stop_dfs = False, so just go to the return command in the end of the method.
         ## Add the removed node to the datanode excludes and refresh the namenodes
-        self.stop_hbase(hostname, node)
+        nodes = []                          # nodes is list of dict HBaseCluster.cluster which is practically never used.
+        for instance in self.cluster.values():
+            nodes.append(instance)     
         if stop_dfs:
             self.my_logger.debug("Adding " + hostname + " to datanode-excludes ...")
             ssh = paramiko.SSHClient()
@@ -347,6 +345,12 @@ class HBaseCluster(object):
         #k self.start_cluster()
         
         return node
+    
+    
+    def restart_cluster(self):
+        
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 
     def sleep(self, duration):
@@ -394,7 +398,7 @@ class HBaseCluster(object):
             self.my_logger.debug("Master is not made for Regionserver vre malakes!")
             return
         
-        self.cluster[hostname] = host       # Is very usefull when the {"hostname" : Instance:host} is NOT in self.cluster because it was previously removed/pop'ed
+        self.cluster[hostname] = host       # Is very usefull when the {"hostname" : Instance:host} is NOT in self.cluster
         # start the regionserver
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -438,19 +442,28 @@ class HBaseCluster(object):
         self.my_logger.debug("Stopping the balancer ...")
         stdin, stdout, stderr = ssh.exec_command('echo balance_switch false | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
-        #self.my_logger.debug("Balancer stopped:\n  " + '  '.join(stdout.readlines()))
+#        self.my_logger.debug("Balancer stopped:\n  " + '  '.join(stdout.readlines()))
         self.my_logger.debug("Stopping HBase ...")
-        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/graceful_stop.sh ' + hostname)
+        stdin, stdout, stderr = ssh.exec_command('/opt/hbase-1.2.3/bin/graceful_stop.sh ' + hostname)       # Shouldn't this command run in master?
         stdout.readlines()
-        #self.my_logger.debug("HBase Stopped:\n  " + '  '.join(stdout.readlines()))
+#        self.my_logger.debug("HBase Stopped:\n  " + '  '.join(stdout.readlines()))
         self.my_logger.debug("Starting the balancer ...")
         stdin, stdout, stderr = ssh.exec_command('echo balance_switch true | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
-        #self.my_logger.debug("Balancer started:\n  " + '  '.join(stdout.readlines()))
+#        self.my_logger.debug("Balancer started:\n  " + '  '.join(stdout.readlines()))
         ssh.close()
         time.sleep(5)
 
 
+    """
+       stop_hard_hbase method executes stop-hbase.sh (original HBase sh) in master of HBase-cluster.
+    """
+    def stop_hard_hbase(self):
+        
+        # TO-DO
+        print("Not implemented yet")    
+
+    
     def trigger_balancer(self):
 
         master_node = self.cluster[self.host_template + "master"]
@@ -460,7 +473,7 @@ class HBaseCluster(object):
         self.my_logger.debug("Triggerring the balancer ...")
         stdin, stdout, stderr = ssh.exec_command('echo balancer | /opt/hbase-1.2.3/bin/hbase shell')
         stdout.readlines()
-        #self.my_logger.debug("Balancer triggered:\n  " + '  '.join(stdout.readlines()))
+        self.my_logger.debug("Balancer triggered:\n  " + '  '.join(stdout.readlines()))
         ssh.close()
 
 

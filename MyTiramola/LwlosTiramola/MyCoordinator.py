@@ -9,9 +9,8 @@ Created on Sep 30, 2010
 
 from Deamon import Daemon
 import Utils
-import sys, os, time, logging#, pprint
+import sys, os, time, logging
 import math, random
-# from subprocess import call
 import subprocess
 import EucaCluster, MonitorVms, OpenStackCluster
 import HBase92Cluster, HBaseCluster, VoldemortCluster, CassandraCluster, RiakCluster
@@ -106,6 +105,52 @@ class MyDaemon(Daemon):
             self.my_logger.debug("END of Tiramola pseudo-__init__(). Next step... run_warm_up(?).\n")
 
 
+        def e_greedy(self, num_actions, epsilon = 1.0):
+            
+            for i in range(num_actions):
+                target          = self.get_load()
+                nodes_before    = len(self.nosqlCluster.cluster)
+                
+                if i >= self.train_actions:     # Defining epsilon according to the selected training time from properties
+                    epsilon = 0
+                
+                type_of_action = "Unknown"
+                randoms = 0
+                suggesteds = 0
+                if random.uniform(0, 1) <= epsilon:
+                    possible_actions = self.decision_maker.get_legal_actions()
+                    print("Random choosing among: " + str(possible_actions))
+                    action = random.choice(possible_actions)
+                    self.my_logger.debug("Time = %d, selected random action: %s" % (self.time, str(action)))
+                    type_of_action = "Random"
+                    randoms += 1
+                else:
+                    action = self.decision_maker.suggest_action()
+                    self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
+                    type_of_action = "Suggested"
+                    suggesteds += 1
+                
+                self.execute_action(action)
+                nodes_after    = len(self.nosqlCluster.cluster)
+                self.run_test(target, self.reads, update_load=False)
+                print("fyi: Metrics from the last run_test will NOT-BE used.")
+                self.my_logger.debug("Trying again in 1 minute")
+                self.sleep(60)
+                meas = self.run_test(target, self.reads)
+                print("fyi: Metrics from the last run_test will be used for updating state.")
+                print("\nAction-Num: " + str(i) +
+                      "\t" + str(type_of_action) +
+                      "\tAction: " + str(action) +
+                      "\tnodes: " + str(nodes_before) + " -> " + str(nodes_after) +
+                      "\ttarget = " + str(target) +
+                      "\ttime = " + str(self.time) +
+                      "\nFinal Metrics:")
+                self.decision_maker.update(action, meas)
+                self.time += 1
+            
+            print("Random Actions = " + str(randoms) + "\tSuggested Actions = " + str(suggesteds))
+
+
         def run_warm_up(self, num_tests, target):
 
             for i in range(num_tests):
@@ -121,58 +166,27 @@ class MyDaemon(Daemon):
             self.decision_maker.set_state(meas)
 
 
-        def e_greedy(self, num_actions, epsilon = 1.0):
-
-            for i in range(num_actions):
-
-                self.time += 1
-                target = self.get_load()
-                
-                if i >= self.train_actions:     # Defining epsilon according to the selected training time from properties
-                    epsilon = 0
-                
-                type_of_action = "Unknown"
-                randoms = 0
-                suggesteds = 0
-                if random.uniform(0, 1) <= epsilon:
-                    action = random.choice(self.decision_maker.get_legal_actions())
-                    self.my_logger.debug("Time = %d, selected random action: %s" % (self.time, str(action)))
-                    type_of_action = "Random"
-                    randoms += 1
-                else:
-                    action = self.decision_maker.suggest_action()
-                    self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
-                    type_of_action = "Suggested"
-                    suggesteds += 1
-
-                self.execute_action(action)
-                self.run_test(target, self.reads, update_load=False)
-                print("fyi: Metrics from the last run_test will NOT-BE used.")
-                self.my_logger.debug("Trying again in 1 minute")
-                self.sleep(60)
-                meas = self.run_test(target, self.reads)
-                print("fyi: Metrics from the last run_test will be used for updating state.")
-                print("\nTime = " + str(self.time) + "\t" + str(type_of_action) + "\t\tAction = " + str(action) + "\ttarget = " + str(target) + "\nFinal Metrics:")
-                self.decision_maker.update(action, meas)
-            
-            print("Random Actions = " + str(randoms) + "\tSuggested Actions = " + str(suggesteds))
-
-
         def run_test(self, target, reads, update_load = True):
 
             while True:
-                print("\n\n***\t\tSTARTING run_test!\t\t\t***")
+                print("\n\n***\t\t\tSTARTING run_test!\t\t\t***")
                 self.wake_up_ganglia()
                 self.ycsb.execute_load(target, reads)
                 meas = self.collect_measurements(update_load = update_load)
                 if not meas is None:
-                    print("\n***\t\tEND OF run_test succesfully.\t***")
+                    print("***\t\tEND OF run_test succesfully.\t***")
                     return meas
 
-                self.my_logger.debug("Test failed, trying again in 30 seconds ...")
-                print("\n\t\tFAILED run_test.")
+                self.my_logger.debug("Test failed, trying again in 60 seconds or more if restarting all HBase is needed.")
+                print("@@@ @@@\t\t\tFAILED run_test.\t\t\t@@@ @@@")
                 self.ycsb.killall_jobs()
-                self.sleep(30)
+                # Very hardcoded case. Only for HBase and only for my installation!!!
+                if len(self.removed_hosts) == 0:
+                    print("\nAll HBase-slaves should be running, but can't serve. Restarting all Hbase...")
+                    subprocess.call(["./stop-hbase.sh"])
+                    subprocess.call(["./start-hbase.sh"])
+                    print("\nRestarting HBase is done. Now sleeping for 30 seconds...")
+                self.sleep(60)
 
 #########################END OF 5 BASIC METHODS! The rest following are in alphabetical order##################
 
@@ -196,12 +210,20 @@ class MyDaemon(Daemon):
 
         def add_nodes(self, num_nodes):
 
-            cluster = self.nosqlCluster.cluster
+            # Method variables
+            cluster     = self.nosqlCluster.cluster
+            max_adds    = len(self.removed_hosts)
+            
             print("\nCluster before node addition:")
             pprint(cluster)
             self.my_logger.debug("Adding " + str(num_nodes) + " nodes ...")
-            if num_nodes > len(self.removed_hosts):
-                self.my_logger.debug("Only %d available, adding %d nodes instead ..." % (len(self.removed_hosts), len(self.removed_hosts)))
+            if num_nodes > max_adds:
+                self.my_logger.debug("Only %d available, adding %d nodes instead ..." % (max_adds, max_adds))
+                print("\nI cannot add " + num_nodes + " node(s) to the NoSQL-cluster.")
+                if max_adds == 0:
+                    print("REAL EXECUTING ACTION: ('no_op', 0)")
+                else:
+                    print("REAL EXECUTING ACTION: ('add_VMs', %d)" %max_adds)
 
             new_nodes = self.removed_hosts[:num_nodes]
             self.removed_hosts = self.removed_hosts[num_nodes:]
@@ -210,7 +232,7 @@ class MyDaemon(Daemon):
                 self.nosqlCluster.start_node(hostname, host)
                 print("Cluster after node addition:")
                 pprint(cluster)
-                print("self.removed_hosts left: " + str(self.removed_hosts))
+                print("removed_hosts left: " + str(self.removed_hosts))
             
             self.log_cluster()
             ## Wait for the nodes to get ready
@@ -289,9 +311,9 @@ class MyDaemon(Daemon):
 
 
         """
-            (Probably) A dedicated method for removing VMs.
+            A dedicated method for adding VMs.
             Used (only) for testing.
-            Doing the usual iteration:  (load - action - update) with no Decision taking place. 
+            Doing the usual iteration:  (action - load - update) with no Decision taking place. 
         """
         def exec_add_actions(self, num_actions = 1, num_adds = 1):
             
@@ -385,7 +407,7 @@ class MyDaemon(Daemon):
                     instances.append(instance)
                 self.my_logger.debug("NoSQL-cluster is formed by: " + str(instances))
                 self.my_logger.debug("WARNING: Tiramola will block forever if they are not running.")
-                print("\nCertifying that NoSQL-cluster is running.")
+                print("\nCertifying that NoSQL-cluster is running:")
                 eucacluster.block_until_running(instances)
                 self.my_logger.debug("Running instances: " + str(instances))
 
@@ -461,10 +483,10 @@ class MyDaemon(Daemon):
 
         def remove_nodes(self, num_nodes):
             
-            # method variables
-            min_server_nodes   = int(self.utils.min_server_nodes)
-
-            cluster = self.nosqlCluster.cluster
+            # Method variables
+            min_server_nodes    = int(self.utils.min_server_nodes)
+            cluster             = self.nosqlCluster.cluster
+            
             print("\nCluster before node removal:")
             pprint(cluster)
             self.my_logger.debug("Removing " + str(num_nodes) + " nodes ...")
@@ -472,6 +494,11 @@ class MyDaemon(Daemon):
             if num_nodes > max_removed_nodes:
                 self.my_logger.debug("I can only remove %d nodes!" % max_removed_nodes)
                 num_nodes = max_removed_nodes
+                print("\nI cannot remove " + num_nodes + " node(s) from the NoSQL-cluster.")
+                if max_removed_nodes == 0:
+                    print("REAL EXECUTING ACTION: ('no_op', 0)")
+                else:
+                    print("REAL EXECUTING ACTION: ('remove_VMs', %d)" %num_nodes)
 
             for i in range(num_nodes):
                 cluster_length = len(cluster)
@@ -666,8 +693,8 @@ class MyDaemon(Daemon):
             training_perc       = float(self.utils.training_perc)
             self.train_actions  = round(training_perc * self.num_actions + 0.5)
             eval_actions        = self.num_actions - self.train_actions
-            self.period         = self.num_actions / float(self.utils.num_periods) - 1
-            self.time           = self.period / 2    # self.time = 0 => sinus,    self.time = period / 2 => cosinus
+            self.period         = round(self.num_actions / float(self.utils.num_periods))
+            self.time           = round(self.period / 2)    # self.time = 0 => sinus,    self.time = period / 2 => cosinus
             self.offset         = int(self.utils.offset)
             self.amplitude      = int(self.utils.amplitude)
             

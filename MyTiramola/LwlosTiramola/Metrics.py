@@ -50,7 +50,7 @@ class Metrics(object):
         timeseries = []
         start = timer()
         end = start + int(self.utils.ycsb_max_time)
-        self.my_logger.debug("\nWill start collecting data in 30 seconds ...")
+        self.my_logger.debug("Will start collecting data in 30 seconds ...")
         time.sleep(20)
         self.my_logger.debug("Now collecting data ...")
         while True:
@@ -67,7 +67,7 @@ class Metrics(object):
             self.my_logger.error("Only %d metrics collected from Ganglia" % len(timeseries))
             return None
 
-        self.my_logger.debug("Successfully collected data %s times" % len(timeseries) + "\n")
+        self.my_logger.debug("Successfully collected data %s times" % len(timeseries))
         results = {n: sum([m[n] for m in timeseries]) / len(timeseries) for n in timeseries[0]}
         
         return results                                                  # dict results has the averaged-by-to-the-number-of-collection-times metrics (cluster+IAAS Ganglia)
