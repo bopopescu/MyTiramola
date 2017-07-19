@@ -45,16 +45,50 @@ class MyDaemon(Daemon):
             self.removed_hosts      = []
             
             self.selecting_load_type(self.load_type)
-            self.init(records)
-            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
-            if self.utils.bench:
+            self.running_load(9)
+#            self.init(records)
+#            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
+#            if self.utils.bench:
                 #self.run_benchmark(int(self.utils.warm_up_target))
-                self.exec_rem_actions(2, 1)
-                self.exec_add_actions(1, 1)
+#                self.exec_rem_actions(2, 1)
+#                self.exec_add_actions(1, 1)
             
-            self.e_greedy(self.num_actions, self.epsilon)
+#            self.e_greedy(self.num_actions, self.epsilon)
 
             self.exit()
+        
+        
+        """
+            This method just sends load to pre-specified cluster and gets the metrics
+        """
+        def running_load(self, num_loads):
+            
+            ycsb_clients    = int(self.utils.ycsb_clients)
+            prev_target     = 0
+
+            self.initializeNosqlCluster()
+            self.log_cluster()
+            self.update_hosts()
+            self.init_flavors()
+            
+            self.metrics    = Metrics()
+            self.ycsb       = YCSBController(ycsb_clients)
+            self.time       = 0
+            num_nodes       = (self.nosqlCluster.cluster)
+
+            for i in range(num_loads):
+                j       = i + 1
+                target  = round(6000 + 3000 * math.sin(2 * math.pi * i / 8))
+                nodes   = len(self.nosqlCluster.cluster)
+                
+                meas = self.run_test(target, self.reads)
+                print("\n\nLoad " + str(j))
+                print("num_nodes = " + str(num_nodes) + ", prev_target = " + str(prev_target) + ", cur_target = " + str(target))
+                pprint(meas)
+                self.time   += 1
+                prev_target = target
+                print("Letting NoSQL-cluster to rest for 2 mins.")
+                self.sleep(120)           
 
 
         """
@@ -184,8 +218,8 @@ class MyDaemon(Daemon):
                 # Very hardcoded case. Only for HBase and only for my installation!!!
                 if len(self.removed_hosts) == 0:
                     print("\nAll HBase-slaves should be running, but can't serve. Restarting all Hbase...")
-                    subprocess.call(["./stop-hbase.sh"])
-                    subprocess.call(["./start-hbase.sh"])
+                    subprocess.call(["stop-hbase.sh"])
+                    subprocess.call(["start-hbase.sh"])
                     print("\nRestarting HBase is done. Now sleeping for 60 seconds...")
                 self.sleep(60)
 
@@ -220,7 +254,7 @@ class MyDaemon(Daemon):
             self.my_logger.debug("Adding " + str(num_nodes) + " nodes ...")
             if num_nodes > max_adds:
                 self.my_logger.debug("Only %d available, adding %d nodes instead ..." % (max_adds, max_adds))
-                print("\nI cannot add " + num_nodes + " node(s) to the NoSQL-cluster.")
+                print("\nI cannot add " + str(num_nodes) + " node(s) to the NoSQL-cluster.")
                 if max_adds == 0:
                     print("REAL EXECUTING ACTION: ('no_op', 0)")
                 else:

@@ -51,7 +51,7 @@ class Metrics(object):
         start = timer()
         end = start + int(self.utils.ycsb_max_time)
         self.my_logger.debug("Will start collecting data in 30 seconds ...")
-        time.sleep(20)
+        time.sleep(30)
         self.my_logger.debug("Now collecting data ...")
         while True:
             now = timer()
@@ -81,11 +81,14 @@ class Metrics(object):
     def get_cluster_metrics(self, cluster):
 
         hostnames = self._get_monitored_hosts(cluster)                  # list hostnames will be the names only for NoSQL-slaves.
+        print("I will sum and average the metrics only from: " + str(hostnames))
         while True:
             data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data has all the raw metrics for every monitored node.
+            print("Raw data:")
+            pprint(data)
             metrics = self._cluster_averages(data, hostnames)           # dict metrics has the filtered(only important ones) and averaged metrics.
-#            print("\n\nAveraged metrics:")
-#            pprint(metrics)
+            print("\nAveraged metrics:")
+            pprint(metrics)
             if not metrics is None:
                 break
 
@@ -105,6 +108,7 @@ class Metrics(object):
     def _cluster_averages(self, data, hostnames):
         
         num_meas = len(hostnames)
+        print("I will divide every metric with the number of monitored hosts: %num" %num_meas)
         if num_meas == 0:
             self.my_logger.error("No hostnames provided")
             return None
