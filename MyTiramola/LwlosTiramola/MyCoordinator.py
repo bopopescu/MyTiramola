@@ -73,7 +73,7 @@ class MyDaemon(Daemon):
             self.init_flavors()
             
             node4 = self.nosqlCluster.cluster.pop("node4")
-            print("Nodes left in nosqlCluster.cluster:" + str(self.cluster))
+            print("Nodes left in nosqlCluster.cluster:" + str(self.nosqlCluster.cluster))
             
             self.metrics    = Metrics()
             self.ycsb       = YCSBController(ycsb_clients)
