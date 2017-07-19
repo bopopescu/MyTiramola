@@ -45,7 +45,8 @@ class MyDaemon(Daemon):
             self.removed_hosts      = []
             
             self.selecting_load_type(self.load_type)
-            self.running_load(9)
+            self.running_load()
+            self.virtulator()
 #            self.init(records)
 #            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
 #            if self.utils.bench:
@@ -59,13 +60,98 @@ class MyDaemon(Daemon):
         
         
         """
+            This method runs Tiramola virtually.
+            For each number of VMs of the NoSQL-cluster it gets the metrics from the tiramola-environment.txt 
+        """
+        def virtulator(self, num_actions = 9, env_file = "/media/indiana/data/meine/CS_Master/Thesis/TiramolaExperiments/tiramola_environments/metrics234_sinus3-9k.txt"):
+
+            # method variables
+            self.last_load          = None
+            ycsb_clients            = int(self.utils.ycsb_clients)
+            decision_making_file    = self.utils.decision_making_file
+            reconfigure             = self.utils.reconfigure
+            self.install_logger()
+            # Setting up Decision Making
+            self.decision_maker = DecisionMaking.DecisionMaker(decision_making_file)
+            self.setting_up_dec_maker()
+            
+            meas = self.meas_to_dict(env_file, 5, 0, 6000)
+            self.decision_maker.set_state(meas)
+            
+            prev_target = 0
+            self.num_of_VMs  = 5
+            for i in range(num_actions):
+                j               = i + 1
+                
+                if i >= self.train_actions:     # Defining epsilon according to the selected training time from properties
+                    epsilon = 0
+                
+                type_of_action = "Unknown"
+                randoms = 0
+                suggesteds = 0
+                if random.uniform(0, 1) <= epsilon:
+                    possible_actions = self.decision_maker.get_legal_actions()
+                    print("Random choosing among: " + str(possible_actions))
+                    action = random.choice(possible_actions)
+                    self.my_logger.debug("Time = %d, selected random action: %s" % (self.time, str(action)))
+                    type_of_action = "Random"
+                    randoms += 1
+                else:
+                    action = self.decision_maker.suggest_action()
+                    self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
+                    type_of_action = "Suggested"
+                    suggesteds += 1
+                
+                self.dummy_exec_action(action)
+                cur_target  = round(6000 + 3000 * math.sin(2 * math.pi * i / 8))
+                meas        = self.meas_to_dict(env_file, self.num_of_VMs, prev_target, cur_target)
+#                pprint(meas)
+                self.decision_maker.update(action, meas)
+                self.time   += 1
+                prev_target = cur_target
+
+
+        def dummy_exec_action(self, action):
+            
+            self.my_logger.debug("Dummy Executing action: " + str(action))
+            print("\n\n***************************************************************")
+            print("EXECUTING ACTION: " + str(action))
+            action_type, action_value = action
+
+            if action_type == DecisionMaking.ADD_VMS:
+                self.num_of_VMs += action_value
+            elif action_type == DecisionMaking.REMOVE_VMS:
+                self.num_of_VMs -= action_value          
+            
+                         
+        
+        
+        def meas_to_dict(self, filePath, num_of_VMs, prev_target, cur_target):
+            
+            # TO DOOOOOOOOOOOOOOOOOOO!!!
+
+#            print("Going to take measurements from file: " + filePath)
+#            print("Retrieving measurements for: " + str(num_of_VMs) + " " + str(prev_target) + " " + str(cur_target))
+            measurements = {}
+#            with open(filePath, 'r') as file:
+#                lines = file.readlines()
+#                for line in lines:
+#                    k, v = line.strip().split(':')
+#                    measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
+            
+            return measurements
+       
+        
+        
+        """
             This method just sends load to pre-specified cluster and gets the metrics
         """
-        def running_load(self, num_loads):
+        def running_load(self, num_loads = 9):
             
             self.last_load  = None
             ycsb_clients    = int(self.utils.ycsb_clients)
             prev_target     = 0
+            period          = num_loads - 1
             
             self.initializeNosqlCluster()
             self.log_cluster()
@@ -73,6 +159,7 @@ class MyDaemon(Daemon):
             self.init_flavors()
             
             node4 = self.nosqlCluster.cluster.pop("node4")
+            node3 = self.nosqlCluster.cluster.pop("node3")
             print("Nodes left in nosqlCluster.cluster:" + str(self.nosqlCluster.cluster))
             
             self.metrics    = Metrics()
@@ -82,7 +169,7 @@ class MyDaemon(Daemon):
 
             for i in range(num_loads):
                 j       = i + 1
-                target  = round(6000 + 3000 * math.sin(2 * math.pi * i / 8))
+                target  = round(6000 + 3000 * math.sin(2 * math.pi * i / period))
                 nodes   = len(self.nosqlCluster.cluster)
                 
                 meas = self.run_test(target, self.reads)

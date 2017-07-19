@@ -81,10 +81,10 @@ class Metrics(object):
     def get_cluster_metrics(self, cluster):
 
         hostnames = self._get_monitored_hosts(cluster)                  # list hostnames will be the names only for NoSQL-slaves.
-        print("I will sum and average the metrics only from: " + str(hostnames))
+        print("\n\nI will sum and average the metrics only from: " + str(hostnames))
         while True:
             data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data has all the raw metrics for every monitored node.
-            print("\n\nRaw data:")
+            print("Raw data:")
             pprint(data)
             metrics = self._cluster_averages(data, hostnames)           # dict metrics has the filtered(only important ones) and averaged metrics.
             print("\nAveraged metrics:")
