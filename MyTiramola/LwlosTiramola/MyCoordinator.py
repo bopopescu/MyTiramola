@@ -63,18 +63,22 @@ class MyDaemon(Daemon):
         """
         def running_load(self, num_loads):
             
+            self.last_load  = None
             ycsb_clients    = int(self.utils.ycsb_clients)
             prev_target     = 0
-
+            
             self.initializeNosqlCluster()
             self.log_cluster()
             self.update_hosts()
             self.init_flavors()
             
+            node4 = self.nosqlCluster.cluster.pop("node4")
+            print("Nodes left in nosqlCluster.cluster:" + str(self.cluster))
+            
             self.metrics    = Metrics()
             self.ycsb       = YCSBController(ycsb_clients)
             self.time       = 0
-            num_nodes       = (self.nosqlCluster.cluster)
+            num_nodes       = len(self.nosqlCluster.cluster)
 
             for i in range(num_loads):
                 j       = i + 1
@@ -133,8 +137,6 @@ class MyDaemon(Daemon):
                 self.sleep(120)
                 self.ycsb.load_data(records, verbose=True)
                 self.sleep(240)
-            else:
-                self.ycsb.set_records(records)
             
             self.my_logger.debug("END of Tiramola pseudo-__init__(). Next step... run_warm_up(?).\n")
 

@@ -84,7 +84,7 @@ class Metrics(object):
         print("I will sum and average the metrics only from: " + str(hostnames))
         while True:
             data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data has all the raw metrics for every monitored node.
-            print("Raw data:")
+            print("\n\nRaw data:")
             pprint(data)
             metrics = self._cluster_averages(data, hostnames)           # dict metrics has the filtered(only important ones) and averaged metrics.
             print("\nAveraged metrics:")
@@ -108,7 +108,7 @@ class Metrics(object):
     def _cluster_averages(self, data, hostnames):
         
         num_meas = len(hostnames)
-        print("I will divide every metric with the number of monitored hosts: %num" %num_meas)
+        print("I will divide every metric with the number of monitored hosts: %d" %num_meas)
         if num_meas == 0:
             self.my_logger.error("No hostnames provided")
             return None

@@ -24,7 +24,7 @@ class YCSBController(object):
         self.workload           = self.utils.workload_file
         self.output             = self.utils.ycsb_output
         self.max_time           = int(self.utils.ycsb_max_time)
-        self.record_count       = None
+        self.record_count       = int(self.utils.records)
         self.ycsb_error         = self.utils.install_dir + "/logs/ycsb.err"
         self.clients            = int(num_clients)
 

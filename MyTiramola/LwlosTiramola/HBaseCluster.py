@@ -129,7 +129,7 @@ class HBaseCluster(object):
         ssh.connect(master_node.networks, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
         for hostname in self.cluster:
             ip = self.cluster[hostname].networks
-            stdin, stdout, stderr = ssh.exec_command("sed -i '/"+ip+"/d' /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes")
+            stdin, stdout, stderr = ssh.exec_command("sed -i '/" + ip + "/d' /opt/hadoop-2.5.2/etc/hadoop/datanode-excludes")
             stdout.readlines()
             stdin, stdout, stderr = ssh.exec_command('ls /opt/hadoop-2.5.2/')
             stdout.readlines()
