@@ -45,7 +45,7 @@ class MyDaemon(Daemon):
             self.removed_hosts      = []
             
             self.selecting_load_type(self.load_type)
-            self.running_load()
+#            self.running_load()
             self.virtulator()
 #            self.init(records)
 #            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
@@ -63,9 +63,11 @@ class MyDaemon(Daemon):
             This method runs Tiramola virtually.
             For each number of VMs of the NoSQL-cluster it gets the metrics from the tiramola-environment.txt 
         """
-        def virtulator(self, num_actions = 9, env_file = "/media/indiana/data/meine/CS_Master/Thesis/TiramolaExperiments/tiramola_environments/metrics234_sinus3-9k.txt"):
+        def virtulator(self, num_actions = 517, env_file = "/media/indiana/data/meine/CS_Master/Thesis/TiramolaExperiments/tiramola_environments/metrics234_sinus3-9k.txt"):
 
             # method variables
+            train_actions           = 500
+            epsilon                 = self.epsilon
             self.last_load          = None
             ycsb_clients            = int(self.utils.ycsb_clients)
             decision_making_file    = self.utils.decision_making_file
@@ -83,7 +85,7 @@ class MyDaemon(Daemon):
             for i in range(num_actions):
                 j               = i + 1
                 
-                if i >= self.train_actions:     # Defining epsilon according to the selected training time from properties
+                if i >= train_actions:     # Defining epsilon according to the selected training time from properties
                     epsilon = 0
                 
                 type_of_action = "Unknown"
@@ -102,7 +104,7 @@ class MyDaemon(Daemon):
                     type_of_action = "Suggested"
                     suggesteds += 1
                 
-                self.dummy_exec_action(action)
+                self.dummy_exec_action(action, i)
                 cur_target  = round(6000 + 3000 * math.sin(2 * math.pi * i / 8))
                 meas        = self.meas_to_dict(env_file, self.num_of_VMs, prev_target, cur_target)
 #                pprint(meas)
@@ -111,33 +113,68 @@ class MyDaemon(Daemon):
                 prev_target = cur_target
 
 
-        def dummy_exec_action(self, action):
+        def dummy_exec_action(self, action, aa):
+            
+            min_VMs = int(self.utils.min_server_nodes)
+            max_VMs = int(self.utils.max_server_nodes)
+            action_num = aa
             
             self.my_logger.debug("Dummy Executing action: " + str(action))
             print("\n\n***************************************************************")
-            print("EXECUTING ACTION: " + str(action))
+            print("EXECUTING ACTION:" + str(action_num) + " -> " + str(action))
             action_type, action_value = action
-
-            if action_type == DecisionMaking.ADD_VMS:
-                self.num_of_VMs += action_value
-            elif action_type == DecisionMaking.REMOVE_VMS:
-                self.num_of_VMs -= action_value          
+            
+            if self.num_of_VMs == max_VMs and action_type == DecisionMaking.ADD_VMS:
+                print("Cannot execute ADD action!!! No-op is selected")
+            
+            elif self.num_of_VMs == min_VMs and action_type == DecisionMaking.REMOVE_VMS:
+                print("Cannot execute ADD action!!! No-op is selected")
+                
+            else:
+                if action_type == DecisionMaking.ADD_VMS:
+                    self.num_of_VMs += action_value
+                elif action_type == DecisionMaking.REMOVE_VMS:
+                    self.num_of_VMs -= action_value      
             
                          
         
         
         def meas_to_dict(self, filePath, num_of_VMs, prev_target, cur_target):
-            
-            # TO DOOOOOOOOOOOOOOOOOOO!!!
 
-#            print("Going to take measurements from file: " + filePath)
-#            print("Retrieving measurements for: " + str(num_of_VMs) + " " + str(prev_target) + " " + str(cur_target))
-            measurements = {}
-#            with open(filePath, 'r') as file:
-#                lines = file.readlines()
-#                for line in lines:
-#                    k, v = line.strip().split(':')
-#                    measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
+            measurements = {}            
+            print("Going to take measurements from file: " + filePath)
+            print("Retrieving measurements for: " + str(num_of_VMs) + " " + str(prev_target) + " " + str(cur_target))
+            with open(filePath, "r") as file:
+                lines = file.readlines()
+                i = 0
+                m = 0
+                n = 0
+                for line in lines:
+                    pureline = line.strip()
+                    i += 1
+                    if pureline.startswith("num_nodes"):
+                        parts = pureline.strip().split(",")
+                        criterion1  = parts[0].strip().split("=")
+                        criterion2  = parts[1].strip().split("=")
+                        criterion3  = parts[2].strip().split("=")
+                        purecrit1   = criterion1[1].strip()
+                        purecrit2   = criterion2[1].strip()
+                        purecrit3   = criterion3[1].strip()
+                        num_VMs     = str(num_of_VMs)
+                        last_target = str(prev_target)
+                        target      = str(cur_target)
+                        if purecrit1 == num_VMs and purecrit2 == last_target and purecrit3 == target:
+                            print("Found the measurements! target = " + str(cur_target) + "\n")
+                            m = i + 1
+                            n = i + 44
+                    if m == i:
+                        k, v = pureline.strip().split(":")
+                        measurements[k.strip()[2:-1]] = float(v.strip()[:-1])
+                    elif m < i < n:
+                        k, v = pureline.strip().split(":")
+                        measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
+            file.close()
+#            pprint(measurements)
             
             return measurements
        

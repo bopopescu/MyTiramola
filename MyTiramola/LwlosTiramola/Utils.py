@@ -19,7 +19,7 @@ class Utils(object):
     
     def __init__(self):
         
-        self.read_properties(os.getenv("HOME", "/etc") + "/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")
+        self.read_properties(os.getenv("HOME", "/etc") + "/git/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")
 
 
     def return_instance_from_tuple(self, atuple):

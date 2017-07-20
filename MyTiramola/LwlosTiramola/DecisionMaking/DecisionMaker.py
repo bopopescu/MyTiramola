@@ -72,7 +72,8 @@ class DecisionMaker(object):
 
     def install_logger(self):
         
-        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
+#        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
+        LOG_FILENAME = "/media/indiana/data/BDE-xartoura/logs/Coordinator.log"
         self.my_logger = logging.getLogger('DecisionMaker')
         self.my_logger.setLevel(logging.DEBUG)
         handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024, backupCount = 5)
