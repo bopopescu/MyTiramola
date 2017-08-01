@@ -45,8 +45,8 @@ class MyDaemon(Daemon):
             self.removed_hosts      = []
             
             self.selecting_load_type(self.load_type)
-#            self.running_load()
-            self.virtulator()
+            self.running_load()
+#            self.virtulator()
 #            self.init(records)
 #            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
 #            if self.utils.bench:
@@ -183,7 +183,7 @@ class MyDaemon(Daemon):
         """
             This method just sends load to pre-specified cluster and gets the metrics
         """
-        def running_load(self, num_loads = 9):
+        def running_load(self, num_loads = 4, load_type = "linear"):
             
             self.last_load  = None
             ycsb_clients    = int(self.utils.ycsb_clients)
@@ -195,28 +195,45 @@ class MyDaemon(Daemon):
             self.update_hosts()
             self.init_flavors()
             
-            node4 = self.nosqlCluster.cluster.pop("node4")
-            node3 = self.nosqlCluster.cluster.pop("node3")
+#            node4 = self.nosqlCluster.cluster.pop("node4")
+#            node3 = self.nosqlCluster.cluster.pop("node3")
             print("Nodes left in nosqlCluster.cluster:" + str(self.nosqlCluster.cluster))
             
             self.metrics    = Metrics()
             self.ycsb       = YCSBController(ycsb_clients)
             self.time       = 0
             num_nodes       = len(self.nosqlCluster.cluster)
-
-            for i in range(num_loads):
-                j       = i + 1
-                target  = round(6000 + 3000 * math.sin(2 * math.pi * i / period))
-                nodes   = len(self.nosqlCluster.cluster)
+            
+            if load_type == "sinus":
+                for i in range(num_loads):
+                    j       = i + 1
+                    target  = round(6000 + 3000 * math.sin(2 * math.pi * i / period))
+                    nodes   = len(self.nosqlCluster.cluster)
                 
-                meas = self.run_test(target, self.reads)
-                print("\n\nLoad " + str(j))
-                print("num_nodes = " + str(num_nodes) + ", prev_target = " + str(prev_target) + ", cur_target = " + str(target))
-                pprint(meas)
-                self.time   += 1
-                prev_target = target
-                print("Letting NoSQL-cluster to rest for 2 mins.")
-                self.sleep(120)           
+                    meas = self.run_test(target, self.reads)
+                    print("\n\nLoad " + str(j))
+                    print("num_nodes = " + str(num_nodes) + ", prev_target = " + str(prev_target) + ", cur_target = " + str(target))
+                    pprint(meas)
+                    self.time   += 1
+                    prev_target = target
+                    print("Letting NoSQL-cluster to rest for 2 mins.")
+                    self.sleep(120) 
+                    
+            elif  load_type == "linear":
+                min_load = 2000
+                dif_load = 150       # TODO to be calculated according to max and min load
+                for i in range(num_loads):
+                    j       = i + 1
+                    target  = min_load + i * dif_load
+                    nodes   = len(self.nosqlCluster.cluster)
+                    
+                    meas = self.run_test(target, self.reads)
+                    print("\n\nLoad " + str(j))
+                    print("num_nodes = " + str(num_nodes) + "target = " + str(target))
+                    pprint(meas)
+                    self.time += 1
+                    print("Letting NoSQL-cluster to rest for 2 mins.")
+                    self.sleep(120)           
 
 
         """
