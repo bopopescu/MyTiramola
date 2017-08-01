@@ -74,21 +74,21 @@ class Metrics(object):
 
 
     """
-        Returns the metrics from the hbase-cluster for the given cluster only for slave-NoSQL-nodes.
+        Returns the metrics from the hbase-cluster for the given cluster only for NoSQL-slave-nodes.
         From all the Ganglia-provided metrics, we keep only the important and average them according to the number of NoSQL-slave-nodes.
         (also a helper for get_all_metrics)
     """
     def get_cluster_metrics(self, cluster):
 
         hostnames = self._get_monitored_hosts(cluster)                  # list hostnames will be the names only for NoSQL-slaves.
-        print("\n\nI will sum and average the metrics only from: " + str(hostnames))
+        print("\nI will sum and average the metrics only from: " + str(hostnames))
         while True:
             data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data has all the raw metrics for every monitored node.
-            print("Raw data:")
-            pprint(data)
+#            print("Raw data:")
+#            pprint(data)
             metrics = self._cluster_averages(data, hostnames)           # dict metrics has the filtered(only important ones) and averaged metrics.
-            print("\nAveraged metrics:")
-            pprint(metrics)
+#            print("\nFiltered and Averaged metrics:")
+#            pprint(metrics)
             if not metrics is None:
                 break
 
@@ -100,15 +100,16 @@ class Metrics(object):
 
 
     """
+        Filtering and Averaging metrics.
         Returns a tuple with the averages of all metrics if all metrics are present for all the
         given hosts, else returns None.
-        Also, it filters (and averages the) most important metrics. Not all provided by Ganglia.
+        Also, it filters and averages the (most important) metrics. Not all metrics provided by Ganglia.
         (helper for get_cluster_metrics)
     """
     def _cluster_averages(self, data, hostnames):
         
         num_meas = len(hostnames)
-        print("I will divide every metric with the number of monitored hosts: %d" %num_meas)
+        print("Filtering metrics to keep the most important and Averaging them with the number of monitored hosts: %d" %num_meas)
         if num_meas == 0:
             self.my_logger.error("No hostnames provided")
             return None

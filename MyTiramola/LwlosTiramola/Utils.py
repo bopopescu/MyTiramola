@@ -19,7 +19,8 @@ class Utils(object):
     
     def __init__(self):
         
-        self.read_properties(os.getenv("HOME", "/etc") + "/git/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")
+#        self.read_properties(os.getenv("HOME", "/etc") + "/git/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")    # local-VirtualTiramola
+        self.read_properties(os.getenv("HOME", "/etc") + "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")        # cluster-NormalTiramola
 
 
     def return_instance_from_tuple(self, atuple):

@@ -51,25 +51,29 @@ class YCSBController(object):
         self.my_logger.debug("Ordering YCSB clients to run the load: target = %s, reads = %s" % (str(target), str(reads)))
         delay_per_client = 0.7
         delay = self.clients * delay_per_client + 2
+        print("\n")
         for c in range(1, self.clients + 1):
             delay -= delay_per_client
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            print("Connecting to ycsb-client-" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
+            print("\nConnecting to ycsb-client-" + str(c) + " to launch /home/ubuntu/tiramola/YCSBClient.py")
             ssh.connect(self.ycsb_templ_name + "%d" % c, username = 'ubuntu', password = 'secretpw', key_filename = self.utils.key_file)
             cmd = "python3 /home/ubuntu/tiramola/YCSBClient.py %s %s %s %s %s" %(int(target / self.clients), reads, self.record_count, self.max_time, delay)
             print("Executing command: " + str(cmd))
             ssh.exec_command(cmd)
             ssh.close()
+        
+        print("\n")
 
 
     # stop any running ycsb jobs
     def killall_jobs(self):
 
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
+        print("\n\n")
         for c in range(1, self.clients + 1):
             hostname = self.ycsb_templ_name + str(c)
-            print("\n\nConnecting to: " + str(hostname) + " and killing all java...")
+            print("\nConnecting to: " + str(hostname) + " and killing all java...")
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname, username = 'ubuntu')
@@ -102,9 +106,10 @@ class YCSBController(object):
     def transfer_files(self):
 
         self.my_logger.debug("Copying hosts files to ycsb clients ...")
+        print("\n")
         for c in range(1, self.clients + 1):
             hostname = self.ycsb_templ_name + str(c)
-            print("Connecting to: " + str(hostname) + " and transfering files.")
+            print("\nConnecting to: " + str(hostname) + " and transfering files.")
             transport = paramiko.Transport((hostname, 22))
             transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
             transport.open_channel("session", hostname, "localhost")
@@ -196,8 +201,8 @@ class YCSBController(object):
  
                         # self.my_logger.debug("YCSB results: " + str(res))
                         self.my_logger.debug("Successfully collected YCSB results from client %d" % c + "\n")
-                        print("Successfully collected YCSB results from client %d." % c) # argotera vale na sou ektypwnei ta averaged dil to epistrefomeno
-#                        pprint(res)
+                        print("\nSuccessfully collected YCSB results from client %d." % c) # argotera vale na sou ektypwnei ta averaged dil to epistrefomeno
+                        pprint(res)
                         client_results.append(res)
                         break
 

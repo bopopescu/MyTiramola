@@ -183,7 +183,7 @@ class MyDaemon(Daemon):
         """
             This method just sends load to pre-specified cluster and gets the metrics
         """
-        def running_load(self, num_loads = 4, load_type = "linear"):
+        def running_load(self, num_loads = 20, load_type = "linear"):
             
             self.last_load  = None
             ycsb_clients    = int(self.utils.ycsb_clients)
@@ -220,8 +220,8 @@ class MyDaemon(Daemon):
                     self.sleep(120) 
                     
             elif  load_type == "linear":
-                min_load = 2000
-                dif_load = 150       # TODO to be calculated according to max and min load
+                min_load = 16000
+                dif_load = 0       # TODO to be calculated according to max and min load
                 for i in range(num_loads):
                     j       = i + 1
                     target  = min_load + i * dif_load
@@ -229,7 +229,7 @@ class MyDaemon(Daemon):
                     
                     meas = self.run_test(target, self.reads)
                     print("\n\nLoad " + str(j))
-                    print("num_nodes = " + str(num_nodes) + "target = " + str(target))
+                    print("num_nodes = " + str(num_nodes) + ", target = " + str(target))
                     pprint(meas)
                     self.time += 1
                     print("Letting NoSQL-cluster to rest for 2 mins.")
@@ -425,8 +425,8 @@ class MyDaemon(Daemon):
             print("\nGot Ganglia(s)-metrics.")
 #            pprint(ganglia_metrics)
             ycsb_metrics    = self.ycsb.parse_results()                                     # Averaged metrics from ycsb.out(s)
-#            print("\nAggregated ycsb-results from all clients: ")    # Activate it when ycsb-clients are more than 1.
-#            pprint(ycsb_metrics)
+            print("\nAggregated ycsb-results from all clients: ")    # Activate it when ycsb-clients are more than 1.
+            pprint(ycsb_metrics)
             if ganglia_metrics is None or ycsb_metrics is None:
                 return None
 
@@ -456,7 +456,7 @@ class MyDaemon(Daemon):
                 last_load = meas[DecisionMaking.INCOMING_LOAD]
             else:
                 last_load = self.last_load
-            print("last_load1 = " + str(last_load))
+            print("\n\nlast_load1 = " + str(last_load))
 
             # Gia kapoio logo psilodoulevei, alla pou xrhsimopoieitai. Ti ginetai an kati paei strava!
             meas[DecisionMaking.NEXT_LOAD] = 2 * meas[DecisionMaking.INCOMING_LOAD] - last_load
@@ -467,7 +467,7 @@ class MyDaemon(Daemon):
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
             print("last_load2 = " + str(self.last_load))
 
-            print("Got fully averaged measurements from inside-ganglia, outside-ganglia and ycsb to be used for all DM procedures.")
+            print("\n\nGot fully averaged measurements from inside-ganglia, outside-ganglia and ycsb to be used for all DM procedures.")
 #            pprint(meas)
 
             return meas
@@ -921,6 +921,7 @@ class MyDaemon(Daemon):
         def wake_up_ganglia(self):
 
             self.my_logger.debug("Making sure ganglia is running ...")
+            print("Getting Ganglia(s) metrics to verify it is running.")
             self.metrics.get_cluster_metrics(self.nosqlCluster.cluster)
             self.metrics.get_iaas_metrics(self.nosqlCluster.cluster)
 
