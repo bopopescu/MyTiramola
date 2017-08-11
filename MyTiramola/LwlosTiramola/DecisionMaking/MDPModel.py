@@ -21,11 +21,11 @@ class QState(object):
 
         action_type, action_value = action
         if action_type == ADD_VMS:
-            self.action_name = "Add %s VMs   " % action_value
+            self.action_name = "add_%s_VMs" % action_value
         elif action_type == REMOVE_VMS:
-            self.action_name = "Remove %s VMs" % action_value
+            self.action_name = "rmv_%s_VMs" % action_value
         else:
-            self.action_name = "no op       "
+            self.action_name = "no_op"
         # TODO the rest of the actions
 
 
@@ -132,8 +132,7 @@ class QState(object):
     """
     def __str__(self):
 
-        return "Action: %s \tQ-value: %2.3f  \tTaken: %d" % \
-               (self.action_name, self.qvalue, self.num_taken)
+        return "ACT:%s  Q-V=%2.3f  N=%d" %(self.action_name, self.qvalue, self.num_taken)
 
     def __repr__(self):
 

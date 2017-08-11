@@ -70,7 +70,7 @@ class YCSBController(object):
     def killall_jobs(self):
 
         self.my_logger.debug("Stopping any running ycsb's on all clients ... ")
-        print("\n\n")
+        print("\n")
         for c in range(1, self.clients + 1):
             hostname = self.ycsb_templ_name + str(c)
             print("\nConnecting to: " + str(hostname) + " and killing all java...")
@@ -97,60 +97,15 @@ class YCSBController(object):
             subprocess.call(cmd, stderr=err)
 
 
-    def set_records(self, records):
-
-        self.record_count = records
-
-
-    # copy hosts file to all ycsb clients
-    def transfer_files(self):
-
-        self.my_logger.debug("Copying hosts files to ycsb clients ...")
-        print("\n")
-        for c in range(1, self.clients + 1):
-            hostname = self.ycsb_templ_name + str(c)
-            print("\nConnecting to: " + str(hostname) + " and transfering files.")
-            transport = paramiko.Transport((hostname, 22))
-            transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
-            transport.open_channel("session", hostname, "localhost")
-            sftp = paramiko.SFTPClient.from_transport(transport)
-            print("copying host machine's /etc/hosts to " + str(hostname) + "/home/ubuntu/hosts")
-            sftp.put("/etc/hosts", "/home/ubuntu/hosts")
-            print("copying host machine's " + str(self.workload) + " to " + str(hostname) + " dir: /home/ubuntu/tiramola/, as workload.cfg")
-            sftp.put(self.workload, "/home/ubuntu/tiramola/workload.cfg")
-            print("copying host machine's /home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/YCSBClient.py to " + str(hostname) + " in dir: /home/ubuntu/tiramola")
-            sftp.put("/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/YCSBClient.py", "/home/ubuntu/tiramola/YCSBClient.py")
-            sftp.close()
-
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname, username = 'ubuntu')
-            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname))
-            ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
-            ssh.close()
-
-
-    def _aggregate_results(self, results):
-
-        aggr = {k: sum([r[k] for r in results]) for k in results[0]}
-        aggr[DecisionMaking.PC_READ_LOAD]   /= self.clients
-        aggr[DecisionMaking.READ_LATENCY]   /= self.clients
-        aggr[DecisionMaking.UPDATE_LATENCY] /= self.clients
-
-        return aggr
-
-
     def parse_results(self):
 
         self.my_logger.debug("Parsing results ...")
-
-        int_re = "([0-9]+)"
-        float_re = "([0-9]*\.?[0-9]+)"
+        int_re      = "([0-9]+)"
+        float_re    = "([0-9]*\.?[0-9]+)"
 
         client_results = []
         for c in range(1, self.clients + 1):
             for i in range(10):
-
                 hostname = self.ycsb_templ_name + str(c)
                 transport = paramiko.Transport((hostname, 22))
                 transport.connect(username = "ubuntu", pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
@@ -205,7 +160,6 @@ class YCSBController(object):
                         pprint(res)
                         client_results.append(res)
                         break
-
                 except Exception as e:
                     self.my_logger.debug(e)
                     self.my_logger.debug("Results not ready for client %d, trying again in 10 seconds ..."%c)
@@ -217,6 +171,47 @@ class YCSBController(object):
         return self._aggregate_results(client_results)
 
 
+    def _aggregate_results(self, results):
+
+        aggr = {k: sum([r[k] for r in results]) for k in results[0]}
+        aggr[DecisionMaking.PC_READ_LOAD]   /= self.clients
+        aggr[DecisionMaking.READ_LATENCY]   /= self.clients
+        aggr[DecisionMaking.UPDATE_LATENCY] /= self.clients
+        return aggr
+
+
+    def set_records(self, records):
+
+        self.record_count = records
+
+
+    # copy hosts file to all ycsb clients
+    def transfer_files(self):
+
+        self.my_logger.debug("Copying hosts files to ycsb clients ...")
+        for c in range(1, self.clients + 1):
+            hostname = self.ycsb_templ_name + str(c)
+            print("\nConnecting to: " + str(hostname) + " and transfering files.")
+            transport = paramiko.Transport((hostname, 22))
+            transport.connect(username = 'ubuntu', pkey = paramiko.RSAKey.from_private_key_file(self.utils.key_file))
+            transport.open_channel("session", hostname, "localhost")
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            print("copying host machine's /etc/hosts to " + str(hostname) + "/home/ubuntu/hosts")
+            sftp.put("/etc/hosts", "/home/ubuntu/hosts")
+            print("copying host machine's " + str(self.workload) + " to " + str(hostname) + " dir: /home/ubuntu/tiramola/, as workload.cfg")
+            sftp.put(self.workload, "/home/ubuntu/tiramola/workload.cfg")
+            print("copying host machine's /home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/YCSBClient.py to " + str(hostname) + " in dir: /home/ubuntu/tiramola")
+            sftp.put("/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/YCSBClient.py", "/home/ubuntu/tiramola/YCSBClient.py")
+            sftp.close()
+
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(hostname, username = 'ubuntu')
+            print("moving /home/ubuntu/hosts to /etc/hosts with sudo in: " + str(hostname))
+            ssh.exec_command('sudo mv /home/ubuntu/hosts /etc/hosts')
+            ssh.close()
+
+
 
 if __name__ == "__main__":
 
@@ -226,5 +221,3 @@ if __name__ == "__main__":
     time.sleep(180)
     res = ycsb.parse_results()
     pprint(res)
-
-

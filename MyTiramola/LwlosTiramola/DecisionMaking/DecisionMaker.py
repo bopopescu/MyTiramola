@@ -60,7 +60,9 @@ class DecisionMaker(object):
         
         vms = measurements[NUMBER_OF_VMS]
         throughput = measurements[TOTAL_THROUGHPUT]
-        reward = throughput - 800 * vms
+        nosql_vms = vms - 1                     # gioargyr
+#        reward = throughput - 800 * vms         # Lwlos
+        reward = throughput - 1200 * nosql_vms  # gioargyr
 
         return reward
 
@@ -183,6 +185,5 @@ class DecisionMaker(object):
         print("Updating State with final_metrics (self.last_meas with network usage added):")
         pprint(self.last_meas)        
         self.model.update(action, meas, reward)
-        print("Reward =\t" + str(reward))
-        print("\n\tState is updated!")
+        print("\n\t\tState is updated!")
         print("***************************************************************\n\n")

@@ -19,8 +19,8 @@ class Utils(object):
     
     def __init__(self):
         
-#        self.read_properties(os.getenv("HOME", "/etc") + "/git/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")    # local-VirtualTiramola
-        self.read_properties(os.getenv("HOME", "/etc") + "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")        # cluster-NormalTiramola
+        self.read_properties(os.getenv("HOME", "/etc") + "/git/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")    # local-VirtualTiramola
+#        self.read_properties(os.getenv("HOME", "/etc") + "/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")        # cluster-NormalTiramola
 
 
     def return_instance_from_tuple(self, atuple):
@@ -312,18 +312,18 @@ class Utils(object):
             self.ycsb_clients   = cfg.get("config", "ycsb_clients")
             
             # PROPERTIES WITH UNKOWN USAGE FOR TIRAMOLA_V2.0(LWLOS-EDITION)
-            self.max_cluster_size   = cfg.get("config", "max_cluster_size")
-            self.trans_cost         = cfg.get("config", "trans_cost")
-            self.gain               = cfg.get("config", "gain")
-            self.serv_throughput    = cfg.get("config", "serv_throughput")
-            try:
-                self.gamma = cfg.get("config", "gamma")
-            except:
-                self.gamma = 0
+#            self.max_cluster_size   = cfg.get("config", "max_cluster_size")    # It is not used in any of the basic classes!!!
+#            self.trans_cost         = cfg.get("config", "trans_cost")        # It is not used in any of the basic classes!!! 
+#            self.gain               = cfg.get("config", "gain")            # It is not used in any of the basic classes!!!
+#            self.serv_throughput    = cfg.get("config", "serv_throughput")    # It is not used in any of the basic classes!!!
+#            try:
+#                self.gamma = cfg.get("config", "gamma")
+#            except:
+#                self.gamma = 0
             # # Reads the monitoring thresholds
-            self.thresholds_add = {}
-            self.thresholds_remove = {}
-            for option in cfg.options("thresholds_add"):
-                self.thresholds_add[option] = cfg.get("thresholds_add", option)
-            for option in cfg.options("thresholds_remove"):
-                self.thresholds_remove[option] = cfg.get("thresholds_remove", option)
+#            self.thresholds_add = {}
+#            self.thresholds_remove = {}
+#            for option in cfg.options("thresholds_add"):
+#                self.thresholds_add[option] = cfg.get("thresholds_add", option)
+#            for option in cfg.options("thresholds_remove"):
+#                self.thresholds_remove[option] = cfg.get("thresholds_remove", option)

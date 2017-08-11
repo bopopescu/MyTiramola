@@ -45,8 +45,8 @@ class MyDaemon(Daemon):
             self.removed_hosts      = []
             
             self.selecting_load_type(self.load_type)
-            self.running_load()
-#            self.virtulator()
+#            self.running_load()
+            self.virtulator()
 #            self.init(records)
 #            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
 #            if self.utils.bench:
@@ -93,7 +93,7 @@ class MyDaemon(Daemon):
                 suggesteds = 0
                 if random.uniform(0, 1) <= epsilon:
                     possible_actions = self.decision_maker.get_legal_actions()
-                    print("Random choosing among: " + str(possible_actions))
+#                    print("Random choosing among: " + str(possible_actions))
                     action = random.choice(possible_actions)
                     self.my_logger.debug("Time = %d, selected random action: %s" % (self.time, str(action)))
                     type_of_action = "Random"
@@ -104,7 +104,7 @@ class MyDaemon(Daemon):
                     type_of_action = "Suggested"
                     suggesteds += 1
                 
-                self.dummy_exec_action(action, i)
+                self.dummy_exec_action(action, j, type_of_action)
                 cur_target  = round(6000 + 3000 * math.sin(2 * math.pi * i / 8))
                 meas        = self.meas_to_dict(env_file, self.num_of_VMs, prev_target, cur_target)
 #                pprint(meas)
@@ -113,17 +113,18 @@ class MyDaemon(Daemon):
                 prev_target = cur_target
 
 
-        def dummy_exec_action(self, action, aa):
+        def dummy_exec_action(self, action, aa, type):
             
-            min_VMs = int(self.utils.min_server_nodes)
-            max_VMs = int(self.utils.max_server_nodes)
-            action_num = aa
+            min_VMs     = int(self.utils.min_server_nodes)
+            max_VMs     = int(self.utils.max_server_nodes)
+            action_num  = aa
             
             self.my_logger.debug("Dummy Executing action: " + str(action))
             print("\n\n***************************************************************")
             print("EXECUTING ACTION:" + str(action_num) + " -> " + str(action))
             action_type, action_value = action
             
+            print("num_of_VMs before =\t" + str(self.num_of_VMs))            
             if self.num_of_VMs == max_VMs and action_type == DecisionMaking.ADD_VMS:
                 print("Cannot execute ADD action!!! No-op is selected")
             
@@ -134,7 +135,9 @@ class MyDaemon(Daemon):
                 if action_type == DecisionMaking.ADD_VMS:
                     self.num_of_VMs += action_value
                 elif action_type == DecisionMaking.REMOVE_VMS:
-                    self.num_of_VMs -= action_value      
+                    self.num_of_VMs -= action_value
+            
+            print("num_of_VMs after =\t" + str(self.num_of_VMs) + "\n")     
             
                          
         
@@ -142,8 +145,8 @@ class MyDaemon(Daemon):
         def meas_to_dict(self, filePath, num_of_VMs, prev_target, cur_target):
 
             measurements = {}            
-            print("Going to take measurements from file: " + filePath)
-            print("Retrieving measurements for: " + str(num_of_VMs) + " " + str(prev_target) + " " + str(cur_target))
+#            print("Going to take measurements from file: " + filePath)
+#            print("Retrieving measurements for: " + str(num_of_VMs) + " " + str(prev_target) + " " + str(cur_target))
             with open(filePath, "r") as file:
                 lines = file.readlines()
                 i = 0

@@ -73,6 +73,16 @@ class LeafNode(object):
 
 
     """
+        This method prints the important Instance-Variables of a LeafNode object
+    """    
+    def leaf_printer(self):
+        
+        print(str(self))
+        print("\t\tvalue =  " + str(self.value))
+        print("\t\tqstates: " + str(self.qstates))
+
+
+    """
         Replaces this leaf node with a decision node in the decision tree
         and updates all the MDP states accordingly.
     """
@@ -257,7 +267,7 @@ class LeafNode(object):
     """
     def __str__(self):
 
-        return "State %d, visited = %d" % (self.state_num, self.num_visited)
+        return "State %d, Vis = %d" % (self.state_num, self.num_visited)
 
     def __repr__(self):
 
@@ -302,6 +312,31 @@ class DecisionNode(object):
     def is_leaf(self):
 
         return False
+
+
+    """
+        This method prints the most important Instance-Variables of a DecisionNode object.
+    """
+    def dn_printer(self):
+        
+        print("\t" + str(self))
+#        print("\tLIMITS = " + str(self.limits))
+        if len(self.children) > 0:
+#            print("\t\tHAS CHILDREN:")
+            for i in range(len(self.children)):
+                print("\t\t" + str(self.children[i]))
+
+
+    """
+        String representation of a DecisionNode object
+    """
+    def __str__(self):
+
+        return "DN @ " + str(self.parameter) + str(self.limits)
+
+    def __repr__(self):
+
+        return str(self)
 
 
     """
@@ -445,20 +480,38 @@ class MDPDTModel:
         self.current_meas  = measurements
         print("self.root: " + str(self.root))
         self.current_state = self.root.get_state(measurements)
+        
 
+    """
+        This method takes as an argument a Decision Node and prints in a beautiful way
+        the rest of the tree from this node
+    """
+    def state_space_printer(self, dec_node):
+        
+        dec_node.dn_printer()
+        print("")
+        if len(dec_node.children) > 0:
+            for i in range(len(dec_node.children)):
+                if isinstance(dec_node.children[i], LeafNode):
+                    dec_node.children[i].leaf_printer()
+                    print("")
+                elif isinstance(dec_node.children[i], DecisionNode):
+                    self.state_space_printer(dec_node.children[i])
+        
 
     """
         Updates the model after taking the given action and ending up in the
         state corresponding to the given measurements.
     """
     def update(self, action, measurements, reward, debug=False):
+        
+        print("Reward =\t" + str(reward))
 
         if self.current_meas is None:
             raise StateNotSetError(self.logger)
 
-        # TODO move this where the splitting is decided
+        # TODO move this where the splitting is decided           
         self.current_state = self.root.get_state(self.current_meas)
-        print("\nself.current_state: " + str(self.current_state))
         
         # determine the new state
         new_state = self.root.get_state(measurements)
@@ -471,6 +524,13 @@ class MDPDTModel:
         # update the qstate
         qstate = self.current_state.get_qstate(action)
         qstate.update(new_state, reward)
+        
+        # Printing report regarding the transition. Full update follows!
+        print("\n\nSTATE-SPACE HAS\t\t" + str(self.root.num_states) + "\t\tSTATES:\n")
+        if isinstance(self.root, DecisionNode):
+            self.state_space_printer(self.root)
+        print("\ncurrent_state:\t" + str(self.current_state))
+        print("new_state:\t\t" + str(new_state))
 
         # update the model values according to the chosen algorithm
         if self.update_algorithm == SINGLE_UPDATE:
@@ -625,6 +685,8 @@ class MDPDTModel:
         if self.current_state is None:
             raise StateNotSetError(self.logger)
         
+#        print("current_state:\t" + str(self.current_state))
+        
         return self.current_state.get_legal_actions()
 
 
@@ -675,9 +737,6 @@ class MDPDTModel:
         self.test = stat_test
 
 
-
-
-
     """
         Attempts to split the given node with the chosen splitting algorithm
     """
@@ -693,8 +752,8 @@ class MDPDTModel:
             return self.split_max_point(state = state, debug = debug)       # Parameter? don't know
         elif self.split_criterion == QVALUE_DIFF:
             return self.split_qvalue_diff(state = state, debug = debug)     # Probably Q-value test
-#        elif self.split_criterion == INFO_GAIN:
-#            return self.split_info_gain(state=state, debug=debug)        # Information Gain? oute kan implementeiso!
+        elif self.split_criterion == INFO_GAIN:
+            return self.split_info_gain(state=state, debug=debug)           # Information Gain
         else:
             raise InternalError("Unknown splitting algorithm: " + self.split_criterion, self.logger)
 
@@ -827,11 +886,13 @@ class MDPDTModel:
                 self.priorities[s_num] = max(t * delta, self.priorities[s_num])
 
             # zero the updated state's priority
+            print("\npriorities_before =\t" + str(self.priorities))
             self.priorities[s.get_state_num()] = 0
+#            print("priorities_after = " + str(self.priorities))
             if debug:
-                print("sweeping for %d, delta = %f" % (s.get_state_num(), delta))
-                print("reverse transitions: " + str(reverse_transitions))
-                print("priorities: " + str(self.priorities))
+#                print("sweeping for %d, delta = %f" % (s.get_state_num(), delta))
+#                print("reverse transitions: " + str(reverse_transitions))
+                print("priorities_after =\t" + str(self.priorities))
 
             # choose the next max priority state
             # TODO with Priority Queue - but needs to support item removal
@@ -845,7 +906,7 @@ class MDPDTModel:
             # stop if the priority gets below the supplied limit
             if max_priority <= error:
                 if debug:
-                    print("max_priority = %s, stopping" % max_priority)
+                    print("\nmax_priority = %s, stopping" % max_priority)
                 break
     
             s = self.states[max_index]
@@ -1002,17 +1063,29 @@ class MDPDTModel:
         else: # do not consider transitions and only keep the immediate reward
             for m1, m2, a, r in transitions:
                 q_values.append((m1, r))
+        
+        opt_qstate = ""
+        for qstate in state.qstates:
+            if optimal_action == qstate.action:
+                opt_qstate = qstate
+       
+        print("\n\nSPLITTING INFO @ split_any_point:\n")
+        print("For current state:\t" + str(state))
+        print("Optimal Action is:\t" + str(optimal_action) + "\tN = " + str(opt_qstate.num_taken))
 
         # find the splitting point with the lowest null hypothesis probability
         best_par     = None
-#        bast_point   = None
         lowest_error = 1
         for par in self.parameters:
             par_values = sorted([(q[0][par], q[1]) for q in q_values])
+            print("\t\tpar_values:\t\t" + str(par_values))
             # only consider points that leave at least min_measurements points on either side
             a = self.min_measurements
             b = len(transitions) - self.min_measurements + 1
-            print(str(a) + " " + str(b))
+            if a < b:
+                print("\nSplit might happen!")
+            else:
+                print("\tNO SPLITTING!\n")
             for i in range(self.min_measurements, len(transitions) - self.min_measurements + 1):
                 # only split between distinct measurements
                 if par_values[i][0] == par_values[i-1][0]:
@@ -1101,8 +1174,7 @@ class MDPDTModel:
             high_values = [p[1] for p in par_values[split_index:]]
             t1_error = self.stat_test(low_values, high_values)
             if debug:
-                print(par, "point =", (par_values[split_index][0] + par_values[split_index-1][0]) / 2, \
-                      "prob =", t1_error)
+                print(par, "point =", (par_values[split_index][0] + par_values[split_index-1][0]) / 2, "prob =", t1_error)
 
             if t1_error < lowest_error:
                 lowest_error = t1_error

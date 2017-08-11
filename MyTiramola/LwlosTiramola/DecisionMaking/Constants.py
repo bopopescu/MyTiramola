@@ -104,11 +104,12 @@ PRIORITIZED_SWEEPING = "prioritized_sweeping"
 UPDATE_ALGORITHMS    = [NO_UPDATE, SINGLE_UPDATE, VALUE_ITERATION, PRIORITIZED_SWEEPING]
 
 # splitting algorithms for MDP-DT
-MID_POINT      = "mid_point"
-ANY_POINT      = "any_point"
-MEDIAN_POINT   = "median_point"
-MAX_POINT      = "max_point"
-QVALUE_DIFF    = "q-value_difference"
+MID_POINT       = "mid_point"
+ANY_POINT       = "any_point"
+MEDIAN_POINT    = "median_point"
+MAX_POINT       = "max_point"
+QVALUE_DIFF     = "q-value_difference"
+INFO_GAIN       = "info_gain"
 SPLIT_CRITERIA = [MID_POINT, ANY_POINT, MEDIAN_POINT, MAX_POINT, QVALUE_DIFF]
 
 # statistical tests
