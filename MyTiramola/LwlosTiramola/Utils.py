@@ -7,7 +7,7 @@ Created on Jun 8, 2010
 
 import re
 # from boto import ec2
-from sqlalchemy import exc, create_engine
+# from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
 import os
 from configparser import ConfigParser
 from instance import Instance
@@ -19,8 +19,10 @@ class Utils(object):
     
     def __init__(self):
         
-        self.read_properties(os.getenv("HOME", "/etc") + "/git/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")    # local-VirtualTiramola
+#        self.read_properties(os.getenv("HOME", "/etc") + "/git/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")    # local-VirtualTiramola
+        self.read_properties(os.getenv("HOME", "/etc") + r"\git\MyTiramola\MyTiramola\LwlosTiramola\MyCoordinator.properties")    # local-VirtualTiramola @HOME-PC
 #        self.read_properties(os.getenv("HOME", "/etc") + "/MyTiramola/MyTiramola/LwlosTiramola/MyCoordinator.properties")        # cluster-NormalTiramola
+
 
 
     def return_instance_from_tuple(self, atuple):

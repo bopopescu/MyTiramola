@@ -5,9 +5,9 @@ Created on Oct 25, 2010
 '''
 
 
-import paramiko
+# import paramiko    # comment-out for virtual-tiramola
 import Utils
-from sqlalchemy import exc, create_engine
+# from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
 import time, sys
 
 class RiakCluster(object):

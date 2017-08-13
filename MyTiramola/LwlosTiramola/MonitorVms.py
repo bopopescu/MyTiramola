@@ -1,7 +1,7 @@
 import sys
 import shutil
 import socket
-import fileinput, paramiko, Utils
+# import fileinput, paramiko, Utils    # comment-out for virtual-tiramola
 import xml.parsers.expat
 
 class GParser:

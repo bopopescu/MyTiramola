@@ -63,7 +63,7 @@ class MyDaemon(Daemon):
             This method runs Tiramola virtually.
             For each number of VMs of the NoSQL-cluster it gets the metrics from the tiramola-environment.txt 
         """
-        def virtulator(self, num_actions = 517, env_file = "/media/indiana/data/meine/CS_Master/Thesis/TiramolaExperiments/tiramola_environments/metrics234_sinus3-9k.txt"):
+        def virtulator(self, num_actions = 17, env_file = "C:\\Users\\Giorgos\\Desktop\\virtual_tiramola\\metrics234_sinus3-9k.txt"):
 
             # method variables
             train_actions           = 500
@@ -80,10 +80,10 @@ class MyDaemon(Daemon):
             meas = self.meas_to_dict(env_file, 5, 0, 6000)
             self.decision_maker.set_state(meas)
             
-            prev_target = 0
-            self.num_of_VMs  = 5
+            prev_target     = 0
+            self.num_of_VMs = 5
             for i in range(num_actions):
-                j               = i + 1
+                j = i + 1
                 
                 if i >= train_actions:     # Defining epsilon according to the selected training time from properties
                     epsilon = 0
@@ -139,9 +139,7 @@ class MyDaemon(Daemon):
             
             print("num_of_VMs after =\t" + str(self.num_of_VMs) + "\n")     
             
-                         
-        
-        
+                             
         def meas_to_dict(self, filePath, num_of_VMs, prev_target, cur_target):
 
             measurements = {}            

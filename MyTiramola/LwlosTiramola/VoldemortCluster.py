@@ -4,9 +4,9 @@ Created on Oct 30, 2010
 @author: christina
 '''
 
-import paramiko
+# import paramiko    # comment-out for virtual-tiramola
 import Utils
-from sqlalchemy import exc, create_engine
+# from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
 import sys, shutil, fileinput, time
 #import easy to use xml parser called minidom:
 from xml.dom.minidom import parseString

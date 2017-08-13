@@ -32,7 +32,8 @@ class Daemon:
                 self.stderr = self.utils.install_dir + "/logs/Coordinator.err"
                 
                 ## Install logger
-                LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
+#                LOG_FILENAME = self.utils.install_dir + '/logs/Coordinator.log'
+                LOG_FILENAME = r"C:\Users\Giorgos\Desktop\virtual_tiramola\logs\Coordinator.log"
                 self.my_logger = logging.getLogger('Deamon')
                 self.my_logger.setLevel(logging.DEBUG)
                 handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024 * 1024, backupCount = 5)

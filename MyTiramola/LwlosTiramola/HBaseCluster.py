@@ -4,13 +4,13 @@ Created on Jun 8, 2010
 @author: vagos
 '''
 
-import paramiko
+# import paramiko# comment-out for virtual-tiramola
 import Utils
 import pprint
 import time
 import re
-from sqlalchemy import exc, create_engine
-import pexpect, os, shutil, fileinput, sys, logging
+# from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
+# import pexpect, os, shutil, fileinput, sys, logging    # comment-out for virtual-tiramola
 
 from pprint import pprint
 

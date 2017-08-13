@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 from pprint import pprint, pformat
-from monitor import get_all_metrics
+# from monitor import get_all_metrics    # comment-out for virtual-tiramola
 import time
 from timeit import default_timer as timer
 import Utils
 import logging
-import paramiko
+# import paramiko    # comment-out for virtual-tiramola
 import random 
 import DecisionMaking
 
