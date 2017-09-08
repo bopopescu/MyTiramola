@@ -6,10 +6,9 @@ Created on May 29, 2017
 
 import sys, os, logging#, time
 from pprint import pprint
-import random#, math
-# import Utils
+import random, math
 import DecisionMaking
-# VUtils imports:
+from DecisionMaking.Constants import *
 from configparser import ConfigParser
 
 class Virtulator:
@@ -22,37 +21,28 @@ class Virtulator:
         print("The .json file that defines the DM Module is: " + dm_json)
         ## Setting DecisionMaker according to virtual properties
         self.decision_maker = DecisionMaking.DecisionMaker(dm_json)
-        self.setting_up_dec_maker()
-        
-        ## OLD VIRTULATOR
-#        self.calc_exp_attributes()
-#        vmeas_start_file = conf_dir + self.vmeas_start
-#        initial_meas = self.meas_to_dict(vmeas_start_file)
-#        print("\nMEASUREMENTS FOR setting state:")
-#        pprint(initial_meas)
-        
+        self.setting_up_dec_maker()        
         metrics_file = os.path.join(self.conf_dir, self.metrics_file)
         initial_meas = self.meas_to_dict2(metrics_file, 5, 0, 6000)
         self.decision_maker.set_state(initial_meas)
-        self.virtual_e_greedy(517, metrics_file)
+        
+        self.virtual_e_greedy(1000, metrics_file)
         
 #############################  END OF __init__  #################################
     """
         This method runs Tiramola virtually.
         For each number of VMs of the NoSQL-cluster it gets the metrics from the tiramola-environment.txt 
     """
-    def virtual_e_greedy(self, num_actions = 517, env_file = "path"):
+    def virtual_e_greedy(self, num_actions, env_file):
 
         # method variables
         train_actions           = 500
-        epsilon                 = self.epsilon
-        self.last_load          = None
-        ycsb_clients            = int(self.ycsb_clients)
-        decision_making_file    = self.decision_making_file
-        reconfigure             = self.reconfigure
+        epsilon                 = float(self.epsilon)
            
         prev_target     = 0
         self.num_of_VMs = 5
+        randoms         = 0
+        suggesteds      = 0
         for i in range(num_actions):
             j = i + 1
                 
@@ -60,11 +50,9 @@ class Virtulator:
                 epsilon = 0
                
             type_of_action  = "Unknown"
-            randoms         = 0
-            suggesteds      = 0
             if random.uniform(0, 1) <= epsilon:
                 possible_actions = self.decision_maker.get_legal_actions()
-                print("Random choosing among: " + str(possible_actions))
+#                print("Random choosing among: " + str(possible_actions))
                 action = random.choice(possible_actions)
                 type_of_action = "Random"
                 randoms += 1
@@ -75,29 +63,37 @@ class Virtulator:
              
             self.dummy_exec_action(action, j, type_of_action)
             cur_target  = round(6000 + 3000 * math.sin(2 * math.pi * i / 8))
-            meas        = self.meas_to_dict(env_file, self.num_of_VMs, prev_target, cur_target)
-            pprint(meas)
+            meas        = self.meas_to_dict2(env_file, self.num_of_VMs, prev_target, cur_target)
+#            pprint(meas)
             self.decision_maker.update(action, meas)
-            self.time   += 1
+            if j >= 900:
+                pprint(meas)
+                print("")
+                for i in range(len(self.decision_maker.model.states)):
+                    print(str(self.decision_maker.model.states[i]))
+                    print(str(self.decision_maker.model.states[i].num_visited))
+                    print(str(self.decision_maker.model.states[i].get_qstate(self.decision_maker.model.states[i].get_optimal_action())))
+                    print(str(self.decision_maker.model.states[i].qstates) + "\n")
+            print("***************************************************************\n\n")
             prev_target = cur_target
 
 
     def dummy_exec_action(self, action, aa, type):
             
-        min_VMs     = int(self.utils.min_server_nodes)
-        max_VMs     = int(self.utils.max_server_nodes)
+        min_VMs     = int(self.min_server_nodes)
+        max_VMs     = int(self.max_server_nodes)
         action_num  = aa
             
-        self.my_logger.debug("Dummy Executing action: " + str(action))
+#        print("Dummy Executing action: " + str(action))
         print("\n\n***************************************************************")
         print("EXECUTING ACTION:" + str(action_num) + " -> " + str(action))
         action_type, action_value = action
             
         print("num_of_VMs before =\t" + str(self.num_of_VMs))            
-        if self.num_of_VMs == max_VMs and action_type == DecisionMaking.ADD_VMS:
+        if self.num_of_VMs == max_VMs and action_type == ADD_VMS:
             print("Cannot execute ADD action!!! No-op is selected")
             
-        elif self.num_of_VMs == min_VMs and action_type == DecisionMaking.REMOVE_VMS:
+        elif self.num_of_VMs == min_VMs and action_type == REMOVE_VMS:
             print("Cannot execute ADD action!!! No-op is selected")
                 
         else:
@@ -283,9 +279,9 @@ class Virtulator:
         ## virtulator files
         self.metrics_file   = cfg.get("config", "metrics_file")
 
-        self.num_actions    = cfg.get("config", "num_actions")      # old virtulator
-        self.vmeas_start    = cfg.get("config", "vmeas_start")      # old virtulator
-        self.vmeas_file     = cfg.get("config", "vmeas_file")       # old virtulator
+#        self.num_actions    = cfg.get("config", "num_actions")      # old virtulator
+#        self.vmeas_start    = cfg.get("config", "vmeas_start")      # old virtulator
+#        self.vmeas_file     = cfg.get("config", "vmeas_file")       # old virtulator
 
 
     """
@@ -315,7 +311,7 @@ class Virtulator:
             print("MDP-DT is NOT selected. split_crit, cons_trans and stat_test are ignored!")
         ## Update Algorithm
         if self.decision_maker.model_type == MDP or self.decision_maker.model_type == MDP_DT:
-            self.select_Ualgorithm(float(self.ualgorithm_error), int(self.utils.max_steps))
+            self.select_Ualgorithm(float(self.ualgorithm_error), int(self.max_steps))
         else:
             print("Neither MDP, nor MDP-DT is selected. udate_algorithm, ualgorithm_error and max_steps are ignored!")
             print("Default Update Algorithm(s) will be applied according to the selected model.")

@@ -45,9 +45,9 @@ class MyDaemon(Daemon):
             self.removed_hosts      = []
             
             self.selecting_load_type(self.load_type)
-#            self.running_load()
-            self.virtulator()
-#            self.init(records)
+#            self.running_load()    # MODE1, exclusively for just sending load to NoSQLCluster    MODE1
+            self.virtulator()       # MODE2, exclusively for running tiramola in virtual-mode. Maybe the independent Virtulator is better!
+#            self.init(records)     # MODE3, the normal mode for here till the end!
 #            self.run_warm_up(warm_up_tests, warm_up_target) # always run a warm up even with zero. warm_up_target == self.utils.offset?
 #            if self.utils.bench:
                 #self.run_benchmark(int(self.utils.warm_up_target))

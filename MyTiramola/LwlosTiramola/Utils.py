@@ -6,8 +6,8 @@ Created on Jun 8, 2010
 ''' modified by gioargyr, 2017-06-26... '''
 
 import re
-# from boto import ec2
-# from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
+from boto import ec2
+from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
 import os
 from configparser import ConfigParser
 from instance import Instance

@@ -4,9 +4,9 @@ Created on Jun 8, 2010
 @author: vagos
 '''
 
-# import paramiko    # comment-out for virtual-tiramola
+import paramiko    # comment-out for virtual-tiramola
 import Utils
-# from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
+from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
 import sys, os, shutil, fileinput
 
 class CassandraCluster(object):

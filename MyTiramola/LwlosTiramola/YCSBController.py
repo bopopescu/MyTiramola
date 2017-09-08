@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
-# import paramiko    # comment-out for virtual-tiramola
+import paramiko    # comment-out for virtual-tiramola
 import re
 import time
 import Utils

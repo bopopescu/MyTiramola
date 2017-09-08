@@ -414,6 +414,13 @@ class QModel:
         qvalue = (1 - a)*qstate.get_qvalue() + a*(reward + g*new_state.get_max_qvalue())
         qstate.set_qvalue(qvalue)
         qstate.incr_taken()
+        
+        print("Current State:\t" + str(self.current_state))
+        print(str(self.current_state.num_visited))
+        print(str(self.current_state.qstates) + "\n")
+        print("New State:\t" + str(new_state))
+        print(str(new_state.num_visited))
+        print(str(new_state.qstates) + "\n")
 
         self.current_state = new_state
 

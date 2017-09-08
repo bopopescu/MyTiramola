@@ -6,15 +6,15 @@ Created on Jun 8, 2010
 
 import os
 import time
-# from novaclient import client    # comment-out for virtual-tiramola
+from novaclient import client    # comment-out for virtual-tiramola
 from credentials import get_nova_creds
-# from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
+from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
 import sys, time
 import Utils
 import subprocess
 import logging
 from instance import Instance
-# import sqlalchemy    # comment-out for virtual-tiramola
+import sqlalchemy    # comment-out for virtual-tiramola
 import threading
 import uuid
 

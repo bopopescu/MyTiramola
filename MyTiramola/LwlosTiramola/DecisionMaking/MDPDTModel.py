@@ -744,17 +744,17 @@ class MDPDTModel:
     def split(self, state = None, debug = True):
 
         if self.split_criterion == MID_POINT:
-            return self.split_mid_point(state = state, debug = debug)       # AccordingToThesis:  Q-value test, alla kai Multiple Points (aka any_point?)  
+            return self.split_mid_point(state = state, debug = debug)       # Parameter Test                     [in thesis]
         elif self.split_criterion == ANY_POINT:
-            return self.split_any_point(state = state, debug = debug)       # Multiple splitting points?
+            return self.split_any_point(state = state, debug = debug)       # Q-Value test (multiple points)     [in thesis]
         elif self.split_criterion == MEDIAN_POINT:
-            return self.split_median_point(state = state, debug = debug)    # Lwlos'? similar to Q-value
+            return self.split_median_point(state = state, debug = debug)    # Q-Value test (single point)        [in thesis]
         elif self.split_criterion == MAX_POINT:
-            return self.split_max_point(state = state, debug = debug)       # Parameter? don't know
+            return self.split_max_point(state = state, debug = debug)       # It's the opposite of qvalue_diff (probably deprecated)
         elif self.split_criterion == QVALUE_DIFF:
-            return self.split_qvalue_diff(state = state, debug = debug)     # Probably Q-value test
+            return self.split_qvalue_diff(state = state, debug = debug)     # Says it is deprecated (the opposite of max_point. This is the min_point)
         elif self.split_criterion == INFO_GAIN:
-            return self.split_info_gain(state=state, debug=debug)           # Information Gain
+            return self.split_info_gain(state=state, debug=debug)           # Information Gain                   [in thesis]
         else:
             raise InternalError("Unknown splitting algorithm: " + self.split_criterion, self.logger)
 

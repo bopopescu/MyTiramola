@@ -3,9 +3,9 @@ Created on Jun 8, 2010
 
 @author: vagos
 '''
-# import paramiko    # comment-out for virtual-tiramola
+import paramiko    # comment-out for virtual-tiramola
 import boto.ec2
-# from euca2ools.commands.euca import describeimages, describeinstances, runinstances, terminateinstances    # comment-out for virtual-tiramola
+from euca2ools.commands.euca import describeimages, describeinstances, runinstances, terminateinstances    # comment-out for virtual-tiramola
 from sqlalchemy import exc, create_engine    # comment-out for virtual-tiramola
 import sys, os, time
 import Utils
