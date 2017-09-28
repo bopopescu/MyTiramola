@@ -24,13 +24,25 @@ class Virtulator:
         self.setting_up_dec_maker()        
         metrics_file = os.path.join(self.conf_dir, self.metrics_file)
 #        initial_meas = self.meas_to_dict2(metrics_file, 5, 0, 6000)
-        full_measurements = self.retrieve_measurements(metrics_file)
-        initial_meas = self.meas_to_dict3(metrics_file, 5, 6000)
+        self.full_measurements = self.retrieve_measurements(metrics_file)
+        initial_meas = self.retrieve_specific_meas(5, 6000)
+#        initial_meas = self.meas_to_dict3(metrics_file, 5, 6000)
         self.decision_maker.set_state(initial_meas)
+        self.v_e_greedy(num_actions)
         
-        self.virtual_e_greedy(8500, metrics_file)
+#        self.virtual_e_greedy(8500, metrics_file)
         
 #############################  END OF __init__  #################################
+    """
+        final (hoping) virtual e-greedy method
+    """
+    def v_e_greedy(self, num_of_actions):
+        
+        
+        
+        print("")
+    
+    
     """
         This method runs Tiramola virtually.
         For each number of VMs of the NoSQL-cluster it gets the metrics from the tiramola-environment.txt 
@@ -587,6 +599,28 @@ class Virtulator:
         file.close()
             
         return all_measurements
+
+
+    """
+        retrieve_specific_meas is retrieving the exact measurement for specifin number_of_VMs and incoming_load
+    """
+    def retrieve_specific_meas(self, number_of_VMs, incoming_load):
+        
+        specific_meas = {}
+        
+        for meas in self.full_measurements:            
+            if meas[NUMBER_OF_VMS] == number_of_VMs and meas[INCOMING_LOAD] == incoming_load:
+                specific_meas = meas
+                print("\n\nSpecific measurements are found:")
+                pprint(specific_meas)
+        
+        for s_meas in specific_meas:            
+            if isinstance(specific_meas[s_meas], tuple):
+                specific_meas[s_meas] = random.gauss(specific_meas[s_meas][0], specific_meas[s_meas][1])
+        
+        print("\nThe measurements we are gonna consider for this iteration are:")
+        pprint(specific_meas)
+        print("\n\n")
 
 
     """
