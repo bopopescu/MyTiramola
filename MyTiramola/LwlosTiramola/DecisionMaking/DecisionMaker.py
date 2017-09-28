@@ -62,8 +62,8 @@ class DecisionMaker(object):
         throughput = measurements[TOTAL_THROUGHPUT]
         nosql_vms = vms - 1                     # gioargyr
 #        reward = throughput - 800 * vms         # Lwlos
-#        reward = throughput - 1200 * nosql_vms  # gioargyr
-        reward = throughput / nosql_vms
+        reward = throughput - 1200 * nosql_vms  # gioargyr
+#        reward = throughput / nosql_vms        # gioargyr2
 
         return reward
 
@@ -127,7 +127,7 @@ class DecisionMaker(object):
 
     def set_state(self, measurements):
 
-        self.add_network_usage(measurements)
+#        self.add_network_usage(measurements)
         self.last_meas = measurements
         print("\nSetting State with final_metrics (self.last_meas after adding network usage):")
         pprint(self.last_meas)
@@ -179,13 +179,19 @@ class DecisionMaker(object):
                 f.flush()
                 self.my_logger.debug("Recorded experience")
 
-        self.add_network_usage(meas)        
+#        self.add_network_usage(meas)        
         if reward is None:
             reward = self.get_reward(meas, action)
 
         self.last_meas = meas
         print("Updating State with final_metrics (self.last_meas with network usage added):")
+        print("NEXT_LOAD = " + str(self.last_meas[NEXT_LOAD]))
+        print("IO_REQS = " + str(self.last_meas[IO_REQS]))
+        print("CPU_WIO = " + str(self.last_meas[CPU_WIO]))
+        print("PC_FREE_RAM = " + str(self.last_meas[PC_FREE_RAM]))
+        print("PC_CACHED_RAM = " + str(self.last_meas[PC_CACHED_RAM]))
+        print("DISK_FREE = " + str(self.last_meas[DISK_FREE]))
 #        pprint(self.last_meas)        
         self.model.update(action, meas, reward)
-        print("\n\t\tState is updated!")
+        print("\n\t\tState is updated! Real action: " + str(action))
 #        print("***************************************************************\n\n")

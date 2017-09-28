@@ -486,6 +486,8 @@ class MyDaemon(Daemon):
 
             if update_load:
                 self.last_load = meas[DecisionMaking.INCOMING_LOAD]
+            
+#            measurements[NETWORK_USAGE] = measurements[BYTES_IN] + measurements[BYTES_OUT]
 
             self.my_logger.debug("Collected measurements: \n" + pprint.pformat(meas))
             return meas
