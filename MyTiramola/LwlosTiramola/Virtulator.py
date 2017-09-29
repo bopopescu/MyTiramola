@@ -23,14 +23,11 @@ class Virtulator:
         self.decision_maker = DecisionMaking.DecisionMaker(dm_json)
         self.setting_up_dec_maker()        
         metrics_file = os.path.join(self.conf_dir, self.metrics_file)
-#        initial_meas = self.meas_to_dict2(metrics_file, 5, 0, 6000)
         self.full_measurements = self.retrieve_measurements(metrics_file)
-        initial_meas = self.retrieve_specific_meas(5, 6000)
-#        initial_meas = self.meas_to_dict3(metrics_file, 5, 6000)
+        initial_meas = self.retrieve_specific_meas(4, 6000)
         self.decision_maker.set_state(initial_meas)
-        self.v_e_greedy(num_actions)
-        
-#        self.virtual_e_greedy(8500, metrics_file)
+        self.v_e_greedy(8500)
+
         
 #############################  END OF __init__  #################################
     """
@@ -38,8 +35,50 @@ class Virtulator:
     """
     def v_e_greedy(self, num_of_actions):
         
+        # method variables
+        train_actions   = 8000
+        epsilon         = float(self.epsilon)
+           
+        self.num_of_VMs = 6
+        self.index      = 0
+        self.ascending  = None
+        randoms         = 0
+        suggesteds      = 0
         
-        
+        for i in range(num_of_actions):
+            j       = i + 1
+            load    = self.get_load("cosinus", i)
+                
+            if i >= train_actions:     # Defining epsilon according to the selected training time from properties
+                epsilon = 0
+#                load = self.get_load("unpred", i)
+               
+            mode_of_action  = "Unknown"
+            if random.uniform(0, 1) <= epsilon:
+                possible_actions    = self.decision_maker.get_legal_actions()
+                action              = random.choice(possible_actions)
+                mode_of_action      = "Random"
+                randoms += 1
+            else:
+                action          = self.decision_maker.suggest_action()
+                mode_of_action  = "Optimal"
+                suggesteds += 1
+            
+            print("\n\n***************************************************************")
+            print("EXECUTING ACTION:" + str(j) + " [" + str(mode_of_action) + "]" " -> " + str(action)) 
+            updated_action = self.virtual_exec_action(action)
+            print("THE LOAD = " + str(load))
+            measurements = self.retrieve_specific_meas(load, self.num_of_VMs)
+            self.decision_maker.update(updated_action, measurements)
+            if j >= 8473:
+#                pprint(meas)
+                print("")
+                for i in range(len(self.decision_maker.model.states)):
+                    print(str(self.decision_maker.model.states[i]))
+                    print(str(self.decision_maker.model.states[i].num_visited))
+                    print(str(self.decision_maker.model.states[i].get_qstate(self.decision_maker.model.states[i].get_optimal_action())))
+                    print(str(self.decision_maker.model.states[i].qstates) + "\n")
+            print("***************************************************************\n\n")        
         print("")
     
     
@@ -92,6 +131,423 @@ class Virtulator:
                     print(str(self.decision_maker.model.states[i].qstates) + "\n")
             print("***************************************************************\n\n")
             prev_target = cur_target
+
+
+    """
+        Executing add1, add2, rm1, rm2 and no-op actions
+    """        
+    def virtual_exec_action(self, action):
+            
+        min_VMs     = int(self.min_server_nodes)
+        max_VMs     = int(self.max_server_nodes)
+        updated_act = ("no_op", 0)
+        changed     = False
+            
+#        print("Dummy Executing action: " + str(action))
+#        print("\n\n***************************************************************")
+#        print("EXECUTING ACTION:" + str(action_num) + " [" + str(mode_of_action) + "]" " -> " + str(action))
+        action_type, action_value = action
+            
+        print("num_of_VMs before =\t" + str(self.num_of_VMs))            
+        if self.num_of_VMs == max_VMs and action_type == ADD_VMS:
+            print("Cannot execute ADD action!!! No-op is selected")
+            updated_act = ("no_op", 0)
+            changed     = True
+        
+        elif self.num_of_VMs == max_VMs - 1 and action_type == ADD_VMS and action_value == 2:
+            print("Cannot execute add_2vm action!!! add_1vm is selected")
+            self.num_of_VMs += 1
+            updated_act = ("add_VMs", 1)
+            changed     = True
+            
+        elif self.num_of_VMs == min_VMs and action_type == REMOVE_VMS:
+            print("Cannot execute ADD action!!! No-op is selected")
+            updated_act = ("no_op", 0)
+            changed     = True
+            
+        elif self.num_of_VMs == min_VMs + 1 and action_type == REMOVE_VMS and action_value == 2:
+            print("Cannot execute rmv_2vm action!!! rmv_1vm is selected")
+            updated_act = ("remove_VMs", 1)
+            changed     = True
+                
+        else:
+            if action_type == DecisionMaking.ADD_VMS:
+                self.num_of_VMs += action_value
+            elif action_type == DecisionMaking.REMOVE_VMS:
+                self.num_of_VMs -= action_value
+           
+        print("num_of_VMs after =\t" + str(self.num_of_VMs) + "\n")
+        
+        if changed:
+            return updated_act
+        else:
+            return action
+
+
+    """
+        Calculates experiments features
+    """
+    def calc_exp_attributes(self):
+        
+        bench_time = int(self.ycsb_max_time) * 2
+        total_time = int(self.num_actions) * (bench_time + 60)
+        print("The experiment will run for " + self.num_actions + " Decisions-Actions.")
+        print("It will take about " + str(total_time / 60) + " mins to be completed.")
+
+
+    def e_greedy(self, num_actions, epsilon = 0):
+
+        for i in range(num_actions):
+            print("ITERATION: " + str(i + 1))
+#            self.time += 1
+#            target = self.get_load()
+            
+            if random.uniform(0, 1) <= epsilon:
+                action = random.choice(self.decision_maker.get_legal_actions())
+#                self.my_logger.debug("Time = %d, selected random action: %s" % (self.time, str(action)))
+            else:
+                action = self.decision_maker.suggest_action()
+#                self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
+                print("Taking Action: " + str(action) + "\n")
+                print("\nWe consider that the action has been made and the YCSB is run and the measures are read and we go to the next step\n")
+#            self.execute_action(action)
+            
+#            self.run_test(target, self.reads, update_load = False)
+#            self.my_logger.debug("Trying again in 1 minute")
+#            self.sleep(60)
+#            meas = self.run_test(target, self.reads)
+            vmeas_current_file = self.conf_dir + self.vmeas_file + str(i) + ".txt"
+            measurements = self.meas_to_dict(vmeas_current_file)
+            pprint(measurements)
+            self.decision_maker.update(action, measurements)
+
+
+    """
+        Creating target
+    """
+    def get_load(self, load_type, iteration):
+        
+        possible_load = [1000, 1200, 1400, 2000, 2800, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 17200, 18000, 18600, 18800, 19000]
+        
+        if load_type == "sinus":
+            if iteration == 0:
+                self.index = int(len(possible_load) / 2)
+                self.ascending = True
+            
+            if self.index == len(possible_load):
+                self.index -= 2
+                self.ascending = False    
+            elif self.index < 0:
+                self.index = 1
+                self.ascending = True       
+
+            load = possible_load[self.index]
+            
+            if self.ascending:
+                self.index += 1
+            else:
+                self.index -= 1
+                
+            return load
+            
+        elif load_type == "cosinus":
+            if iteration == 0:
+                self.index = int(len(possible_load) / 2)
+                self.ascending = False
+                
+            if self.index < 0:
+                self.index = 1
+                self.ascending = True
+            elif self.index == len(possible_load):
+                self.index -= 2
+                self.ascending = False
+                
+            load = possible_load[self.index]
+
+            if self.ascending:
+                self.index += 1
+            else:
+                self.index -= 1
+
+            return load
+        
+        else:
+            load = random.choice(possible_load)
+            return load
+            
+            
+       
+       
+    def install_logger(self):
+
+        LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
+        self.my_logger = logging.getLogger('Coordinator')
+        self.my_logger.setLevel(logging.DEBUG)
+            
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+        handler.setFormatter(formatter)
+        self.my_logger.addHandler(handler)
+            
+        ## Log the environment with which the daemon is run
+        self.my_logger.debug(os.environ)
+        self.my_logger.debug(self.utils.bucket_name)
+    
+
+    """
+        meas_to_dict1 is a method for the first version of Virtulator.
+        It is almos deprecated
+    """
+    def meas_to_dict1(self, filePath):
+
+        print("Going to take measurements from file: " + filePath)
+        measurements = {}
+        with open(filePath, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                k, v = line.strip().split(':')
+                measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
+        return measurements
+
+
+    """
+        meas_to_dict2 is the current method for the second version of Virtulator.
+    """
+    def meas_to_dict2(self, filePath, num_of_VMs, prev_target, cur_target):
+
+        measurements = {}            
+#        print("Going to take measurements from file: " + filePath)
+#        print("Retrieving measurements for: " + str(num_of_VMs) + " " + str(prev_target) + " " + str(cur_target))
+        with open(filePath, "r") as file:
+            lines = file.readlines()
+            i = 0
+            m = 0
+            n = 0
+            
+            for line in lines:
+                pureline = line.strip()
+                i += 1
+                
+                if pureline.startswith("num_nodes"):
+                    parts = pureline.strip().split(",")
+                    criterion1  = parts[0].strip().split("=")
+                    criterion2  = parts[1].strip().split("=")
+                    criterion3  = parts[2].strip().split("=")
+                    purecrit1   = criterion1[1].strip()
+                    purecrit2   = criterion2[1].strip()
+                    purecrit3   = criterion3[1].strip()
+                    num_VMs     = str(num_of_VMs)
+                    last_target = str(prev_target)
+                    target      = str(cur_target)
+                    
+                    if purecrit1 == num_VMs and purecrit2 == last_target and purecrit3 == target:
+                        print("Found the measurements! target = " + str(cur_target) + "\n")
+                        m = i + 1
+                        n = i + 45
+                if m == i:
+                    k, v = pureline.strip().split(":")
+                    measurements[k.strip()[2:-1]] = float(v.strip()[:-1])
+                elif m < i < n:
+                    k, v = pureline.strip().split(":")
+                    measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
+        file.close()
+#        pprint(measurements)
+            
+        return measurements
+    
+    
+    """
+        retrieve_measurements is the final (hoping) method for parsing pre-taken-cluster-metrics.
+        Metrics should include network_usage and the crucial values should have (mean, std, coefficient_of_deviation)
+    """
+    def retrieve_measurements(self, filePath):
+
+        all_measurements    = []
+        measurements        = {}      
+#        print("Going to take all measurements from file: " + filePath)
+        with open(filePath, "r") as file:
+            lines = file.readlines()
+            i = 0
+            m = 0
+            n = 0
+            for line in lines:
+                pureline = line.strip()
+                i += 1
+                
+                if pureline.startswith("num_nodes"):
+                    m = i + 1
+                    n = i + 44
+                    
+                elif i == m:
+                    k, v    = pureline.strip().split(":")
+                    values  = v.strip().split(",")
+                    
+                    if len(values) == 4:
+                        mean_v  = float(values[0].strip()[2:-1])
+                        std_v   = float(values[1].strip()[1:-1])
+                        coef_v  = float(values[2].strip()[1:-2])
+                        measurements[k.strip()[2:-1]] = (mean_v, std_v, coef_v)
+                        
+                    elif len(values) == 2:
+                        measurements[k.strip()[2:-1]] = float(v.strip()[:-1])
+                        
+                    else:
+                        print("The value in this metric-parameter is in unknown format!")
+                    
+                elif m < i < n:
+                    k, v    = pureline.strip().split(":")
+                    values  = v.strip().split(",")
+                    
+                    if len(values) == 4:
+                        mean_v  = float(values[0].strip()[2:-1])
+                        std_v   = float(values[1].strip()[1:-1])
+                        coef_v  = float(values[2].strip()[1:-2])
+                        measurements[k.strip()[1:-1]] = (mean_v, std_v, coef_v)
+                        
+                    elif len(values) == 2:
+                        measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
+                        
+                    else:
+                        print("The value in this metric-parameter is in unknown format!")
+                
+                elif i == n:
+                    k, v = pureline.strip().split(":")
+                    measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
+                    all_measurements.append(measurements.copy())
+            
+            print("File with " + str(i) + " lines is parsed.")
+            print(str(len(all_measurements)) + " measurements are found and stored in all_measurements list.")                    
+        file.close()
+            
+        return all_measurements
+
+
+    """
+        retrieve_specific_meas is retrieving the exact measurement for specifin number_of_VMs and incoming_load
+    """
+    def retrieve_specific_meas(self, incoming_load, number_of_VMs):
+        
+        specific_meas = {}
+        
+        for meas in self.full_measurements:            
+            if meas[NUMBER_OF_VMS] == number_of_VMs and meas[INCOMING_LOAD] == incoming_load:
+                specific_meas = meas
+                print("\n\nSpecific measurements are found:")
+                pprint(specific_meas)
+        
+        for s_meas in specific_meas:            
+            if isinstance(specific_meas[s_meas], tuple):
+                specific_meas[s_meas] = random.gauss(specific_meas[s_meas][0], specific_meas[s_meas][1])
+        
+        print("\nThe measurements we are gonna consider for this iteration are:")
+        pprint(specific_meas)
+        print("\n\n")
+        
+        return specific_meas
+
+
+    """
+        process properties file
+    """
+    def read_properties(self, conf_dir):
+        
+        ## Reads the configuration properties
+#        property_file = conf_dir + "/virtualTiramola.properties"
+        property_file = os.path.join(conf_dir, "virtualTiramola.properties")
+        cfg = ConfigParser()
+        cfg.read(property_file)
+        self.install_dir            = cfg.get("config", "install_dir")
+        self.cloud_api_type         = cfg.get("config", "cloud_api_type")
+        self.euca_rc_dir            = cfg.get("config", "euca_rc_dir")
+        self.rc_file                = cfg.get("config", "rc_file")              # gioargyr-property
+        self.rc_pwd                 = cfg.get("config", "rc_pwd")              # gioargyr-property
+        self.db_file                = cfg.get("config", "db_file")
+        self.cluster_name           = cfg.get("config", "cluster_name")
+        self.cluster_type           = cfg.get("config", "cluster_type")
+        self.instance_type          = cfg.get("config", "instance_type")
+        self.hostname_template      = cfg.get("config", "hostname_template")
+        self.ycsb_hostname_template = cfg.get("config", "ycsb_hostname_template")
+        self.min_server_nodes       = cfg.get("config", "min_server_nodes")
+        self.max_server_nodes       = cfg.get("config", "max_server_nodes")
+        self.initial_cluster_size   = cfg.get("config", "initial_cluster_size")
+        self.key_file               = cfg.get("config", "key_file")
+        self.keypair_name           = cfg.get("config", "keypair_name")
+        self.possible_flavors       = cfg.get("config", "possible_flavors")
+        self.username               = cfg.get("config", "username")
+        self.bucket_name            = cfg.get("config", "bucket_name")
+        self.reconfigure            = cfg.get("config", "reconfigure")
+        # PROPERTIES FOR: DecisionMaking setup
+        self.decision_making_file   = cfg.get("config", "decision_making_file")
+        self.training_file          = cfg.get("config", "training_file")
+        self.udate_algorithm        = cfg.get("config", "update_algorithm")     # gioargyr-property
+        self.ualgorithm_error       = cfg.get("config", "ualgorithm_error")     # gioargyr-property
+        self.max_steps              = cfg.get("config", "max_steps")            # gioargyr-property
+        self.split_crit             = cfg.get("config", "split_crit")           # gioargyr-property
+        self.cons_trans             = cfg.get("config", "cons_trans")           # gioargyr-property
+        self.stat_test              = cfg.get("config", "stat_test")            # gioargyr-property
+        # PROPERTIES FOR: run_warm_up()
+        self.warm_up_tests  = cfg.get("config", "warm_up_tests")    # gioargyr-property
+        self.warm_up_target = cfg.get("config", "warm_up_target")   # gioargyr-property
+        # PROPERTIES FOR: run_benchmark()
+        self.bench          = cfg.get("config", "bench")            # gioargyr-property
+        # PROPERTIES FOR: e_greedy
+        self.epsilon        = cfg.get("config", "epsilon")          # gioargyr-property
+        # PROPERTIES FOR: YCSB
+        ## ycsb type of load
+        self.load_type      = cfg.get("config", "load_type")        # gioargyr-property
+        self.ycsb_max_time  = cfg.get("config", "ycsb_max_time")
+        self.total_run_time = cfg.get("config", "total_run_time")   # gioargyr-property
+        self.offset         = cfg.get("config", "offset")           # gioargyr-property
+        self.amplitude      = cfg.get("config", "amplitude")        # gioargyr-property
+        self.num_periods    = cfg.get("config", "num_periods")      # gioargyr-property
+        self.training_perc  = cfg.get("config", "training_perc")    # gioargyr-property
+        self.read           = cfg.get("config", "read")             # gioargyr-property
+        ## ycsb records-to-load
+        self.records        = cfg.get("config", "records")          # gioargyr-property
+        ## ycsb configuration/nstallation files
+        self.ycsb_binary    = cfg.get("config", "ycsb_binary")
+        self.workload_file  = cfg.get("config", "workload_file")
+        self.ycsb_output    = cfg.get("config", "ycsb_output")
+        self.ycsb_clients   = cfg.get("config", "ycsb_clients")
+        ## virtulator files
+        self.metrics_file   = cfg.get("config", "metrics_file")
+
+#        self.num_actions    = cfg.get("config", "num_actions")      # old virtulator
+#        self.vmeas_start    = cfg.get("config", "vmeas_start")      # old virtulator
+#        self.vmeas_file     = cfg.get("config", "vmeas_file")       # old virtulator
+
+
+    """
+        Selects the Update-Algorithm as defined in .properties file and
+        sets it to the already created Decision-Maker(only for MDP methods)
+    """
+    def select_Ualgorithm(self, error = 0.1, max_steps = 200):
+        
+        if self.udate_algorithm == DecisionMaking.SINGLE_UPDATE:
+            self.decision_maker.set_single_update()
+        elif self.udate_algorithm == DecisionMaking.VALUE_ITERATION:
+            self.decision_maker.set_value_iteration(error)
+        elif self.udate_algorithm == DecisionMaking.PRIORITIZED_SWEEPING:
+            self.decision_maker.set_prioritized_sweeping()
+        else:
+            self.decision_maker.set_no_update()
+
+
+    def setting_up_dec_maker(self):
+                   
+        if self.decision_maker.model_type == MDP_DT:
+            ## Splitting Method
+            self.decision_maker.set_splitting(self.split_crit, self.cons_trans)
+            ## Statistical Test
+            self.decision_maker.set_stat_test(self.stat_test)
+        else:
+            print("MDP-DT is NOT selected. split_crit, cons_trans and stat_test are ignored!")
+        ## Update Algorithm
+        if self.decision_maker.model_type == MDP or self.decision_maker.model_type == MDP_DT:
+            self.select_Ualgorithm(float(self.ualgorithm_error), int(self.max_steps))
+        else:
+            print("Neither MDP, nor MDP-DT is selected. udate_algorithm, ualgorithm_error and max_steps are ignored!")
+            print("Default Update Algorithm(s) will be applied according to the selected model.")
 
 
     """
@@ -383,348 +839,6 @@ class Virtulator:
             pure_meas[PC_CACHED_RAM] = pure_meas[PC_CACHED_RAM] * random.uniform(0.989358, 1.012161) 
 #            """           
             return pure_meas
-        
-        
-
-
-    def dummy_exec_action(self, action, aa, mode_of_action):
-            
-        min_VMs     = int(self.min_server_nodes)
-        max_VMs     = int(self.max_server_nodes)
-        action_num  = aa
-        updated_act = ('no_op', 0)
-        changed     = False
-            
-#        print("Dummy Executing action: " + str(action))
-        print("\n\n***************************************************************")
-        print("EXECUTING ACTION:" + str(action_num) + " [" + str(mode_of_action) + "]" " -> " + str(action))
-        action_type, action_value = action
-            
-        print("num_of_VMs before =\t" + str(self.num_of_VMs))            
-        if self.num_of_VMs == max_VMs and action_type == ADD_VMS:
-            print("Cannot execute ADD action!!! No-op is selected")
-            changed = True
-            
-        elif self.num_of_VMs == min_VMs and action_type == REMOVE_VMS:
-            print("Cannot execute ADD action!!! No-op is selected")
-            changed = True
-                
-        else:
-            if action_type == DecisionMaking.ADD_VMS:
-                self.num_of_VMs += action_value
-            elif action_type == DecisionMaking.REMOVE_VMS:
-                self.num_of_VMs -= action_value
-           
-        print("num_of_VMs after =\t" + str(self.num_of_VMs) + "\n")
-        if changed:
-            return updated_act
-        else:
-            return action
-
-
-    def calc_exp_attributes(self):
-        
-        bench_time = int(self.ycsb_max_time) * 2
-        total_time = int(self.num_actions) * (bench_time + 60)
-        print("The experiment will run for " + self.num_actions + " Decisions-Actions.")
-        print("It will take about " + str(total_time / 60) + " mins to be completed.")
-
-
-    def e_greedy(self, num_actions, epsilon = 0):
-
-        for i in range(num_actions):
-            print("ITERATION: " + str(i + 1))
-#            self.time += 1
-#            target = self.get_load()
-            
-            if random.uniform(0, 1) <= epsilon:
-                action = random.choice(self.decision_maker.get_legal_actions())
-#                self.my_logger.debug("Time = %d, selected random action: %s" % (self.time, str(action)))
-            else:
-                action = self.decision_maker.suggest_action()
-#                self.my_logger.debug("Time = %d, suggested action: %s" % (self.time, str(action)))
-                print("Taking Action: " + str(action) + "\n")
-                print("\nWe consider that the action has been made and the YCSB is run and the measures are read and we go to the next step\n")
-#            self.execute_action(action)
-            
-#            self.run_test(target, self.reads, update_load = False)
-#            self.my_logger.debug("Trying again in 1 minute")
-#            self.sleep(60)
-#            meas = self.run_test(target, self.reads)
-            vmeas_current_file = self.conf_dir + self.vmeas_file + str(i) + ".txt"
-            measurements = self.meas_to_dict(vmeas_current_file)
-            pprint(measurements)
-            self.decision_maker.update(action, measurements)
-       
-       
-    def install_logger(self):
-
-        LOG_FILENAME = self.utils.install_dir+'/logs/Coordinator.log'
-        self.my_logger = logging.getLogger('Coordinator')
-        self.my_logger.setLevel(logging.DEBUG)
-            
-        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=2*1024*1024*1024, backupCount=5)
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-        handler.setFormatter(formatter)
-        self.my_logger.addHandler(handler)
-            
-        ## Log the environment with which the daemon is run
-        self.my_logger.debug(os.environ)
-        self.my_logger.debug(self.utils.bucket_name)
-    
-
-    """
-        meas_to_dict1 is a method for the first version of Virtulator.
-        It is almos deprecated
-    """
-    def meas_to_dict1(self, filePath):
-
-        print("Going to take measurements from file: " + filePath)
-        measurements = {}
-        with open(filePath, 'r') as file:
-            lines = file.readlines()
-            for line in lines:
-                k, v = line.strip().split(':')
-                measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
-        return measurements
-
-
-    """
-        meas_to_dict2 is the current method for the second version of Virtulator.
-    """
-    def meas_to_dict2(self, filePath, num_of_VMs, prev_target, cur_target):
-
-        measurements = {}            
-#        print("Going to take measurements from file: " + filePath)
-#        print("Retrieving measurements for: " + str(num_of_VMs) + " " + str(prev_target) + " " + str(cur_target))
-        with open(filePath, "r") as file:
-            lines = file.readlines()
-            i = 0
-            m = 0
-            n = 0
-            
-            for line in lines:
-                pureline = line.strip()
-                i += 1
-                
-                if pureline.startswith("num_nodes"):
-                    parts = pureline.strip().split(",")
-                    criterion1  = parts[0].strip().split("=")
-                    criterion2  = parts[1].strip().split("=")
-                    criterion3  = parts[2].strip().split("=")
-                    purecrit1   = criterion1[1].strip()
-                    purecrit2   = criterion2[1].strip()
-                    purecrit3   = criterion3[1].strip()
-                    num_VMs     = str(num_of_VMs)
-                    last_target = str(prev_target)
-                    target      = str(cur_target)
-                    
-                    if purecrit1 == num_VMs and purecrit2 == last_target and purecrit3 == target:
-                        print("Found the measurements! target = " + str(cur_target) + "\n")
-                        m = i + 1
-                        n = i + 45
-                if m == i:
-                    k, v = pureline.strip().split(":")
-                    measurements[k.strip()[2:-1]] = float(v.strip()[:-1])
-                elif m < i < n:
-                    k, v = pureline.strip().split(":")
-                    measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
-        file.close()
-#        pprint(measurements)
-            
-        return measurements
-    
-    
-    """
-        retrieve_measurements is the final (hoping) method for parsing pre-taken-cluster-metrics.
-        Metrics should include network_usage and the crucial values should have (mean, std, coefficient_of_deviation)
-    """
-    def retrieve_measurements(self, filePath):
-
-        all_measurements    = []
-        measurements        = {}      
-#        print("Going to take all measurements from file: " + filePath)
-        with open(filePath, "r") as file:
-            lines = file.readlines()
-            i = 0
-            m = 0
-            n = 0
-            for line in lines:
-                pureline = line.strip()
-                i += 1
-                
-                if pureline.startswith("num_nodes"):
-                    m = i + 1
-                    n = i + 44
-                    
-                elif i == m:
-                    k, v    = pureline.strip().split(":")
-                    values  = v.strip().split(",")
-                    
-                    if len(values) == 4:
-                        mean_v  = float(values[0].strip()[2:-1])
-                        std_v   = float(values[1].strip()[1:-1])
-                        coef_v  = float(values[2].strip()[1:-2])
-                        measurements[k.strip()[2:-1]] = (mean_v, std_v, coef_v)
-                        
-                    elif len(values) == 2:
-                        measurements[k.strip()[2:-1]] = float(v.strip()[:-1])
-                        
-                    else:
-                        print("The value in this metric-parameter is in unknown format!")
-                    
-                elif m < i < n:
-                    k, v    = pureline.strip().split(":")
-                    values  = v.strip().split(",")
-                    
-                    if len(values) == 4:
-                        mean_v  = float(values[0].strip()[2:-1])
-                        std_v   = float(values[1].strip()[1:-1])
-                        coef_v  = float(values[2].strip()[1:-2])
-                        measurements[k.strip()[1:-1]] = (mean_v, std_v, coef_v)
-                        
-                    elif len(values) == 2:
-                        measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
-                        
-                    else:
-                        print("The value in this metric-parameter is in unknown format!")
-                
-                elif i == n:
-                    k, v = pureline.strip().split(":")
-                    measurements[k.strip()[1:-1]] = float(v.strip()[:-1])
-                    all_measurements.append(measurements.copy())
-            
-            print("File with " + str(i) + " lines is parsed.")
-            print(str(len(all_measurements)) + " measurements are found and stored in all_measurements list.")                    
-        file.close()
-            
-        return all_measurements
-
-
-    """
-        retrieve_specific_meas is retrieving the exact measurement for specifin number_of_VMs and incoming_load
-    """
-    def retrieve_specific_meas(self, number_of_VMs, incoming_load):
-        
-        specific_meas = {}
-        
-        for meas in self.full_measurements:            
-            if meas[NUMBER_OF_VMS] == number_of_VMs and meas[INCOMING_LOAD] == incoming_load:
-                specific_meas = meas
-                print("\n\nSpecific measurements are found:")
-                pprint(specific_meas)
-        
-        for s_meas in specific_meas:            
-            if isinstance(specific_meas[s_meas], tuple):
-                specific_meas[s_meas] = random.gauss(specific_meas[s_meas][0], specific_meas[s_meas][1])
-        
-        print("\nThe measurements we are gonna consider for this iteration are:")
-        pprint(specific_meas)
-        print("\n\n")
-
-
-    """
-        process properties file
-    """
-    def read_properties(self, conf_dir):
-        
-        ## Reads the configuration properties
-#        property_file = conf_dir + "/virtualTiramola.properties"
-        property_file = os.path.join(conf_dir, "virtualTiramola.properties")
-        cfg = ConfigParser()
-        cfg.read(property_file)
-        self.install_dir            = cfg.get("config", "install_dir")
-        self.cloud_api_type         = cfg.get("config", "cloud_api_type")
-        self.euca_rc_dir            = cfg.get("config", "euca_rc_dir")
-        self.rc_file                = cfg.get("config", "rc_file")              # gioargyr-property
-        self.rc_pwd                 = cfg.get("config", "rc_pwd")              # gioargyr-property
-        self.db_file                = cfg.get("config", "db_file")
-        self.cluster_name           = cfg.get("config", "cluster_name")
-        self.cluster_type           = cfg.get("config", "cluster_type")
-        self.instance_type          = cfg.get("config", "instance_type")
-        self.hostname_template      = cfg.get("config", "hostname_template")
-        self.ycsb_hostname_template = cfg.get("config", "ycsb_hostname_template")
-        self.min_server_nodes       = cfg.get("config", "min_server_nodes")
-        self.max_server_nodes       = cfg.get("config", "max_server_nodes")
-        self.initial_cluster_size   = cfg.get("config", "initial_cluster_size")
-        self.key_file               = cfg.get("config", "key_file")
-        self.keypair_name           = cfg.get("config", "keypair_name")
-        self.possible_flavors       = cfg.get("config", "possible_flavors")
-        self.username               = cfg.get("config", "username")
-        self.bucket_name            = cfg.get("config", "bucket_name")
-        self.reconfigure            = cfg.get("config", "reconfigure")
-        # PROPERTIES FOR: DecisionMaking setup
-        self.decision_making_file   = cfg.get("config", "decision_making_file")
-        self.training_file          = cfg.get("config", "training_file")
-        self.udate_algorithm        = cfg.get("config", "update_algorithm")     # gioargyr-property
-        self.ualgorithm_error       = cfg.get("config", "ualgorithm_error")     # gioargyr-property
-        self.max_steps              = cfg.get("config", "max_steps")            # gioargyr-property
-        self.split_crit             = cfg.get("config", "split_crit")           # gioargyr-property
-        self.cons_trans             = cfg.get("config", "cons_trans")           # gioargyr-property
-        self.stat_test              = cfg.get("config", "stat_test")            # gioargyr-property
-        # PROPERTIES FOR: run_warm_up()
-        self.warm_up_tests  = cfg.get("config", "warm_up_tests")    # gioargyr-property
-        self.warm_up_target = cfg.get("config", "warm_up_target")   # gioargyr-property
-        # PROPERTIES FOR: run_benchmark()
-        self.bench          = cfg.get("config", "bench")            # gioargyr-property
-        # PROPERTIES FOR: e_greedy
-        self.epsilon        = cfg.get("config", "epsilon")          # gioargyr-property
-        # PROPERTIES FOR: YCSB
-        ## ycsb type of load
-        self.load_type      = cfg.get("config", "load_type")        # gioargyr-property
-        self.ycsb_max_time  = cfg.get("config", "ycsb_max_time")
-        self.total_run_time = cfg.get("config", "total_run_time")   # gioargyr-property
-        self.offset         = cfg.get("config", "offset")           # gioargyr-property
-        self.amplitude      = cfg.get("config", "amplitude")        # gioargyr-property
-        self.num_periods    = cfg.get("config", "num_periods")      # gioargyr-property
-        self.training_perc  = cfg.get("config", "training_perc")    # gioargyr-property
-        self.read           = cfg.get("config", "read")             # gioargyr-property
-        ## ycsb records-to-load
-        self.records        = cfg.get("config", "records")          # gioargyr-property
-        ## ycsb configuration/nstallation files
-        self.ycsb_binary    = cfg.get("config", "ycsb_binary")
-        self.workload_file  = cfg.get("config", "workload_file")
-        self.ycsb_output    = cfg.get("config", "ycsb_output")
-        self.ycsb_clients   = cfg.get("config", "ycsb_clients")
-        ## virtulator files
-        self.metrics_file   = cfg.get("config", "metrics_file")
-
-#        self.num_actions    = cfg.get("config", "num_actions")      # old virtulator
-#        self.vmeas_start    = cfg.get("config", "vmeas_start")      # old virtulator
-#        self.vmeas_file     = cfg.get("config", "vmeas_file")       # old virtulator
-
-
-    """
-        Selects the Update-Algorithm as defined in .properties file and
-        sets it to the already created Decision-Maker(only for MDP methods)
-    """
-    def select_Ualgorithm(self, error = 0.1, max_steps = 200):
-        
-        if self.udate_algorithm == DecisionMaking.SINGLE_UPDATE:
-            self.decision_maker.set_single_update()
-        elif self.udate_algorithm == DecisionMaking.VALUE_ITERATION:
-            self.decision_maker.set_value_iteration(error)
-        elif self.udate_algorithm == DecisionMaking.PRIORITIZED_SWEEPING:
-            self.decision_maker.set_prioritized_sweeping()
-        else:
-            self.decision_maker.set_no_update()
-
-
-    def setting_up_dec_maker(self):
-                   
-        if self.decision_maker.model_type == MDP_DT:
-            ## Splitting Method
-            self.decision_maker.set_splitting(self.split_crit, self.cons_trans)
-            ## Statistical Test
-            self.decision_maker.set_stat_test(self.stat_test)
-        else:
-            print("MDP-DT is NOT selected. split_crit, cons_trans and stat_test are ignored!")
-        ## Update Algorithm
-        if self.decision_maker.model_type == MDP or self.decision_maker.model_type == MDP_DT:
-            self.select_Ualgorithm(float(self.ualgorithm_error), int(self.max_steps))
-        else:
-            print("Neither MDP, nor MDP-DT is selected. udate_algorithm, ualgorithm_error and max_steps are ignored!")
-            print("Default Update Algorithm(s) will be applied according to the selected model.")
             
         
 

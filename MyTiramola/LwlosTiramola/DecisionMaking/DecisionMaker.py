@@ -128,6 +128,7 @@ class DecisionMaker(object):
     def set_state(self, measurements):
 
 #        self.add_network_usage(measurements)
+#        pprint(measurements)
         self.last_meas = measurements
         print("\nSetting State with final_metrics (self.last_meas after adding network usage):")
         pprint(self.last_meas)
@@ -179,7 +180,8 @@ class DecisionMaker(object):
                 f.flush()
                 self.my_logger.debug("Recorded experience")
 
-#        self.add_network_usage(meas)        
+#        self.add_network_usage(meas)
+        self.update_next_load(meas)        
         if reward is None:
             reward = self.get_reward(meas, action)
 
@@ -194,4 +196,12 @@ class DecisionMaker(object):
 #        pprint(self.last_meas)        
         self.model.update(action, meas, reward)
         print("\n\t\tState is updated! Real action: " + str(action))
-#        print("***************************************************************\n\n")
+
+
+    """
+        This function updates the naive prognosis about the next incoming load.
+    """
+    def update_next_load(self, current_measurements):
+        
+        current_measurements[NEXT_LOAD] = 2 * current_measurements[INCOMING_LOAD] - self.last_meas[INCOMING_LOAD]
+        
