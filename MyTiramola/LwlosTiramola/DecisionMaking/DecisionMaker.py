@@ -62,7 +62,7 @@ class DecisionMaker(object):
         throughput = measurements[TOTAL_THROUGHPUT]
         nosql_vms = vms - 1                     # gioargyr
 #        reward = throughput - 800 * vms         # Lwlos
-        reward = throughput - 1200 * nosql_vms  # gioargyr
+        reward = throughput - 1000 * nosql_vms  # gioargyr
 #        reward = throughput / nosql_vms        # gioargyr2
 
         return reward
@@ -77,7 +77,7 @@ class DecisionMaker(object):
         
 #        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
 #        LOG_FILENAME = "/media/indiana/data/BDE-xartoura/logs/Coordinator.log"
-        LOG_FILENAME = r"C:\Users\Giorgos\Desktop\virtual_tiramola\logs\Coordinator.log"
+        LOG_FILENAME = r"C:\Users\indiana_john\Downloads\Thesis\VirtualTiramola\tiramola-logs\Coordinator.log"
         self.my_logger = logging.getLogger('DecisionMaker')
         self.my_logger.setLevel(logging.DEBUG)
         handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024, backupCount = 5)
@@ -186,13 +186,18 @@ class DecisionMaker(object):
             reward = self.get_reward(meas, action)
 
         self.last_meas = meas
-        print("Updating State with final_metrics (self.last_meas with network usage added):")
-        print("NEXT_LOAD = " + str(self.last_meas[NEXT_LOAD]))
-        print("IO_REQS = " + str(self.last_meas[IO_REQS]))
-        print("CPU_WIO = " + str(self.last_meas[CPU_WIO]))
-        print("PC_FREE_RAM = " + str(self.last_meas[PC_FREE_RAM]))
-        print("PC_CACHED_RAM = " + str(self.last_meas[PC_CACHED_RAM]))
-        print("DISK_FREE = " + str(self.last_meas[DISK_FREE]))
+        print("\nUpdating State with final_metrics (self.last_meas with network usage added):")
+        print("NEXT_LOAD\t= " + str(self.last_meas[NEXT_LOAD]))
+        print("NETWORK_USAGE\t= " + str(self.last_meas[NETWORK_USAGE]))
+        print("TOTAL_THROUGHPUT= " + str(self.last_meas[TOTAL_THROUGHPUT]))
+        print("TOTAL_LATENCY\t= " + str(self.last_meas[TOTAL_LATENCY]))
+        print("LOAD_ONE\t= " + str(self.last_meas[LOAD_ONE]))        
+        print("PC_CPU_USAGE\t= " + str(self.last_meas[PC_CPU_USAGE]))
+#        print("IO_REQS = " + str(self.last_meas[IO_REQS]))
+ #       print("CPU_WIO = " + str(self.last_meas[CPU_WIO]))
+  #      print("PC_FREE_RAM = " + str(self.last_meas[PC_FREE_RAM]))
+   #     print("PC_CACHED_RAM = " + str(self.last_meas[PC_CACHED_RAM]))
+    #    print("DISK_FREE = " + str(self.last_meas[DISK_FREE]))
 #        pprint(self.last_meas)        
         self.model.update(action, meas, reward)
         print("\n\t\tState is updated! Real action: " + str(action))

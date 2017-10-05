@@ -367,8 +367,6 @@ class MDPModel:
         self._set_maxima_minima(parameters, conf[ACTIONS])
         self._add_qstates(conf[ACTIONS], conf[INITIAL_QVALUES])
         
-        print("HERE WE SHOULD print EVERYTHING FROM ALL STATES!!!")
-
         # set the default update algorithm
         self.update_algorithm  = SINGLE_UPDATE
 

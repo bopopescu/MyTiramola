@@ -425,7 +425,7 @@ class MDPDTModel:
 
 #        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
 #        LOG_FILENAME = "/media/indiana/data/BDE-xartoura/logs/Coordinator.log"
-        LOG_FILENAME = r"C:\Users\Giorgos\Desktop\virtual_tiramola\logs\Coordinator.log"
+        LOG_FILENAME = r"C:\Users\indiana_john\Downloads\Thesis\VirtualTiramola\tiramola-logs\Coordinator.log"
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(get_logging_handler(LOG_FILENAME))
@@ -507,7 +507,7 @@ class MDPDTModel:
     """
     def update(self, action, measurements, reward, debug = True):
         
-        print("Reward =\t" + str(reward))
+        print("Reward = " + str(reward))
 
         if self.current_meas is None:
             raise StateNotSetError(self.logger)
@@ -529,8 +529,8 @@ class MDPDTModel:
         
         # Printing report regarding the transition. Full update follows!
         print("\n\nSTATE-SPACE HAS\t\t" + str(self.root.num_states) + "\t\tSTATES:\n")
-        if isinstance(self.root, DecisionNode):
-            self.state_space_printer(self.root)
+#        if isinstance(self.root, DecisionNode):
+#            self.state_space_printer(self.root)
         print("\ncurrent_state:\t" + str(self.current_state))
         print("new_state:\t\t" + str(new_state))
 

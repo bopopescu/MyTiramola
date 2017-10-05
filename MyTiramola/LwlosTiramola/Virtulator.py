@@ -17,16 +17,17 @@ class Virtulator:
         
         self.conf_dir = conf_dir
         self.read_properties(conf_dir)
-        dm_json = os.path.join(conf_dir, self.decision_making_file)
+        dm_json = os.path.join(self.conf_dir, self.decision_making_file)
         print("The .json file that defines the DM Module is: " + dm_json)
         ## Setting DecisionMaker according to virtual properties
         self.decision_maker = DecisionMaking.DecisionMaker(dm_json)
+        print("going to setup DM")
         self.setting_up_dec_maker()        
         metrics_file = os.path.join(self.conf_dir, self.metrics_file)
         self.full_measurements = self.retrieve_measurements(metrics_file)
-        initial_meas = self.retrieve_specific_meas(4, 6000)
+        initial_meas = self.retrieve_specific_meas(10000, 5)
         self.decision_maker.set_state(initial_meas)
-        self.v_e_greedy(8500)
+        self.v_e_greedy(4101)
 
         
 #############################  END OF __init__  #################################
@@ -36,18 +37,37 @@ class Virtulator:
     def v_e_greedy(self, num_of_actions):
         
         # method variables
-        train_actions   = 8000
+        train_actions   = 4000
         epsilon         = float(self.epsilon)
            
-        self.num_of_VMs = 6
+        self.num_of_VMs = 5
         self.index      = 0
         self.ascending  = None
         randoms         = 0
         suggesteds      = 0
+        cload           = 0
         
         for i in range(num_of_actions):
             j       = i + 1
-            load    = self.get_load("cosinus", i)
+#            if j < 1001:
+#                load    = self.get_load("cosinus", i)
+#            else:
+#                if j % 5 == 1:
+#                    load    = self.get_load("unpred", i)
+#                    print("load = " + str(load))
+#                    cload   = load
+#                    print("cload = " + str(cload))
+#                else:
+#                    load    = cload
+#                    print("ELSEcload = " + str(cload))
+            if j % 5 == 1:
+                load    = self.get_load("unpred", i)
+                print("load = " + str(load))
+                cload   = load
+#                print("cload = " + str(cload))
+            else:
+                load    = cload
+                print("ELSEcload = " + str(cload))          
                 
             if i >= train_actions:     # Defining epsilon according to the selected training time from properties
                 epsilon = 0
@@ -67,12 +87,13 @@ class Virtulator:
             print("\n\n***************************************************************")
             print("EXECUTING ACTION:" + str(j) + " [" + str(mode_of_action) + "]" " -> " + str(action)) 
             updated_action = self.virtual_exec_action(action)
-            print("THE LOAD = " + str(load))
+            print("THE LOAD\t\t= " + str(load))
             measurements = self.retrieve_specific_meas(load, self.num_of_VMs)
             self.decision_maker.update(updated_action, measurements)
-            if j >= 8473:
+            if j == 4101:
 #                pprint(meas)
                 print("")
+#                self.decision_maker.model.state_space_printer(self.decision_maker.model.root)
                 for i in range(len(self.decision_maker.model.states)):
                     print(str(self.decision_maker.model.states[i]))
                     print(str(self.decision_maker.model.states[i].num_visited))
@@ -156,18 +177,19 @@ class Virtulator:
         
         elif self.num_of_VMs == max_VMs - 1 and action_type == ADD_VMS and action_value == 2:
             print("Cannot execute add_2vm action!!! add_1vm is selected")
-            self.num_of_VMs += 1
             updated_act = ("add_VMs", 1)
+            self.num_of_VMs += 1
             changed     = True
             
         elif self.num_of_VMs == min_VMs and action_type == REMOVE_VMS:
-            print("Cannot execute ADD action!!! No-op is selected")
+            print("Cannot execute RMV action!!! No-op is selected")
             updated_act = ("no_op", 0)
             changed     = True
             
         elif self.num_of_VMs == min_VMs + 1 and action_type == REMOVE_VMS and action_value == 2:
             print("Cannot execute rmv_2vm action!!! rmv_1vm is selected")
             updated_act = ("remove_VMs", 1)
+            self.num_of_VMs -= 1
             changed     = True
                 
         else:
@@ -176,7 +198,7 @@ class Virtulator:
             elif action_type == DecisionMaking.REMOVE_VMS:
                 self.num_of_VMs -= action_value
            
-        print("num_of_VMs after =\t" + str(self.num_of_VMs) + "\n")
+        print("num_of_VMs after =\t" + str(self.num_of_VMs))
         
         if changed:
             return updated_act
@@ -227,7 +249,9 @@ class Virtulator:
     """
     def get_load(self, load_type, iteration):
         
-        possible_load = [1000, 1200, 1400, 2000, 2800, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 17200, 18000, 18600, 18800, 19000]
+#        possible_load = [1000, 1200, 1400, 2000, 2800, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 17200, 18000, 18600, 18800, 19000]
+#        possible_load = [2000, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 18000, 19000]
+        possible_load = [2000, 4800, 7200, 10000, 12800, 15200, 18000]
         
         if load_type == "sinus":
             if iteration == 0:
@@ -432,16 +456,16 @@ class Virtulator:
         for meas in self.full_measurements:            
             if meas[NUMBER_OF_VMS] == number_of_VMs and meas[INCOMING_LOAD] == incoming_load:
                 specific_meas = meas
-                print("\n\nSpecific measurements are found:")
-                pprint(specific_meas)
+#                print("\n\nSpecific measurements are found:")
+#                pprint(specific_meas)
         
         for s_meas in specific_meas:            
             if isinstance(specific_meas[s_meas], tuple):
                 specific_meas[s_meas] = random.gauss(specific_meas[s_meas][0], specific_meas[s_meas][1])
         
-        print("\nThe measurements we are gonna consider for this iteration are:")
-        pprint(specific_meas)
-        print("\n\n")
+#        print("\nThe measurements we are gonna consider for this iteration are:")
+#        pprint(specific_meas)
+#        print("\n\n")
         
         return specific_meas
 
