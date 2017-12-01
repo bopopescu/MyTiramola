@@ -77,7 +77,8 @@ class DecisionMaker(object):
         
 #        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
 #        LOG_FILENAME = "/media/indiana/data/BDE-xartoura/logs/Coordinator.log"
-        LOG_FILENAME = r"C:\Users\indiana_john\Downloads\Thesis\VirtualTiramola\tiramola-logs\Coordinator.log"
+#        LOG_FILENAME = r"C:\Users\indiana_john\Downloads\Thesis\VirtualTiramola\tiramola-logs\Coordinator.log"
+        LOG_FILENAME = r"C:\Users\Giorgos\Desktop\virtual_tiramola\logs\Coordinator.log"
         self.my_logger = logging.getLogger('DecisionMaker')
         self.my_logger.setLevel(logging.DEBUG)
         handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = 2 * 1024 * 1024, backupCount = 5)

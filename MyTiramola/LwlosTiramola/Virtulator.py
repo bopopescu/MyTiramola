@@ -27,7 +27,7 @@ class Virtulator:
         self.full_measurements = self.retrieve_measurements(metrics_file)
         initial_meas = self.retrieve_specific_meas(10000, 5)
         self.decision_maker.set_state(initial_meas)
-        self.v_e_greedy(4101)
+        self.v_e_greedy(1100)
 
         
 #############################  END OF __init__  #################################
@@ -37,7 +37,7 @@ class Virtulator:
     def v_e_greedy(self, num_of_actions):
         
         # method variables
-        train_actions   = 4000
+        train_actions   = 1000
         epsilon         = float(self.epsilon)
            
         self.num_of_VMs = 5
@@ -46,9 +46,12 @@ class Virtulator:
         randoms         = 0
         suggesteds      = 0
         cload           = 0
+        eval_loads      = [11400, 11400, 11400, 11400, 11400, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 15200, 15200, 15200, 15200, 15200, 11400, 11400, 11400, 11400, 11400, 10000, 10000, 10000, 10000, 10000, 6000, 6000, 6000, 6000, 6000, 8600, 8600, 8600, 8600, 8600, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 10000, 10000, 10000, 10000, 10000, 14000, 14000, 14000, 14000, 14000, 10000, 10000, 10000, 10000, 10000, 17200, 17200, 17200, 17200, 17200, 15200, 15200, 15200, 15200, 15200, 11400, 11400, 11400, 11400, 11400, 8600, 8600, 8600, 8600, 8600, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 17200, 8600, 8600, 8600, 8600, 8600]
+        eval_act        = 0
         
         for i in range(num_of_actions):
             j       = i + 1
+#            load    = self.get_load("unpred", i)
 #            if j < 1001:
 #                load    = self.get_load("cosinus", i)
 #            else:
@@ -60,17 +63,19 @@ class Virtulator:
 #                else:
 #                    load    = cload
 #                    print("ELSEcload = " + str(cload))
-            if j % 5 == 1:
+            if j % 3 == 1:
                 load    = self.get_load("unpred", i)
                 print("load = " + str(load))
                 cload   = load
-#                print("cload = " + str(cload))
+                print("cload = " + str(cload))
             else:
                 load    = cload
                 print("ELSEcload = " + str(cload))          
                 
             if i >= train_actions:     # Defining epsilon according to the selected training time from properties
                 epsilon = 0
+#                load = eval_loads[eval_act]
+                eval_act += 1
 #                load = self.get_load("unpred", i)
                
             mode_of_action  = "Unknown"
@@ -90,10 +95,10 @@ class Virtulator:
             print("THE LOAD\t\t= " + str(load))
             measurements = self.retrieve_specific_meas(load, self.num_of_VMs)
             self.decision_maker.update(updated_action, measurements)
-            if j == 4101:
+            if j == 1100:
 #                pprint(meas)
                 print("")
-#                self.decision_maker.model.state_space_printer(self.decision_maker.model.root)
+                self.decision_maker.model.state_space_printer(self.decision_maker.model.root)
                 for i in range(len(self.decision_maker.model.states)):
                     print(str(self.decision_maker.model.states[i]))
                     print(str(self.decision_maker.model.states[i].num_visited))
@@ -155,47 +160,50 @@ class Virtulator:
 
 
     """
-        Executing add1, add2, rm1, rm2 and no-op actions
+        Executing ADD or RMV X VMs. Extra checking if the selected Action is allowed.
     """        
     def virtual_exec_action(self, action):
             
-        min_VMs     = int(self.min_server_nodes)
-        max_VMs     = int(self.max_server_nodes)
-        updated_act = ("no_op", 0)
-        changed     = False
-            
-#        print("Dummy Executing action: " + str(action))
-#        print("\n\n***************************************************************")
-#        print("EXECUTING ACTION:" + str(action_num) + " [" + str(mode_of_action) + "]" " -> " + str(action))
+        min_VMs         = int(self.min_server_nodes)
+        max_VMs         = int(self.max_server_nodes)
+        current_VMs     = self.num_of_VMs
+        max_expansion   = max_VMs - current_VMs
+        max_contraction = current_VMs - min_VMs
+        updated_act     = (NO_OP, 0)
+        changed         = False
+
         action_type, action_value = action
-            
-        print("num_of_VMs before =\t" + str(self.num_of_VMs))            
-        if self.num_of_VMs == max_VMs and action_type == ADD_VMS:
-            print("Cannot execute ADD action!!! No-op is selected")
-            updated_act = ("no_op", 0)
-            changed     = True
+        print("num_of_VMs before =\t" + str(self.num_of_VMs))
         
-        elif self.num_of_VMs == max_VMs - 1 and action_type == ADD_VMS and action_value == 2:
-            print("Cannot execute add_2vm action!!! add_1vm is selected")
-            updated_act = ("add_VMs", 1)
-            self.num_of_VMs += 1
-            changed     = True
-            
-        elif self.num_of_VMs == min_VMs and action_type == REMOVE_VMS:
-            print("Cannot execute RMV action!!! No-op is selected")
-            updated_act = ("no_op", 0)
-            changed     = True
-            
-        elif self.num_of_VMs == min_VMs + 1 and action_type == REMOVE_VMS and action_value == 2:
-            print("Cannot execute rmv_2vm action!!! rmv_1vm is selected")
-            updated_act = ("remove_VMs", 1)
-            self.num_of_VMs -= 1
-            changed     = True
-                
-        else:
-            if action_type == DecisionMaking.ADD_VMS:
+        
+        if action_type == ADD_VMS and action_value > max_expansion:
+            if max_expansion == 0:
+                print("Cannot execute ADD action!!! No-op is selected.")
+                updated_act = (NO_OP, 0)
+                changed     = True
+            else:
+                print("Cannot execute add_" + str(action_value) + "vm action!!! add_" + str(max_expansion) + "vm is selected.")
+                action_value    = max_expansion
+                updated_act     = (ADD_VMS, action_value)
                 self.num_of_VMs += action_value
-            elif action_type == DecisionMaking.REMOVE_VMS:
+                changed         = True
+        
+        elif action_type == REMOVE_VMS and action_value > max_contraction:
+            if max_contraction == 0:
+                print("Cannot execute RMV action!!! No-op is selected.")
+                updated_act = (NO_OP, 0)
+                changed     = True
+            else:
+                print("Cannot execute rmv_" + str(action_value) + "vm action!!! rmv_" + str(max_contraction) + "vm is selected.")
+                action_value    = max_contraction
+                updated_act     = (REMOVE_VMS, action_value)
+                self.num_of_VMs -= action_value
+                changed         = True
+        
+        else:
+            if action_type == ADD_VMS:
+                self.num_of_VMs += action_value
+            elif action_type == REMOVE_VMS:
                 self.num_of_VMs -= action_value
            
         print("num_of_VMs after =\t" + str(self.num_of_VMs))
@@ -249,9 +257,10 @@ class Virtulator:
     """
     def get_load(self, load_type, iteration):
         
-#        possible_load = [1000, 1200, 1400, 2000, 2800, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 17200, 18000, 18600, 18800, 19000]
-#        possible_load = [2000, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 18000, 19000]
-        possible_load = [2000, 4800, 7200, 10000, 12800, 15200, 18000]
+#        possible_load = [1000, 1200, 1400, 2000, 2800, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 17200, 18000, 18600, 18800, 19000]    # load1
+#        possible_load = [2000, 3600, 4800, 6000, 7200, 8600, 10000, 11400, 12800, 14000, 15200, 16400, 18000, 19000]    # load2
+#        possible_load = [2000, 4800, 7200, 10000, 12800, 15200, 18000]    # load3
+        possible_load = [6000, 8600, 10000, 11400, 14000, 15200, 17200]     # load4
         
         if load_type == "sinus":
             if iteration == 0:

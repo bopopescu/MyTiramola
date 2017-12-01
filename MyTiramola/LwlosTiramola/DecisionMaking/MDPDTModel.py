@@ -425,7 +425,8 @@ class MDPDTModel:
 
 #        LOG_FILENAME = "/home/ubuntu/MyTiramola/MyTiramola/LwlosTiramola/logs/Coordinator.log"
 #        LOG_FILENAME = "/media/indiana/data/BDE-xartoura/logs/Coordinator.log"
-        LOG_FILENAME = r"C:\Users\indiana_john\Downloads\Thesis\VirtualTiramola\tiramola-logs\Coordinator.log"
+#        LOG_FILENAME = r"C:\Users\indiana_john\Downloads\Thesis\VirtualTiramola\tiramola-logs\Coordinator.log"
+        LOG_FILENAME = r"C:\Users\Giorgos\Desktop\virtual_tiramola\logs\Coordinator.log"
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(get_logging_handler(LOG_FILENAME))
@@ -1063,6 +1064,7 @@ class MDPDTModel:
         end = timer()
         self.logger.debug("Split with %s at %s with prob %s after %s seconds" % \
                           (best_par, splitting_point, lowest_error, end - start))
+        print("SPLIT-DURATION FOR USING PAR(s): " + str(self.parameters) + "\nTIME = %s" %(end - start))
 
         return True
 
