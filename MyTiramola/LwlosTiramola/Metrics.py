@@ -22,8 +22,8 @@ class Metrics(object):
 
         self.utils      = Utils.Utils()
         self.username   = self.utils.username
-#        self.hbase_host = self.utils.hostname_template + "master"
-        self.hbase_host = "master"
+#        self.hbase_host = self.utils.hostname_template + "main"
+        self.hbase_host = "main"
         self.hbase_port = hbase_port
         self.iaas_host  = iaas_host
         self.iaas_port  = iaas_port
@@ -56,7 +56,7 @@ class Metrics(object):
         while True:
             now = timer()
             if now < end:
-                metrics = self.get_cluster_metrics(cluster)             # Get important and averaged-according-to-the-number-of-NoSQL-slave-nodes.
+                metrics = self.get_cluster_metrics(cluster)             # Get important and averaged-according-to-the-number-of-NoSQL-subordinate-nodes.
                 metrics.update(self.get_iaas_metrics(cluster))          # Concatenating them with the IAAS-metrics.
                 timeseries.append(metrics)
                 time.sleep(10)
@@ -74,13 +74,13 @@ class Metrics(object):
 
 
     """
-        Returns the metrics from the hbase-cluster for the given cluster only for NoSQL-slave-nodes.
-        From all the Ganglia-provided metrics, we keep only the important and average them according to the number of NoSQL-slave-nodes.
+        Returns the metrics from the hbase-cluster for the given cluster only for NoSQL-subordinate-nodes.
+        From all the Ganglia-provided metrics, we keep only the important and average them according to the number of NoSQL-subordinate-nodes.
         (also a helper for get_all_metrics)
     """
     def get_cluster_metrics(self, cluster):
 
-        hostnames = self._get_monitored_hosts(cluster)                  # list hostnames will be the names only for NoSQL-slaves.
+        hostnames = self._get_monitored_hosts(cluster)                  # list hostnames will be the names only for NoSQL-subordinates.
         print("\nI will sum and average the metrics only from: " + str(hostnames))
         while True:
             data = get_all_metrics((self.hbase_host, self.hbase_port))  # dict data has all the raw metrics for every monitored node.
@@ -96,7 +96,7 @@ class Metrics(object):
             self._restart_ganglia(cluster)
             time.sleep(30)
         
-        return metrics                                                  # dict metrics has the filtered and averaged-by-the-number-of-NoSQL-slave-nodes metrics (cluster-Ganglia)
+        return metrics                                                  # dict metrics has the filtered and averaged-by-the-number-of-NoSQL-subordinate-nodes metrics (cluster-Ganglia)
 
 
     """
@@ -135,12 +135,12 @@ class Metrics(object):
 
 
     """
-        Returns the hostnames of all the slaves of the NoSQL-cluster (everyone but the master!).
+        Returns the hostnames of all the subordinates of the NoSQL-cluster (everyone but the main!).
         (helper for get_cluster_metrics)
     """
     def _get_monitored_hosts(self, cluster):
 
-        return [n for n in cluster if 'master' not in n]
+        return [n for n in cluster if 'main' not in n]
 
 
     """
@@ -162,7 +162,7 @@ class Metrics(object):
                 self.my_logger.error("Failed to invoke shell!")
                 continue
 
-            if hostname.endswith("master"):
+            if hostname.endswith("main"):
                 ssh.exec_command("/etc/init.d/gmetad restart")
 
             ssh.exec_command("/etc/init.d/ganglia-monitor restart")
@@ -197,7 +197,7 @@ class Metrics(object):
     """
     def _get_monitored_ids(self, cluster):
 
-        return [s.id for n, s in cluster.items() if 'master' not in n]
+        return [s.id for n, s in cluster.items() if 'main' not in n]
 
 
     """

@@ -79,7 +79,7 @@ def get_summary(endpoint):
     net_out = 0
     iops_read = 0
     iops_write = 0
-    # pprint(allmetrics["master"].keys())
+    # pprint(allmetrics["main"].keys())
     for k, v in allmetrics.items():
         cpu += 100-float(v["cpu_idle"])
         total_mem = float(v["mem_free"]) + float(v["mem_buffers"]) +  float(v["mem_cached"])
@@ -198,7 +198,7 @@ def mycast(a):
             return a
 
 
-# print get_summary(("master", 8649))
+# print get_summary(("main", 8649))
 
 if __name__ == "__main__":
 
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Monitoring')
     parser.add_argument("-f", '--file', help="the output file to use")
     parser.add_argument("-c", '--console', help="output the metrics in console", dest='console', action='store_true')
-    parser.add_argument("-eh", '--endpoint-host', help="the ganglia endpoing hostname or IP", default="master")
+    parser.add_argument("-eh", '--endpoint-host', help="the ganglia endpoing hostname or IP", default="main")
     parser.add_argument("-ep", '--endpoint-port', help="the ganglia endpoing port", type=int, default=8649)
     parser.add_argument("-cm", '--collect-metrics', help="collect the metrics", action='store_true')
     parser.add_argument("-t", '--time', type=int, help="maximum running time", default=max_monitoring_time)

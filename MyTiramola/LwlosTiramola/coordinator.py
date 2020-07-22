@@ -302,13 +302,13 @@ class MyDaemon(Daemon):
 
             self.flavor_index = new_index
             new_flavor = self.flavors[new_index]
-            self.my_logger.debug("Resizing all slave nodes to flavor: " + str(new_flavor))
+            self.my_logger.debug("Resizing all subordinate nodes to flavor: " + str(new_flavor))
 
-            # Start the resize on all the slaves
+            # Start the resize on all the subordinates
             cluster = self.nosqlCluster.cluster
             resized_vms = []
             for hostname in cluster:
-                if "master" in hostname:
+                if "main" in hostname:
                     continue
                 #self.my_logger.debug("image = " + str(cluster[hostname]))
                 #self.my_logger.debug("dir(image) = " + str(dir(cluster[hostname])))
@@ -324,7 +324,7 @@ class MyDaemon(Daemon):
 
             # Wait for the machines to get ready and confirm the resize
             cluster_instances = self.eucacluster.describe_instances(pattern=self.utils.cluster_name)
-            instances = [i for i in cluster_instances if not 'master' in i.name]
+            instances = [i for i in cluster_instances if not 'main' in i.name]
             self.my_logger.debug("Waiting for the instances: " + str(instances))
             self.eucacluster.confirm_resizes(resized_vms)
             self.eucacluster.block_until_running(instances)
@@ -418,7 +418,7 @@ class MyDaemon(Daemon):
                 self.my_logger.debug("Running instances: " + str([i.networks for i in instances]))
 
             else:
-                instances.append(nosqlcluster.cluster[nosqlcluster.host_template+"master"])
+                instances.append(nosqlcluster.cluster[nosqlcluster.host_template+"main"])
                 for i in range(1,len(nosqlcluster.cluster)):
                     instances.append(nosqlcluster.cluster[nosqlcluster.host_template+str(i)])
                 self.my_logger.debug("Found old instances: " + str(instances))

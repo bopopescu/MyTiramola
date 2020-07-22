@@ -361,7 +361,7 @@ class MyDaemon(Daemon):
                 self.ycsb.killall_jobs()
                 # Very hardcoded case. Only for HBase and only for my installation!!!
                 if len(self.removed_hosts) == 0:
-                    print("\nAll HBase-slaves should be running, but can't serve. Restarting all Hbase...")
+                    print("\nAll HBase-subordinates should be running, but can't serve. Restarting all Hbase...")
                     subprocess.call(["stop-hbase.sh"])
                     subprocess.call(["start-hbase.sh"])
                     print("\nRestarting HBase is done. Now sleeping for 60 seconds...")
@@ -682,7 +682,7 @@ class MyDaemon(Daemon):
             for i in range(num_nodes):
                 cluster_length = len(cluster)
                 for hostname, host in cluster.items():
-                    if hostname != "master":
+                    if hostname != "main":
                         number = hostname.replace(self.hostname_template, "")
                         if number == str(cluster_length - 1):
                             self.nosqlCluster.remove_node(hostname, stop_dfs = False, update_db = False)
@@ -707,13 +707,13 @@ class MyDaemon(Daemon):
 
             self.flavor_index = new_index
             new_flavor = self.flavors[new_index]
-            self.my_logger.debug("Resizing all slave nodes to flavor: " + str(new_flavor))
+            self.my_logger.debug("Resizing all subordinate nodes to flavor: " + str(new_flavor))
 
-            # Start the resize on all the slaves
+            # Start the resize on all the subordinates
             cluster = self.nosqlCluster.cluster
             resized_vms = []
             for hostname in cluster:
-                if "master" in hostname:
+                if "main" in hostname:
                     continue
                 #self.my_logger.debug("image = " + str(cluster[hostname]))
                 #self.my_logger.debug("dir(image) = " + str(dir(cluster[hostname])))
@@ -728,7 +728,7 @@ class MyDaemon(Daemon):
             self.sleep(240)
             # Wait for the machines to get ready and confirm the resize
             cluster_instances = self.eucacluster.describe_instances(pattern=self.utils.cluster_name)
-            instances = [i for i in cluster_instances if not 'master' in i.name]
+            instances = [i for i in cluster_instances if not 'main' in i.name]
             self.my_logger.debug("Waiting for the instances: " + str(instances))
             self.eucacluster.confirm_resizes(resized_vms)
             self.eucacluster.block_until_running(instances)
@@ -908,7 +908,7 @@ class MyDaemon(Daemon):
 
             # Remove all the host entries from /etc/hosts pointing to VMs that form the NoSQL-cluster 
 #            call(["sed", "-i", "/%s/d" % self.nosqlCluster.host_template, "/etc/hosts"])
-            subprocess.call(["sudo", "sed", "-i", "/master/d", "/etc/hosts"])
+            subprocess.call(["sudo", "sed", "-i", "/main/d", "/etc/hosts"])
             subprocess.call(["sudo", "sed", "-i", "/%s/d" % self.hostname_template, "/etc/hosts"])
             cluster = self.nosqlCluster.cluster
             # Add all the current nodes of the cluster
